@@ -35,8 +35,10 @@ DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFi
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
-    property = other.property;
-    data_ = other.data_;
+    if (*this != other){
+        property = other.property;
+        data_ = other.data_;
+    }
     return *this;
 }
 // Операторы сравнения на равенство
