@@ -22,16 +22,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-    src/datasignal.cpp
+    src/DataSignal.cpp \
+    test/tests.cpp
 
 HEADERS += \
         src/mainwindow.h \
-    src/datasignal.h
+    src/DataSignal.h \
+    test/tests.h
 
 FORMS += \
         src/mainwindow.ui

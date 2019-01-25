@@ -20,18 +20,21 @@ struct PropertyDataSignal { // Контейнер для свойств
     QString measureUnit_;   // Единица измерения
     double scanPeriod_;     // Период опроса датчика
     QString characterisic_; // Характеристика
-    int nCount_;            // Количество отсчетов
+    int nCount_ = 0;        // Количество отсчетов
 };
 
 struct DataSignal{
     // Конструкторы и деструктор
-    DataSignal(QString const& path, QString const& fileName);
+    DataSignal() {}
+    DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
+    DataSignal(DataSignal const&); // Копирующий конструктор
+    DataSignal(DataSignal &&); // Перемещающий конструктор
     ~DataSignal() = default;
-    DataSignal(DataSignal const&) = delete;
     // Операторы
     DataSignal& operator=(DataSignal const&);
     bool operator==(DataSignal const&) const;
     bool operator!=(DataSignal const&) const;
+    double operator[](int) const;
     // Пользовательские методы
     int size() const; // Получение длины сигнала
     QVector<double> getData() const; // Получение сигнала без свойств

@@ -1,4 +1,4 @@
-#include "datasignal.h"
+#include "DataSignal.h"
 
 // Проверка файла на существование и на режим записи / чтения
 bool checkFile(QString const& fileFullPath, QString const& mode) {
@@ -30,8 +30,12 @@ bool checkFile(QString const& fileFullPath, QString const& mode) {
     return 1;
 }
 
-// Конструктор от имени файла
+// Конструктор от пути и имени файла
 DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFile(path, fileName); }
+// Копирующий конструктор
+DataSignal::DataSignal(DataSignal const& other) : property(other.property), data_(other.data_) { };
+// Перемещающий конструктор
+DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), data_(tmpOther.data_) { }
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
@@ -48,7 +52,9 @@ bool DataSignal::operator==(DataSignal const& other) const {
     return (property.path_ == other.property.path_ &&
             property.fileName_ == other.property.fileName_);
 }
-bool DataSignal::operator!=(DataSignal const& other) const { return (*this == other); }
+bool DataSignal::operator!=(DataSignal const& other) const { return !(*this == other); }
+// Оператор обращения по индексу
+double DataSignal::operator[](int index) const { return data_[index]; }
 
 // Пользовательские методы
 int DataSignal::size() const { return property.nCount_; } // Длина сигнала
@@ -82,5 +88,6 @@ void DataSignal::readDataFile(QString const& path, QString const& fileName){
     data_.resize(property.nCount_); // size() == nCount_
     for (int i = 0; i != property.nCount_; ++i )
         data_[i] = inputStream.readLine().toDouble();
+    file.close(); // Закрытие файла
 }
 
