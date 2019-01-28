@@ -37,11 +37,12 @@ struct DataSignal{
     double operator[](int) const;
     // Пользовательские методы
     int size() const; // Получение длины сигнала
+    bool isEmpty() const; // Проверка на пустоту сигнала
     QVector<double> getData() const; // Получение сигнала без свойств
     PropertyDataSignal getProperty() const; // Получение свойств
     // Файловые методы
     void readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
-    bool writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными
+    int writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными
 private:
     PropertyDataSignal property; // Свойства сигнала
     QVector<double> data_;      // Временной сигнал

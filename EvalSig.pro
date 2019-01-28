@@ -28,12 +28,15 @@ SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
     src/DataSignal.cpp \
-    test/tests.cpp
+    test/tests.cpp \
+    src/Statistics.cpp
 
 HEADERS += \
         src/mainwindow.h \
     src/DataSignal.h \
-    test/tests.h
+    test/tests.h \
+    src/Statistics.h \
+    src/Macroses.h
 
 FORMS += \
         src/mainwindow.ui

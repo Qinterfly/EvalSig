@@ -5,25 +5,27 @@ bool checkFile(QString const& fileFullPath, QString const& mode) {
     // mode == Read -- чтение
     // mode == Write -- запись
 
-    // Проверка существования файла
-    if ( !QFileInfo::exists(fileFullPath) || !QFileInfo(fileFullPath).isFile() ){
-        qDebug() << "Файл:" << fileFullPath << "не найден";
-        return 0;
-    }
-    // Проверка на возможность чтения
+    // Режим чтения
     if ( mode == "read" ){
+        // Проверка существования файла
+        if ( !QFileInfo::exists(fileFullPath) || !QFileInfo(fileFullPath).isFile() ){
+            qDebug() << "Файл:" << fileFullPath << "не найден";
+            return 0;
+        }
+        // Проверка на возможность чтения
         if ( !QFileInfo(fileFullPath).isReadable() ){
             qDebug() << "Файл:" << fileFullPath << "не доступен для чтения";
             return 0;
         }
+        // Проверка на пустоту
         if ( QFileInfo(fileFullPath).size() == 0 ){ // Проверка на пустоту файла
             qDebug() << "Файл:" << fileFullPath << "не содержит данных";
             return 0;
         }
     }
-    // Проверка на возможность записи
+    // Режим записи
     if ( mode == "write" )
-        if ( !QFileInfo(fileFullPath).isWritable() ){
+        if ( QFileInfo::exists(fileFullPath) && !QFileInfo(fileFullPath).isWritable() ){
             qDebug() << "Файл:" << fileFullPath << "не доступен для записи";
             return 0;
         }
@@ -58,12 +60,14 @@ double DataSignal::operator[](int index) const { return data_[index]; }
 
 // Пользовательские методы
 int DataSignal::size() const { return property.nCount_; } // Длина сигнала
+bool DataSignal::isEmpty() const { return (size() == 0); }// Проверка на пустоту сигнала
 QVector<double> DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
 PropertyDataSignal DataSignal::getProperty() const { return property; }; // Получение свойств
 
 // Чтение текстового файла с временным сигналом
 void DataSignal::readDataFile(QString const& path, QString const& fileName){
     QString fileFullPath = path + fileName; // Полный путь к файлу
+    fileFullPath.toUtf8();
     QFile file(fileFullPath); // Инициализация файла для чтения
     if (!checkFile(fileFullPath, "read")){ return; } // Обработка ошибок
     file.open(QIODevice::ReadOnly | QIODevice::Text); // Открытие файла для чтения
@@ -88,6 +92,33 @@ void DataSignal::readDataFile(QString const& path, QString const& fileName){
     data_.resize(property.nCount_); // size() == nCount_
     for (int i = 0; i != property.nCount_; ++i )
         data_[i] = inputStream.readLine().toDouble();
+    file.close(); // Закрытие файла
+}
+
+// Запись временного сигнала
+int DataSignal::writeDataFile(QString const& path, QString const& fileName){
+    if (isEmpty()) return -1; // Проверка на пустоту записываеомго сигнала
+    QString fileFullPath = path + fileName; // Полный путь к файлу
+    QFile file(fileFullPath); // Инициализация файла для записи
+    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для чтения
+    QTextStream outputStream(&file); // Создание потока для записи
+    outputStream.setCodec("cp1251"); // Кодировка CP1251
+    outputStream << property.path_ << endl;           // Путь к файлу
+    outputStream << property.fileName_ << endl;       // Имя файла
+    outputStream << property.dateAndTime_ << endl;    // Дата и время записи сигнала
+    outputStream << property.measureObject_ << endl;  // Объект измерения
+    outputStream << property.measurePoint_ << endl;   // Точка установки датчика
+    outputStream << property.currentCount_ << endl;   // Текущие отсчеты
+    outputStream << property.temperature_ << endl;    // Температура
+    outputStream << property.sensorType_ << endl;     // Тип датчика
+    outputStream << property.physicalCoeff_ << endl;  // Физический коэффициент
+    outputStream << property.measureUnit_ << endl;    // Единица измерения
+    outputStream << property.scanPeriod_ << endl;     // Период опроса датчика
+    outputStream << property.characterisic_ << endl;  // Характеристика
+    outputStream << property.nCount_ << endl;         // Количество отсчетов
+    for (int i = 0; i != property.nCount_; ++i )
+        outputStream << data_[i] << endl;
     file.close(); // Закрытие файла
 }
 
