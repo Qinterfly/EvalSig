@@ -21,12 +21,14 @@ void testDataSignal(){
 void testStatistics() {
     int volume = 12;
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
-    DataSignal obj1(testPath, "ОП 182 1с ку.txt");
-    DataSignal obj2(testPath, "ОП 182 2с ку.txt");
+    DataSignal obj1(testPath, "Short1.txt");
+    DataSignal obj2(testPath, "Short2.txt");
+    DataSignal obj3(testPath, "Short3.txt");
     QVector<DataSignal> vecDataSignals;
     vecDataSignals.reserve(volume);
     vecDataSignals.push_back(obj1);
     vecDataSignals.push_back(obj2);
-    Statistics stat(vecDataSignals, 365, 0.5);
+    vecDataSignals.push_back(obj3);
+    Statistics stat(vecDataSignals, 200, 0.);
     qDebug();
 }
