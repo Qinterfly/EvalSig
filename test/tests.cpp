@@ -18,6 +18,7 @@ void testDataSignal(){
    qDebug();
 }
 
+// Проверка статистических характеристик
 void testStatistics() {
     int volume = 12;
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
@@ -28,7 +29,7 @@ void testStatistics() {
     vecDataSignals.reserve(volume);
     vecDataSignals.push_back(obj1);
     vecDataSignals.push_back(obj2);
-    vecDataSignals.push_back(obj3);
     Statistics stat(vecDataSignals, 200, 0.);
+    stat.addSignal(vecDataSignals, obj3); // Добавление сигнала
     qDebug();
 }
