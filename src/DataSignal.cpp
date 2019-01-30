@@ -38,6 +38,8 @@ DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFi
 DataSignal::DataSignal(DataSignal const& other) : property(other.property), data_(other.data_) { };
 // Перемещающий конструктор
 DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), data_(tmpOther.data_) { }
+// Деструктор
+DataSignal::~DataSignal() { property.nCount_ = 0; }
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
@@ -62,13 +64,14 @@ double DataSignal::operator[](int index) const { return data_[index]; }
 int DataSignal::size() const { return property.nCount_; } // Длина сигнала
 bool DataSignal::isEmpty() const { return (size() == 0); }// Проверка на пустоту сигнала
 QVector<double> DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
-PropertyDataSignal DataSignal::getProperty() const { return property; }; // Получение свойств
+PropertyDataSignal DataSignal::getProperty() const { return property; }; // Получение всех свойств
+QString DataSignal::getName() const {return property.fileName_; } // Получение имени сигнала
 
 // Чтение текстового файла с временным сигналом
-void DataSignal::readDataFile(QString const& path, QString const& fileName){
+int DataSignal::readDataFile(QString const& path, QString const& fileName){
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для чтения
-    if (!checkFile(fileFullPath, "read")){ return; } // Обработка ошибок
+    if (!checkFile(fileFullPath, "read")){ return -1; } // Обработка ошибок
     file.open(QIODevice::ReadOnly | QIODevice::Text); // Открытие файла для чтения
     QTextStream inputStream(&file); // Создание потока чтения
     inputStream.setCodec("cp1251"); // Кодировка CP1251
@@ -92,6 +95,7 @@ void DataSignal::readDataFile(QString const& path, QString const& fileName){
     for (int i = 0; i != property.nCount_; ++i )
         data_[i] = inputStream.readLine().toDouble() * property.physicalFactor_;
     file.close(); // Закрытие файла
+    return 0;
 }
 
 // Запись временного сигнала
@@ -119,5 +123,6 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName){
     for (int i = 0; i != property.nCount_; ++i )
         outputStream << data_[i] / property.physicalFactor_ << endl;
     file.close(); // Закрытие файла
+    return 0;
 }
 

@@ -19,19 +19,22 @@ struct Statistics{
     Statistics(QVector<DataSignal> const& vecDataSignal, int widthTimeWindow, double overlapFactor);
     ~Statistics() = default;
     Statistics(Statistics const&) = delete; // Запрет на копирование
-    Statistics& operator=(Statistics const&); // Присваивание осуществяется в случае полного пересчета
+    Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
     // Интерфейс пользователя
     int size() const; // Текущий размер матрицы статистик
     bool isEmpty() const; // Проверка на пустоту
     int minSizeSignals() const; // Минимальная длина сигнала из группы
-    void addSignal(QVector<DataSignal> & vecDataSignal, DataSignal const& dataSignal); // Добавление сигнала
-    void removeSignal(QVector<DataSignal> & vecDataSignal, int deleteInd); // Удаление сигнала
+    bool addSignal(QVector<DataSignal> & vecDataSignal, DataSignal const& dataSignal); // Добавление сигнала
+    bool removeSignal(QVector<DataSignal> & vecDataSignal, int deleteInd); // Удаление сигнала
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams
     template<typename T>
-    void allocateField(T&, int beginColInd, int fullSize); // При расширении объекта
+    void allocateField(T& field, int beginColInd, int fullSize); // При расширении объекта
     template<typename T>
-    void removeField(T&);                                  // При сжатии объекта
+    void removeField(T& field, int deleteInd);                   // При сжатии объекта
+    // Методы-обертки для выделения памяти для всех полей
+    void allocateAllFields(int beginColInd, int fullSize); // При расширении для всех полей
+    void removeAllFields(int deleteInd);                   // При сжатии для всех полей
     // Расчет статистических характеристик
     int calcMinSizeSignals(QVector<DataSignal> const&); // Получение минимальной длины сигнала
     void fullCompute(QVector<DataSignal> const&); // Полный расчет характеристик
@@ -40,7 +43,7 @@ private:
     void calcDistanceAmplitudeRegression(QVector<DataSignal> const& vecDataSignal, int shiftWindow, int i, int j);
         // Тело цикла для расчета коэффициентов подобия
     void calcSimilarity(int shiftWindow, int i, int j);
-    private:
+private:
     ArrayRegressionParams regressionParams_; // Параметры линейной регрессии
     ArrayStatCharacters distanceScatter_; // Дистанция рассеяния
     ArrayStatCharacters similarityCoeffs_; // Коэффициенты подобия сигналов

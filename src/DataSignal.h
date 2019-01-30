@@ -25,11 +25,11 @@ struct PropertyDataSignal { // Контейнер для свойств
 
 struct DataSignal{
     // Конструкторы и деструктор
-    DataSignal() {}
+    DataSignal() = default;
     DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
     DataSignal(DataSignal const&); // Копирующий конструктор
     DataSignal(DataSignal &&); // Перемещающий конструктор
-    ~DataSignal() = default;
+    ~DataSignal(); // Деструктор
     // Операторы
     DataSignal& operator=(DataSignal const&);
     bool operator==(DataSignal const&) const;
@@ -39,9 +39,10 @@ struct DataSignal{
     int size() const; // Получение длины сигнала
     bool isEmpty() const; // Проверка на пустоту сигнала
     QVector<double> getData() const; // Получение сигнала без свойств
-    PropertyDataSignal getProperty() const; // Получение свойств
+    PropertyDataSignal getProperty() const; // Получение всех свойств
+    QString getName() const; // Получение имени сигнала
     // Файловые методы
-    void readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
+    int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными
 private:
     PropertyDataSignal property; // Свойства сигнала

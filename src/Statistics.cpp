@@ -12,11 +12,7 @@ Statistics::Statistics(QVector<DataSignal> const& vecDataSignal, int widthTimeWi
     : nSize_(vecDataSignal.size()), minSizeSignals_(calcMinSizeSignals(vecDataSignal)),
       windowProperty(widthTimeWindow, overlapFactor, minSizeSignals_)
 {
-    // Выделение памяти для хранения полей
-    allocateField(regressionParams_, 0, nSize_); // Параметры линейной регрессии
-    allocateField(distanceScatter_, 0, nSize_); // Дистанция рассеяния
-    allocateField(similarityCoeffs_, 0, nSize_); // Коэффициенты подобия сигналов
-    allocateField(amplitudeScatter_, 0, nSize_); // Амплитуда рассеяния
+    allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(vecDataSignal); // Полный расчет матрицы характеристик
 }
 
@@ -24,19 +20,38 @@ Statistics::Statistics(QVector<DataSignal> const& vecDataSignal, int widthTimeWi
 int Statistics::size() const { return nSize_; } // Текущий размер матрицы статистик
 bool Statistics::isEmpty() const { return size() == 0; } // Проверка на пустоту
 int Statistics::minSizeSignals() const {return minSizeSignals_; }; // Минимальная длина сигнала из группы
-// Добавление сигнала
-void Statistics::addSignal(QVector<DataSignal> & vecDataSignal, DataSignal const& dataSignal){
-    vecDataSignal.push_back(dataSignal); // Добавление сигнала в вектор
-    if (dataSignal.size() >= minSizeSignals_){ // Оценка необходимости полного пересчета матрицы
-        // Частичный пересчет
-            // Инициализация дополнительных полей
-        allocateField(regressionParams_, nSize_, nSize_ + 1); // Параметры линейной регрессии
-        allocateField(distanceScatter_, nSize_, nSize_ + 1); // Дистанция рассеяния
-        allocateField(similarityCoeffs_, nSize_, nSize_ + 1); // Коэффициенты подобия сигналов
-        allocateField(amplitudeScatter_, nSize_, nSize_ + 1); // Амплитуда рассеяния
-        ++nSize_; // Увеличение размера матрицы статистик
-        partialCompute(vecDataSignal); // Вызов метода частичного пересчета
+    // Добавление сигнала
+bool Statistics::addSignal(QVector<DataSignal> & vecDataSignal, DataSignal const& dataSignal){
+    int sizeSignal = dataSignal.size(); // Длина сигнала
+    if (sizeSignal < windowProperty.width_){ // Обработка исключения
+        qDebug() << "Ширина окна превышает длину сигнала" << dataSignal.getName();
+        return 1;
     }
+    vecDataSignal.push_back(dataSignal);   // Добавление объекта в вектор сигналов
+    allocateAllFields(nSize_, nSize_ + 1); // Инциализация дополнительных полей
+    ++nSize_; // Увеличение размера матрицы статистик
+    // Оценка необходимости полного пересчета матрицы
+    if (sizeSignal >= minSizeSignals_ && minSizeSignals_ != 0)
+        partialCompute(vecDataSignal); // Вызов метода частичного пересчета
+    else { // Полный пересчет
+        minSizeSignals_ = sizeSignal; // Запись новой наименьшой длины сигнала
+        fullCompute(vecDataSignal); // Вызов метода полного пересчета
+    }
+    return 0;
+}
+    // Удаление сигнала
+bool Statistics::removeSignal(QVector<DataSignal> & vecDataSignal, int deleteInd){
+    if (isEmpty()) { qDebug() << "Объект статистик пуст"; return 1; } // Проверка на пустоту
+    if (deleteInd > nSize_ - 1){ qDebug() << "Попытка удаления несуществующего элемента"; return 1; } // Проверка на возможность удаления
+    vecDataSignal.remove(deleteInd); // Удаление объекта из вектора сигналов
+    removeAllFields(deleteInd); // Удаление статистик, связанных с объектов
+    --nSize_; // Уменьшение размера матрицы
+    int tempMinSizeSignals = calcMinSizeSignals(vecDataSignal); // Получение нового минимального размера группы сигналов
+    if (tempMinSizeSignals != minSizeSignals_){ // Если после удаление минимальный размер сигналов изменился
+        minSizeSignals_ = tempMinSizeSignals; // Запись нового размера
+        fullCompute(vecDataSignal); // Вызов метода полного пересчета
+    }
+    return 0;
 }
 
 // Выделение памяти для полей структуры
@@ -50,14 +65,39 @@ void Statistics::allocateField(T& field, int beginColInd, int fullSize){
             field[i][j].resize(windowProperty.nWindows_);
     }
     // В случае расширения матрицы одним сигналом дополнительно
-    // инициализируем последнюю строку за исключением диагонального элемента
+    // инициализируем последнюю строку, за исключением диагонального элемента
     if (beginColInd == fullSize - 1)
         for (int j = 0; j != fullSize - 1; ++j)
             field[fullSize - 1][j].resize(windowProperty.nWindows_);
 }
+    // При сжатии объекта
+template<typename T>
+void Statistics::removeField(T& field, int deleteInd){
+    field.remove(deleteInd); // Удаление строки по индексу
+    for (int i = 0; i != nSize_ - 1; ++i)
+        field[i].remove(deleteInd); // Удаление столбца по индексу в оставшихся строках
+}
+
+// Методы-обертки для выделения памяти для всех полей
+    // При расширении для всех полей
+void Statistics::allocateAllFields(int beginColInd, int fullSize){
+    allocateField(regressionParams_, beginColInd, fullSize);   // Параметры линейной регрессии
+    allocateField(distanceScatter_, beginColInd, fullSize);    // Дистанция рассеяния
+    allocateField(similarityCoeffs_, beginColInd, fullSize);   // Коэффициенты подобия сигналов
+    allocateField(amplitudeScatter_, beginColInd, fullSize);   // Амплитуда рассеяния
+}
+
+// При сжатии для всех полей
+void Statistics::removeAllFields(int deleteInd){
+    removeField(regressionParams_, deleteInd);   // Параметры линейной регрессии
+    removeField(distanceScatter_, deleteInd);    // Дистанция рассеяния
+    removeField(similarityCoeffs_, deleteInd);   // Коэффициенты подобия сигналов
+    removeField(amplitudeScatter_, deleteInd);   // Амплитуда рассеяния
+}
 
 // Нахождение минимального размера сигнала из группы
 int Statistics::calcMinSizeSignals(QVector<DataSignal> const& vecDataSignal){
+    if (vecDataSignal.isEmpty()) return 0; // Проверка на пустоту
     auto iter = vecDataSignal.begin();
     int tempMinSize = iter->size(); ++iter;
     for ( ; iter != vecDataSignal.end(); ++iter)
@@ -86,15 +126,14 @@ void Statistics::partialCompute(QVector<DataSignal> const& vecDataSignal){
         // По последнему столбцу
     for (int i = 0; i != nSize_; ++i)
         calcDistanceAmplitudeRegression(vecDataSignal, shiftWindow, i, nSize_ - 1);
-        // По последней строке за исключением диагонального элемента
+        // По последней строке, за исключением диагонального элемента
     for (int j = 0; j != nSize_ - 1; ++j)
         calcDistanceAmplitudeRegression(vecDataSignal, shiftWindow, nSize_ - 1, j);
-
     // Расчет коэффициентов подобия [циклы объединить нельзя]
         // По последнему столбцу
     for (int i = 0; i != nSize_; ++i)
         calcSimilarity(shiftWindow, i, nSize_ - 1);
-    // По последней строке за исключением диагонального элемента
+    // По последней строке, за исключением диагонального элемента
     for (int j = 0; j != nSize_ - 1; ++j)
         calcSimilarity(shiftWindow, nSize_ - 1, j);
 }
