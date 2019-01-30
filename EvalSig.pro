@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = EvalSig
 TEMPLATE = app
@@ -29,14 +29,16 @@ SOURCES += \
         gui/mainwindow.cpp \
         core/DataSignal.cpp \
         test/tests.cpp \
-        core/Statistics.cpp
+        core/Statistics.cpp \
+        gui/qcustomplot.cpp
 
 HEADERS += \
         gui/mainwindow.h \
         core/DataSignal.h \
         test/tests.h \
         core/Statistics.h \
-        core/Macroses.h
+        core/Macroses.h \
+        gui/qcustomplot.h
 
 FORMS += \
         gui/mainwindow.ui
