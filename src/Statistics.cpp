@@ -2,7 +2,10 @@
 
 // Конструктор TimeWindowProperty
 TimeWindowProperty::TimeWindowProperty(int width, double overlapFactor, int sizeSignals)
-    : width_(width), overlapFactor_(overlapFactor) {
+    : width_(width), overlapFactor_(overlapFactor) { calcWindowParams(sizeSignals); }
+
+// Расчет параметров окна
+void TimeWindowProperty::calcWindowParams(int sizeSignals){
     nWindows_ = qCeil(sizeSignals / ( width_ * (1 - overlapFactor_) ) ); // Число окон
     shiftWindow_ = qCeil( width_ * (1 - overlapFactor_) ); // Смещение окна по времени
 }
@@ -52,6 +55,24 @@ bool Statistics::removeSignal(int deleteInd){
         minSizeSignals_ = tempMinSizeSignals; // Запись нового размера
         fullCompute(); // Вызов метода полного пересчета
     }
+    return 0;
+}
+
+    // Изменение свойств окна
+bool Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
+    if (widthTimeWindow > minSizeSignals_) { // Проверка превышения minSizeSignals_
+        qDebug() << "Ширина окна превышает минимальную длину группы сигналов";
+        return 1;
+    }
+    // Проверка необходимости изменения
+    if (windowProperty.width_ == widthTimeWindow && windowProperty.overlapFactor_ == overlapFactor)
+        return 0;
+    // Запись новых параметров
+    windowProperty.width_ = widthTimeWindow;
+    windowProperty.overlapFactor_ = overlapFactor;
+    windowProperty.calcWindowParams(minSizeSignals_);
+    allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
+    fullCompute(); // Полный пересчет
     return 0;
 }
 

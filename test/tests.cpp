@@ -31,14 +31,18 @@ void testStatistics() {
     vecDataSignals.push_back(obj2);
     Statistics stat(vecDataSignals, 200, 0.); // Создание объекта статистик
     // Добавление сигнала
-    stat.addSignal(obj3);
+    Q_ASSERT(!stat.addSignal(obj3));
     // Удаление всех сигналов
-    stat.removeSignal(2);
-    stat.removeSignal(1);
-    stat.removeSignal(0);
+    Q_ASSERT(!stat.removeSignal(2));
+    Q_ASSERT(!stat.removeSignal(1));
+    Q_ASSERT(!stat.removeSignal(0));
     // Добавление сигналов
-    stat.addSignal(obj1);
-    stat.addSignal(obj2);
-    stat.addSignal(obj3);
+    Q_ASSERT(!stat.addSignal(obj1));
+    Q_ASSERT(!stat.addSignal(obj2));
+    Q_ASSERT(!stat.addSignal(obj3));
+    // Переключение параметров окна
+    Q_ASSERT(!stat.setWindowProperty(100, 0.5));
+    Q_ASSERT(!stat.setWindowProperty(100, 0.5));
+
     qDebug();
 }

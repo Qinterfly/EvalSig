@@ -8,6 +8,8 @@
 // Свойства окна выделения характеристик
 struct TimeWindowProperty {
     TimeWindowProperty(int width, double overlapFactor, int sizeSignals);
+    void calcWindowParams(int); // Расчет параметров окна
+
     int width_;             // Ширина временного окна
     double overlapFactor_;  // Коэффициент перекрытия окон
     int nWindows_;          // Число окон
@@ -26,6 +28,7 @@ struct Statistics{
     int minSizeSignals() const; // Минимальная длина сигнала из группы
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
+    bool setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams
     template<typename T>
