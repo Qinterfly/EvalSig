@@ -32,13 +32,17 @@ bool Statistics::addSignal(DataSignal const& dataSignal){
         return 1;
     }
     pVecDataSignal->push_back(dataSignal);   // Добавление объекта в вектор сигналов
-    allocateAllFields(nSize_, nSize_ + 1); // Инциализация дополнительных полей
-    ++nSize_; // Увеличение размера матрицы статистик
     // Оценка необходимости полного пересчета матрицы
-    if (sizeSignal >= minSizeSignals_ && minSizeSignals_ != 0)
+    if (sizeSignal >= minSizeSignals_ && minSizeSignals_ != 0){
+        allocateAllFields(nSize_, nSize_ + 1); // Инциализация дополнительных полей
+        ++nSize_; // Увеличение размера матрицы статистик
         partialCompute(); // Вызов метода частичного пересчета
+    }
     else { // Полный пересчет
         minSizeSignals_ = sizeSignal; // Запись новой наименьшой длины сигнала
+        windowProperty.calcWindowParams(minSizeSignals_); // Пересчет параметров окна
+        allocateAllFields(0, nSize_ + 1); // Инциализация дополнительных полей
+        ++nSize_; // Увеличение размера матрицы статистик
         fullCompute(); // Вызов метода полного пересчета
     }
     return 0;
@@ -53,6 +57,7 @@ bool Statistics::removeSignal(int deleteInd){
     int tempMinSizeSignals = calcMinSizeSignals(); // Получение нового минимального размера группы сигналов
     if (tempMinSizeSignals != minSizeSignals_){ // Если после удаление минимальный размер сигналов изменился
         minSizeSignals_ = tempMinSizeSignals; // Запись нового размера
+        windowProperty.calcWindowParams(minSizeSignals_); // Пересчет параметров окна
         fullCompute(); // Вызов метода полного пересчета
     }
     return 0;

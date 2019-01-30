@@ -25,6 +25,9 @@ void testStatistics() {
     DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
     DataSignal obj2(testPath, "Short2.txt"); // Длина == 200
     DataSignal obj3(testPath, "Short3.txt"); // Длина == 200
+    DataSignal obj4(testPath, "Short4.txt"); // Длина == 193
+    DataSignal obj5(testPath, "Short5.txt"); // Длина == 632
+
     QVector<DataSignal> vecDataSignals;
     vecDataSignals.reserve(volume);
     vecDataSignals.push_back(obj1);
@@ -42,7 +45,11 @@ void testStatistics() {
     Q_ASSERT(!stat.addSignal(obj3));
     // Переключение параметров окна
     Q_ASSERT(!stat.setWindowProperty(100, 0.5));
-    Q_ASSERT(!stat.setWindowProperty(100, 0.5));
-
+    Q_ASSERT(!stat.setWindowProperty(193, 0.));
+    // Добавление сигналов другой длины
+    Q_ASSERT(!stat.addSignal(obj4));
+    Q_ASSERT(!stat.addSignal(obj5));
+    // Переключение параметров окна
+    Q_ASSERT(!stat.setWindowProperty(10, 0.8));
     qDebug();
 }
