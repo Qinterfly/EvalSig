@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
-#include "DataSignal.h"
+#include "core/DataSignal.h"
 #include "test/tests.h"
 
 int main(int argc, char *argv[])

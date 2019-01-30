@@ -25,21 +25,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
-        src/main.cpp \
-        src/mainwindow.cpp \
-    src/DataSignal.cpp \
-    test/tests.cpp \
-    src/Statistics.cpp
+        gui/main.cpp \
+        gui/mainwindow.cpp \
+        core/DataSignal.cpp \
+        test/tests.cpp \
+        core/Statistics.cpp
 
 HEADERS += \
-        src/mainwindow.h \
-    src/DataSignal.h \
-    test/tests.h \
-    src/Statistics.h \
-    src/Macroses.h
+        gui/mainwindow.h \
+        core/DataSignal.h \
+        test/tests.h \
+        core/Statistics.h \
+        core/Macroses.h
 
 FORMS += \
-        src/mainwindow.ui
+        gui/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

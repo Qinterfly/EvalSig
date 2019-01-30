@@ -1,8 +1,8 @@
 #ifndef TESTDATASIGNAL_H
 #define TESTDATASIGNAL_H
 
-#include "src/DataSignal.h"
-#include "src/Statistics.h"
+#include "core/DataSignal.h"
+#include "core/Statistics.h"
 
 void testDataSignal(); // Проверка сигналов
 void testStatistics(); // Проверка статистик
