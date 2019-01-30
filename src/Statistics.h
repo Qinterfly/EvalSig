@@ -16,16 +16,16 @@ struct TimeWindowProperty {
 
 // Класс статистических характеристик
 struct Statistics{
-    Statistics(QVector<DataSignal> const& vecDataSignal, int widthTimeWindow, double overlapFactor);
-    ~Statistics() = default;
+    Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, double overlapFactor);
+    ~Statistics(){}
     Statistics(Statistics const&) = delete; // Запрет на копирование
     Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
     // Интерфейс пользователя
     int size() const; // Текущий размер матрицы статистик
     bool isEmpty() const; // Проверка на пустоту
     int minSizeSignals() const; // Минимальная длина сигнала из группы
-    bool addSignal(QVector<DataSignal> & vecDataSignal, DataSignal const& dataSignal); // Добавление сигнала
-    bool removeSignal(QVector<DataSignal> & vecDataSignal, int deleteInd); // Удаление сигнала
+    bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
+    bool removeSignal(int deleteInd); // Удаление сигнала
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams
     template<typename T>
@@ -36,14 +36,15 @@ private:
     void allocateAllFields(int beginColInd, int fullSize); // При расширении для всех полей
     void removeAllFields(int deleteInd);                   // При сжатии для всех полей
     // Расчет статистических характеристик
-    int calcMinSizeSignals(QVector<DataSignal> const&); // Получение минимальной длины сигнала
-    void fullCompute(QVector<DataSignal> const&); // Полный расчет характеристик
-    void partialCompute(QVector<DataSignal> const&); // Частичный расчет характеристик
+    int calcMinSizeSignals(); // Получение минимальной длины сигнала
+    void fullCompute(); // Полный расчет характеристик
+    void partialCompute(); // Частичный расчет характеристик
         // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров
-    void calcDistanceAmplitudeRegression(QVector<DataSignal> const& vecDataSignal, int shiftWindow, int i, int j);
+    void calcDistanceAmplitudeRegression(int shiftWindow, int i, int j);
         // Тело цикла для расчета коэффициентов подобия
     void calcSimilarity(int shiftWindow, int i, int j);
 private:
+    QVector<DataSignal> * const pVecDataSignal = nullptr; // Указатель на вектор сигналов
     ArrayRegressionParams regressionParams_; // Параметры линейной регрессии
     ArrayStatCharacters distanceScatter_; // Дистанция рассеяния
     ArrayStatCharacters similarityCoeffs_; // Коэффициенты подобия сигналов

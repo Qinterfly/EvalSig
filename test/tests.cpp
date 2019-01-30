@@ -31,14 +31,14 @@ void testStatistics() {
     vecDataSignals.push_back(obj2);
     Statistics stat(vecDataSignals, 200, 0.); // Создание объекта статистик
     // Добавление сигнала
-    stat.addSignal(vecDataSignals, obj3);
+    stat.addSignal(obj3);
     // Удаление всех сигналов
-    stat.removeSignal(vecDataSignals, 2);
-    stat.removeSignal(vecDataSignals, 1);
-    stat.removeSignal(vecDataSignals, 0);
+    stat.removeSignal(2);
+    stat.removeSignal(1);
+    stat.removeSignal(0);
     // Добавление сигналов
-    stat.addSignal(vecDataSignals, obj1);
-    stat.addSignal(vecDataSignals, obj2);
-    stat.addSignal(vecDataSignals, obj3);
+    stat.addSignal(obj1);
+    stat.addSignal(obj2);
+    stat.addSignal(obj3);
     qDebug();
 }
