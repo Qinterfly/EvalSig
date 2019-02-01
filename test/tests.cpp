@@ -22,6 +22,7 @@ void testDataSignal(){
 void testStatistics() {
     int volume = 12;
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
+    // Создание по готовым сигналам
     DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
     DataSignal obj2(testPath, "Short2.txt"); // Длина == 200
     DataSignal obj3(testPath, "Short3.txt"); // Длина == 200

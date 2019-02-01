@@ -6,6 +6,10 @@ TimeWindowProperty::TimeWindowProperty(int width, double overlapFactor, int size
 
 // Расчет параметров окна
 void TimeWindowProperty::calcWindowParams(int sizeSignals){
+    if (width_ == 0) { // Обработка исключения окна нулевой ширины
+        nWindows_ = 0; shiftWindow_ = 0;
+        return;
+    }
     nWindows_ = qCeil(sizeSignals / ( width_ * (1 - overlapFactor_) ) ); // Число окон
     shiftWindow_ = qCeil( width_ * (1 - overlapFactor_) ); // Смещение окна по времени
 }
@@ -65,10 +69,8 @@ bool Statistics::removeSignal(int deleteInd){
 
     // Изменение свойств окна
 bool Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
-    if (widthTimeWindow > minSizeSignals_) { // Проверка превышения minSizeSignals_
-        qDebug() << "Ширина окна превышает минимальную длину группы сигналов";
-        return 1;
-    }
+    // ~ Гарантируется, что ширина окна не превышает минимальную длину сигнала из группы
+
     // Проверка необходимости изменения
     if (windowProperty.width_ == widthTimeWindow && windowProperty.overlapFactor_ == overlapFactor)
         return 0;

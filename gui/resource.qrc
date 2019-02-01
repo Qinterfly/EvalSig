@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>icons/delete-48px.png</file>
+        <file>icons/exit-48px.png</file>
+        <file>icons/file-48px.png</file>
+        <file>icons/microsoft-excel-48px.png</file>
+        <file>icons/plus-48px.png</file>
+        <file>icons/save-48px.png</file>
+        <file>icons/settings-48px.png</file>
+        <file>icons/trash-48px.png</file>
+    </qresource>
+</RCC>
