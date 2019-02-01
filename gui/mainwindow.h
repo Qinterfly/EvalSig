@@ -18,16 +18,20 @@ public:
     ~MainWindow();
 
 public slots:
-    // Работа с исходными сигналами
+    // Чтение / запись сигналов
     void addSignal(); // Добавить сигнал
     void removeSignal(); // Удалить сигнал
 
 public:
-    // Работа с графиками
-    void replot(); // Перерисовать график
+    // Инициализация параметров программы
     void initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
+    void initializeSystemParams(); // Установка параметров используемой операционной системы
+    void initializeCalculationParams(); // Выставление расчетных параметров
+    void initializeShowParams(); // Инициализация параметров для отображения
+    // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
-    void setSystemParams(); // Установка параметров используемой операционной системы
+    // Работа с графиками
+    void replot(); // Перерисовать графики
 
 private:
     Ui::MainWindow *ui; // Графический интерфейс QtDesigner
@@ -38,6 +42,9 @@ private:
     int widthTimeWindow_ = 0; // Ширина окна
     double overlapFactor_ = 0; // Коэффициент перекрытия окон
     Statistics statSignal_; // Статистические характеристики для сигналов
+    // Отображение
+    int showWindow_; // Номер временного окна для показа
+    const QStringList colorList_; // Список цветов для отображения
 };
 
 #endif // MAINWINDOW_H

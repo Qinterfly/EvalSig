@@ -434,7 +434,7 @@
             <number>14</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -492,7 +492,7 @@
            </item>
            <item row="0" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="1" column="0">
@@ -502,7 +502,7 @@
            </item>
            <item row="1" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="2" column="0">
@@ -512,7 +512,7 @@
            </item>
            <item row="2" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="3" column="0">
@@ -522,7 +522,7 @@
            </item>
            <item row="3" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="4" column="0">
@@ -532,7 +532,7 @@
            </item>
            <item row="4" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="5" column="0">
@@ -542,7 +542,7 @@
            </item>
            <item row="5" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="6" column="0">
@@ -552,7 +552,7 @@
            </item>
            <item row="6" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="7" column="0">
@@ -562,7 +562,7 @@
            </item>
            <item row="7" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="8" column="0">
@@ -572,7 +572,7 @@
            </item>
            <item row="8" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="9" column="0">
@@ -582,7 +582,7 @@
            </item>
            <item row="9" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="10" column="0">
@@ -592,7 +592,7 @@
            </item>
            <item row="10" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="11" column="0">
@@ -602,7 +602,7 @@
            </item>
            <item row="11" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="12" column="0">
@@ -612,7 +612,7 @@
            </item>
            <item row="12" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
            <item row="13" column="0">
@@ -622,7 +622,7 @@
            </item>
            <item row="13" column="1">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </item>
           </widget>
@@ -633,6 +633,76 @@
         <attribute name="title">
          <string>Расчета</string>
         </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <layout class="QHBoxLayout" name="tabCalcHorizontalLayout">
+           <item>
+            <layout class="QFormLayout" name="tabCalcFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelTimeWidth">
+               <property name="text">
+                <string>Ширина врем. окна:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBoxTimeWidth">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>221196</number>
+               </property>
+               <property name="value">
+                <number>512</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelOverlapFactor">
+               <property name="text">
+                <string>Коэфф. перекрытия:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelShowWindow">
+               <property name="text">
+                <string>Номер окна показа:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="spinBoxShowWindow">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>221196</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
+               <property name="minimum">
+                <double>0.010000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>0.990000000000000</double>
+               </property>
+               <property name="stepType">
+                <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+               </property>
+               <property name="value">
+                <double>0.500000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>

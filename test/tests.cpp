@@ -52,5 +52,7 @@ void testStatistics() {
     Q_ASSERT(!stat.addSignal(obj5));
     // Переключение параметров окна
     Q_ASSERT(!stat.setWindowProperty(10, 0.8));
+    Q_ASSERT(!stat.setWindowProperty(1024, 0.));
+    Q_ASSERT(!stat.setWindowProperty(2048, 0.));
     qDebug();
 }

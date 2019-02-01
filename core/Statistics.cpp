@@ -27,14 +27,11 @@ Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow,
 // Интерфейс пользователя
 int Statistics::size() const { return nSize_; } // Текущий размер матрицы статистик
 bool Statistics::isEmpty() const { return size() == 0; } // Проверка на пустоту
-int Statistics::minSizeSignals() const {return minSizeSignals_; }; // Минимальная длина сигнала из группы
+int Statistics::minSizeSignals() const { return minSizeSignals_; }; // Минимальная длина сигнала из группы
+int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон
     // Добавление сигнала
 bool Statistics::addSignal(DataSignal const& dataSignal){
     int sizeSignal = dataSignal.size(); // Длина сигнала
-    if (sizeSignal < windowProperty.width_){ // Обработка исключения
-        qDebug() << "Ширина окна превышает длину сигнала" << dataSignal.getName();
-        return 1;
-    }
     pVecDataSignal->push_back(dataSignal);   // Добавление объекта в вектор сигналов
     // Оценка необходимости полного пересчета матрицы
     if (sizeSignal >= minSizeSignals_ && minSizeSignals_ != 0){
@@ -69,8 +66,6 @@ bool Statistics::removeSignal(int deleteInd){
 
     // Изменение свойств окна
 bool Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
-    // ~ Гарантируется, что ширина окна не превышает минимальную длину сигнала из группы
-
     // Проверка необходимости изменения
     if (windowProperty.width_ == widthTimeWindow && windowProperty.overlapFactor_ == overlapFactor)
         return 0;
@@ -136,7 +131,6 @@ int Statistics::calcMinSizeSignals(){
 
 // Полный расчет статистик
 void Statistics::fullCompute(){
-    // ~ гарантируется, что widthTimeWindow_ <= minSizeSignals_ 
     // Расчет регрессионных параметров, дистанций и амплитуд рассеяния
     for (int i = 0; i != nSize_; ++i)
         for (int j = 0; j != nSize_; ++j)
@@ -149,7 +143,6 @@ void Statistics::fullCompute(){
 
 // Частичный пересчет статистик (при добавлении одного сигнала)
 void Statistics::partialCompute(){
-    // ~ гарантируется, что propertyWindow.width_ <= minSizeSignals_
     int shiftWindow = qCeil( windowProperty.width_ * (1 - windowProperty.overlapFactor_) ); // Смещение окна по времени
     // Расчет регрессионных параметров, дистанций и амплитуд рассеяния
         // По последнему столбцу
@@ -181,8 +174,8 @@ void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
             meanX += (*pVecDataSignal)[i][s + k];
             meanY += (*pVecDataSignal)[j][s + k];
         }
-        meanX /= windowProperty.width_;
-        meanY /= windowProperty.width_;
+        meanX /= currRightBound; // Нормировка к реальной ширине окна
+        meanY /= currRightBound;
         // Нахождение параметров линейной регрессии
         double numeratorA = 0, denominatorA = 0; // Числитель и знаменатель углового коэффициента
         for (int k = 0; k != currRightBound; ++k){
