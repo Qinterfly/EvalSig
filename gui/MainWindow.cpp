@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 // Конструктор главного окна
 MainWindow::MainWindow(QWidget *parent) :
