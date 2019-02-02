@@ -29,6 +29,7 @@ int Statistics::size() const { return nSize_; } // Текущий размер �
 bool Statistics::isEmpty() const { return size() == 0; } // Проверка на пустоту
 int Statistics::minSizeSignals() const { return minSizeSignals_; }; // Минимальная длина сигнала из группы
 int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон
+ArrayRegressionParams const& Statistics::getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
     // Добавление сигнала
 bool Statistics::addSignal(DataSignal const& dataSignal){
     int sizeSignal = dataSignal.size(); // Длина сигнала
@@ -51,7 +52,10 @@ bool Statistics::addSignal(DataSignal const& dataSignal){
     // Удаление сигнала
 bool Statistics::removeSignal(int deleteInd){
     if (isEmpty()) { qDebug() << "Объект статистик пуст"; return 1; } // Проверка на пустоту
-    if (deleteInd > nSize_ - 1){ qDebug() << "Попытка удаления несуществующего элемента"; return 1; } // Проверка на возможность удаления
+    if (deleteInd < 0 || deleteInd > nSize_ - 1){ // Проверка на возможность удаления
+        qDebug() << "Попытка удаления несуществующего элемента";
+        return 1;
+    }
     pVecDataSignal->remove(deleteInd); // Удаление объекта из вектора сигналов
     removeAllFields(deleteInd); // Удаление статистик, связанных с объектов
     --nSize_; // Уменьшение размера матрицы
@@ -59,6 +63,7 @@ bool Statistics::removeSignal(int deleteInd){
     if (tempMinSizeSignals != minSizeSignals_){ // Если после удаление минимальный размер сигналов изменился
         minSizeSignals_ = tempMinSizeSignals; // Запись нового размера
         windowProperty.calcWindowParams(minSizeSignals_); // Пересчет параметров окна
+        allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
         fullCompute(); // Вызов метода полного пересчета
     }
     return 0;

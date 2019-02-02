@@ -1,9 +1,11 @@
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include "core/DataSignal.h"
 #include "core/Statistics.h"
+#include "gui/qcustomplot.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,20 +27,26 @@ public slots:
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
+    void setTimeWindowProperty(); // Установка параметров окна
+    void setShowParams(); // Установка параметров отображения
     // Методы очистки
     void clearProject(); // Очистка проекта
 
-public:
+private:
     // Инициализация параметров программы
     void initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
-    void initializeSystemParams(); // Установка параметров используемой операционной системы
     void initializeCalculationParams(); // Выставление расчетных параметров
     void initializeShowParams(); // Инициализация параметров для отображени
+    void initializePlot(); // Инициализация графических окон
+    // Set методы
+    void setBoundaryShowParams(); // Выставления границ отображения для объектов интерфейса
     // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     // Работа с графиками
-
-
+    void addGraph(); // Добавить график
+    void removeGraph(int); // Удалить график
+    // Работа с цветовыми картами
+    void plotColorMap(); // Построить цветовые карты
 private:
     Ui::MainWindow *ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
@@ -49,7 +57,12 @@ private:
     Statistics statSignal_; // Статистические характеристики для сигналов
     // Отображение
     int showWindow_; // Номер временного окна для показа
-    const QStringList colorList_; // Список цветов для отображения
+    QVector<QColor> colorList_; // Список цветов для отображения
+
+    // TODO -> сделать map контейнер с парами (* карта, * шкала) и реализовать метод clear;
+
+    QCPColorMap * angleColorMap = nullptr; // Указатель на цветовую карту для углов
+    QCPColorScale * angleColorScale = nullptr; // Указатель на шкалу для углов
 };
 
 #endif // MAINWINDOW_H
