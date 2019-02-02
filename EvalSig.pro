@@ -25,23 +25,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
-        gui/main.cpp \
-        gui/mainwindow.cpp \
         core/DataSignal.cpp \
-        test/tests.cpp \
         core/Statistics.cpp \
-        gui/qcustomplot.cpp
+    gui/MainWindow.cpp \
+    gui/QCustomPlot.cpp \
+    gui/SignalProcessing.cpp \
+    gui/Main.cpp \
+    test/Tests.cpp \
+    gui/InitializeMethods.cpp \
+    gui/SetMethods.cpp \
+    gui/ClearMethods.cpp \
+    gui/ColorMapPlotting.cpp \
+    gui/GraphPlotting.cpp
 
 HEADERS += \
-        gui/mainwindow.h \
         core/DataSignal.h \
-        test/tests.h \
         core/Statistics.h \
         core/Macroses.h \
-        gui/qcustomplot.h
+    gui/MainWindow.h \
+    gui/QCustomPlot.h \
+    test/Tests.h
 
 FORMS += \
-        gui/mainwindow.ui
+    gui/MainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

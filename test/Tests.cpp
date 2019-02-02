@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "Tests.h"
 
 // Проверка временных сигналов
 void testDataSignal(){

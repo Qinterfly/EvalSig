@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include "core/DataSignal.h"
 #include "core/Statistics.h"
-#include "gui/qcustomplot.h"
+#include "gui/QCustomPlot.h"
 
 namespace Ui {
 class MainWindow;
