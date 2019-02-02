@@ -133,6 +133,8 @@
     <property name="title">
      <string>&amp;Справка</string>
     </property>
+    <addaction name="action_About"/>
+    <addaction name="action"/>
    </widget>
    <widget class="QMenu" name="view">
     <property name="title">
@@ -431,10 +433,10 @@
             <bool>true</bool>
            </property>
            <property name="rowCount">
-            <number>14</number>
+            <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -448,7 +450,6 @@
            <attribute name="verticalHeaderVisible">
             <bool>false</bool>
            </attribute>
-           <row/>
            <row/>
            <row/>
            <row/>
@@ -567,7 +568,7 @@
            </item>
            <item row="8" column="0">
             <property name="text">
-             <string>Смещение нуля</string>
+             <string>Единица измерения</string>
             </property>
            </item>
            <item row="8" column="1">
@@ -577,7 +578,7 @@
            </item>
            <item row="9" column="0">
             <property name="text">
-             <string>Единица измерения</string>
+             <string>Период опроса датчика</string>
             </property>
            </item>
            <item row="9" column="1">
@@ -587,7 +588,7 @@
            </item>
            <item row="10" column="0">
             <property name="text">
-             <string>Период опроса датчика</string>
+             <string>Характеристика</string>
             </property>
            </item>
            <item row="10" column="1">
@@ -597,7 +598,7 @@
            </item>
            <item row="11" column="0">
             <property name="text">
-             <string>Характеристика</string>
+             <string>Количество отсчётов</string>
             </property>
            </item>
            <item row="11" column="1">
@@ -607,20 +608,10 @@
            </item>
            <item row="12" column="0">
             <property name="text">
-             <string>Количество отсчётов</string>
-            </property>
-           </item>
-           <item row="12" column="1">
-            <property name="text">
-             <string/>
-            </property>
-           </item>
-           <item row="13" column="0">
-            <property name="text">
              <string>Цвет графика</string>
             </property>
            </item>
-           <item row="13" column="1">
+           <item row="12" column="1">
             <property name="text">
              <string/>
             </property>
@@ -818,6 +809,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>О Qt</string>
    </property>
   </action>
  </widget>

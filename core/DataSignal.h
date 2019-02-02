@@ -38,8 +38,8 @@ struct DataSignal{
     // Пользовательские методы
     int size() const; // Получение длины сигнала
     bool isEmpty() const; // Проверка на пустоту сигнала
-    QVector<double> getData() const; // Получение сигнала без свойств
-    PropertyDataSignal getProperty() const; // Получение всех свойств
+    QVector<double> const& getData() const; // Получение сигнала без свойств
+    PropertyDataSignal const& getProperty() const; // Получение всех свойств
     QString getName() const; // Получение имени сигнала
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными

@@ -63,8 +63,8 @@ double DataSignal::operator[](int index) const { return data_[index]; }
 // Пользовательские методы
 int DataSignal::size() const { return property.nCount_; } // Длина сигнала
 bool DataSignal::isEmpty() const { return (size() == 0); }// Проверка на пустоту сигнала
-QVector<double> DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
-PropertyDataSignal DataSignal::getProperty() const { return property; }; // Получение всех свойств
+QVector<double> const& DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
+PropertyDataSignal const& DataSignal::getProperty() const { return property; }; // Получение всех свойств
 QString DataSignal::getName() const {return property.fileName_; } // Получение имени сигнала
 
 // Чтение текстового файла с временным сигналом
@@ -107,8 +107,6 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName){
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для чтения
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << property.path_ << endl;           // Путь к файлу
-    outputStream << property.fileName_ << endl;       // Имя файла
     outputStream << property.dateAndTime_ << endl;    // Дата и время записи сигнала
     outputStream << property.measureObject_ << endl;  // Объект измерения
     outputStream << property.measurePoint_ << endl;   // Точка установки датчика

@@ -18,25 +18,30 @@ public:
     ~MainWindow();
 
 public slots:
-    // Чтение / запись сигналов
+    // Чтение, запись и удаление сигналов
     void addSignal(); // Добавить сигнал
     void removeSignal(); // Удалить сигнал
+    void saveSignal(); // Сохранить сигнал
+    // Set методы
+    void setSignalProperty(); // Установка свойств сигнала
+    void setColor(int row, int column); // Установка цвета сигнала
+    // Методы очистки
+    void clearProject(); // Очистка проекта
 
 public:
     // Инициализация параметров программы
     void initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
     void initializeSystemParams(); // Установка параметров используемой операционной системы
     void initializeCalculationParams(); // Выставление расчетных параметров
-    void initializeShowParams(); // Инициализация параметров для отображения
+    void initializeShowParams(); // Инициализация параметров для отображени
     // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     // Работа с графиками
-    void replot(); // Перерисовать графики
+
 
 private:
     Ui::MainWindow *ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
-    QString pathSymbol_ = "/"; // Символ разделения директорий
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
