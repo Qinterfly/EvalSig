@@ -15,7 +15,7 @@ TEMPLATE = app
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DEPRECATED_WARNINGS QCUSTOMPLOT_USE_LIBRARY
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -27,27 +27,25 @@ CONFIG += c++14
 SOURCES += \
         core/DataSignal.cpp \
         core/Statistics.cpp \
-    gui/MainWindow.cpp \
-    gui/QCustomPlot.cpp \
-    gui/SignalProcessing.cpp \
-    gui/Main.cpp \
-    test/Tests.cpp \
-    gui/InitializeMethods.cpp \
-    gui/SetMethods.cpp \
-    gui/ClearMethods.cpp \
-    gui/ColorMapPlotting.cpp \
-    gui/GraphPlotting.cpp
+        gui/MainWindow.cpp \
+        gui/SignalProcessing.cpp \
+        gui/Main.cpp \
+        test/Tests.cpp \
+        gui/InitializeMethods.cpp \
+        gui/SetMethods.cpp \
+        gui/ClearMethods.cpp \
+        gui/ColorMapPlotting.cpp \
+        gui/GraphPlotting.cpp
 
 HEADERS += \
         core/DataSignal.h \
         core/Statistics.h \
         core/Macroses.h \
-    gui/MainWindow.h \
-    gui/QCustomPlot.h \
-    test/Tests.h
+        gui/MainWindow.h \
+        test/Tests.h
 
 FORMS += \
-    gui/MainWindow.ui
+        gui/MainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -55,8 +53,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 # Иконка к проекту
-win32:RC_ICONS += $$PWD/gui/icons/app-icon.png
+win32:RC_ICONS += $$PWD/gui/icons/app-icon.ico
 
 RESOURCES += \
     gui/resource.qrc
 
+# Библиотека QCustomPlot
+unix|win32: LIBS += -L$$PWD/lib/ -lqcustomplot
+
+INCLUDEPATH += $$PWD/lib
+DEPENDPATH += $$PWD/lib

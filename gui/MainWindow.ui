@@ -993,7 +993,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>gui/QCustomPlot.h</header>
+   <header>lib/QCustomPlot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
