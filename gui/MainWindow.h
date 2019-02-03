@@ -37,18 +37,21 @@ private:
     void initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
     void initializeCalculationParams(); // Выставление расчетных параметров
     void initializeShowParams(); // Инициализация параметров для отображени
-    void initializePlot(); // Инициализация графических окон
+    void initializeAllPlot(); // Инициализация графических окон
+    void initializeAllColorMap(); // Инициализация цветовых карт
     // Set методы
     void setBoundaryShowParams(); // Выставления границ отображения для объектов интерфейса
     // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     // Работа с графиками
-    void addGraph(); // Добавить график
-    void removeGraph(int); // Удалить график
+    void addGraph(); // Добавление графика
+    void removeGraph(int); // Удаление графика
     // Работа с цветовыми картами
-    void plotColorMap(); // Построить цветовые карты
+    void plotAllColorMap(); // Построение цветовые карты
+    void setColorMapData(int plotInd, int nGrid); // Выставление данных для цветовой карты по индексу
+    void clearAllColorMap(); // Очистка цветовых карт
 private:
-    Ui::MainWindow *ui; // Графический интерфейс QtDesigner
+    Ui::MainWindow * ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
@@ -58,11 +61,10 @@ private:
     // Отображение
     int showWindow_; // Номер временного окна для показа
     QVector<QColor> colorList_; // Список цветов для отображения
-
-    // TODO -> сделать map контейнер с парами (* карта, * шкала) и реализовать метод clear;
-
-    QCPColorMap * angleColorMap = nullptr; // Указатель на цветовую карту для углов
-    QCPColorScale * angleColorScale = nullptr; // Указатель на шкалу для углов
+    // Контейнеры для построения цветовых карт
+    QVector<QCustomPlot *> vecTablePlot_; // Вектор указателей на графические обхъекты
+    QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
+    QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
 };
 
 #endif // MAINWINDOW_H

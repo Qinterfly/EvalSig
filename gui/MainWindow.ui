@@ -763,8 +763,11 @@
              </item>
              <item row="1" column="1">
               <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
+               <property name="decimals">
+                <number>2</number>
+               </property>
                <property name="minimum">
-                <double>0.010000000000000</double>
+                <double>0.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>0.990000000000000</double>

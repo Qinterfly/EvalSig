@@ -28,6 +28,9 @@ struct Statistics{
     int minSizeSignals() const; // Минимальная длина сигнала из группы
     int getNumberOfWindows() const; // Получить число временных окон
     ArrayRegressionParams const& getRegressionParams() const; // Получение регрессионных параметров
+    ArrayStatCharacters const& getDistanceScatter() const; // Получение дистанций рассеяния
+    ArrayStatCharacters const& getSimilarityCoeffs() const; // Получение коэффициентов подобия сигналов
+    ArrayStatCharacters const& getAmplitudeScatter() const; // Получение амплитуд рассеяния
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     bool setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна

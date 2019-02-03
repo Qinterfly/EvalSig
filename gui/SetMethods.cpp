@@ -56,14 +56,14 @@ void MainWindow::setTimeWindowProperty(){
 // Установка параметров отображения
 void MainWindow::setShowParams(){
     showWindow_ = ui->spinBoxShowWindow->value() - 1; // Номер окна для отображения
-    plotColorMap(); // Построение цветовой карты
+    plotAllColorMap(); // Построение цветовой карты
 }
 
 // Выставления границ отображения для объектов интерфейса
 void MainWindow::setBoundaryShowParams(){
     int nWindows = statSignal_.getNumberOfWindows(); // Число временных окон
     // Проверка пустоты статистик и необходимости смены предела
-    if (!statSignal_.isEmpty() && nWindows != ui->spinBoxShowWindow->value()){
+    if (!statSignal_.isEmpty() && nWindows != ui->spinBoxShowWindow->maximum()){
         ui->spinBoxShowWindow->setMaximum(nWindows); // Номер отображемого окна
         setShowParams(); // Выставление параметров
     }

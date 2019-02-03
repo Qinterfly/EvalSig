@@ -54,5 +54,6 @@ void testStatistics() {
     Q_ASSERT(!stat.setWindowProperty(10, 0.8));
     Q_ASSERT(!stat.setWindowProperty(1024, 0.));
     Q_ASSERT(!stat.setWindowProperty(2048, 0.));
+    Q_ASSERT(!stat.setWindowProperty(128, 0.5));
     qDebug();
 }

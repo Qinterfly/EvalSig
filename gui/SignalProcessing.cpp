@@ -28,7 +28,7 @@ void MainWindow::addSignal(){
             statusBar()->showMessage("Сигнал " + fileName + " успешно прочитан"); // Вывод сообщения в statusBar
         }
     }
-    plotColorMap(); // Построение цветовых карт
+    plotAllColorMap(); // Построение цветовых карт
     // Установка свойств по последнему сигналу
     int nItem = ui->listFile->count() - 1; // Число элементов в списке
     ui->listFile->setCurrentRow(nItem); // Фокус на последнем элементе (вызов setSignalProperty() по сигналу)
@@ -44,7 +44,7 @@ void MainWindow::removeSignal(){
         ui->listFile->takeItem(deleteInd); // Удаляем элемент из списка
         setBoundaryShowParams(); // Выставление граничных значений параметров
         removeGraph(deleteInd); // Удаление графика
-        plotColorMap(); // Построение цветовой карты
+        plotAllColorMap(); // Построение цветовой карты
     }
 }
 

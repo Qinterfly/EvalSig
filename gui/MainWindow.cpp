@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
+    initializeAllPlot(); // Инициализация графических окон
     initializeShowParams(); // Инициализация параметров для отображения
-    initializePlot(); // Инициализация графических окон
 
     // Создание соединений сигнал - слот
     connect(ui->actionAddSignal, SIGNAL(triggered()), this, SLOT(addSignal())); // Добавить сигнал

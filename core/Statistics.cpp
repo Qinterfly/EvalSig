@@ -30,6 +30,10 @@ bool Statistics::isEmpty() const { return size() == 0; } // Проверка н�
 int Statistics::minSizeSignals() const { return minSizeSignals_; }; // Минимальная длина сигнала из группы
 int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон
 ArrayRegressionParams const& Statistics::getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
+ArrayStatCharacters const& Statistics::getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
+ArrayStatCharacters const& Statistics::getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
+ArrayStatCharacters const& Statistics::getAmplitudeScatter() const { return amplitudeScatter_; } // Получение амплитуд рассеяния
+
     // Добавление сигнала
 bool Statistics::addSignal(DataSignal const& dataSignal){
     int sizeSignal = dataSignal.size(); // Длина сигнала
@@ -187,7 +191,10 @@ void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
             numeratorA += ( (*pVecDataSignal)[i][s + k] - meanX ) * ( (*pVecDataSignal)[j][s + k] - meanY );
             denominatorA += qPow( (*pVecDataSignal)[i][s + k] - meanX, 2 );
         }
-        regressionParams_[i][j][currWindow].first = numeratorA / denominatorA; // Угловой коэффициент
+        if (numeratorA == 0 && denominatorA == 0)
+            regressionParams_[i][j][currWindow].first = 0; // Угловой коэффициент
+        else
+            regressionParams_[i][j][currWindow].first = numeratorA / denominatorA; // Угловой коэффициент
         regressionParams_[i][j][currWindow].second = meanY - regressionParams_[i][j][currWindow].first * meanX; // Смещение прямой
         double alpha = qAtan(regressionParams_[i][j][currWindow].first); // Угол наклона прямой
         double tSumDistance = 0; // Подсумма дистанции рассеяния

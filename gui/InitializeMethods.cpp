@@ -42,20 +42,41 @@ void MainWindow::initializeShowParams(){
     colorList_ << Qt::yellow << Qt::darkYellow << Qt::darkGray;
 }
 
-// Инициализация графических окон
-void MainWindow::initializePlot(){
+// Инициализация всех графических окон
+void MainWindow::initializeAllPlot(){
     // -- comparePlot --
     ui->comparePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
-    // -- anglePlot --
-    ui->anglePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
-    ui->anglePlot->axisRect()->setupFullAxesBox(true); // Отображение осей по всем сторонам
-    angleColorMap = new QCPColorMap(ui->anglePlot->xAxis, ui->anglePlot->yAxis); // Инициализация цветовой карты
-    angleColorScale = new QCPColorScale(ui->anglePlot); // Инициализация шкалы
-    ui->anglePlot->plotLayout()->addElement(0, 1, angleColorScale); // Добавление шкалы справа
-    angleColorScale->setType(QCPAxis::atRight); // Метки к шкале справа
-    angleColorMap->setColorScale(angleColorScale); // Ассоциорвать распределение цветов с шкалой
-    angleColorScale->axis()->setLabel(""); // Метка шкалы
-    angleColorMap->setGradient(QCPColorGradient::gpPolar); // Тип градиента цвета для отображения
+    // -- AllColorMap --
+    initializeAllColorMap(); // Инициализация всех цветовых карт
+}
+
+// Инициализация цветовых карт
+void MainWindow::initializeAllColorMap(){
+    int nCMapPlot = 4; // Число цветовых карт
+    // Выделение буфера для хранения объектов
+    vecTablePlot_.resize(nCMapPlot); // На графические объекты
+    vecColorMap_.resize(nCMapPlot); // На цветовые карты
+    vecColorScale_.resize(nCMapPlot); // На цветовые шкалы
+    // Заполнение объектов
+        // Графические объекты
+    vecTablePlot_[0] = ui->anglePlot;
+    vecTablePlot_[1] = ui->distancePlot;
+    vecTablePlot_[2] = ui->similarityPlot;
+    vecTablePlot_[3] = ui->amplitudePlot;
+    // Цветовые карты и цветовые шкалы
+    for (int plotInd = 0; plotInd != nCMapPlot; ++plotInd){
+        vecTablePlot_[plotInd]->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
+        vecTablePlot_[plotInd]->axisRect()->setupFullAxesBox(true); // Отображение осей по всем сторонам
+        vecColorMap_[plotInd] = new QCPColorMap(vecTablePlot_[plotInd]->xAxis, vecTablePlot_[plotInd]->yAxis); // Инициализация цветовой карты
+        vecColorScale_[plotInd] = new QCPColorScale(vecTablePlot_[plotInd]); // Инициализация шкалы
+        // Установка свойств
+        vecTablePlot_[plotInd]->plotLayout()->addElement(0, 1, vecColorScale_[plotInd]); // Добавление шкалы справа
+        vecColorScale_[plotInd]->setType(QCPAxis::atRight); // Метки к шкале справа
+        vecColorScale_[plotInd]->axis()->setLabel(""); // Метка шкалы
+        vecColorMap_[plotInd]->setColorScale(vecColorScale_[plotInd]); // Ассоциорвать распределение цветов с шкалой
+        vecColorMap_[plotInd]->setGradient(QCPColorGradient::gpPolar); // Тип градиента цвета для отображения
+        vecColorMap_[plotInd]->setInterpolate(false); // Отключить интерполяцию
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------------------
