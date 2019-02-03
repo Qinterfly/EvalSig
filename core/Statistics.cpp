@@ -28,7 +28,7 @@ Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow,
 int Statistics::size() const { return nSize_; } // Текущий размер матрицы статистик
 bool Statistics::isEmpty() const { return size() == 0; } // Проверка на пустоту
 int Statistics::minSizeSignals() const { return minSizeSignals_; }; // Минимальная длина сигнала из группы
-int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон
+int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
 ArrayRegressionParams const& Statistics::getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
 ArrayStatCharacters const& Statistics::getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
 ArrayStatCharacters const& Statistics::getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
@@ -95,13 +95,13 @@ void Statistics::allocateField(T& field, int beginColInd, int fullSize){
     for (int i = 0; i != fullSize; ++i){ // Столбцы
         field[i].resize(fullSize);
         for (int j = beginColInd; j != fullSize; ++j)
-            field[i][j].resize(windowProperty.nWindows_);
+            field[i][j].resize(windowProperty.nWindows_ + 1); // (!) Выделяем под заданное число окон + под среднее окно
     }
     // В случае расширения матрицы одним сигналом дополнительно
     // инициализируем последнюю строку, за исключением диагонального элемента
     if (beginColInd == fullSize - 1)
         for (int j = 0; j != fullSize - 1; ++j)
-            field[fullSize - 1][j].resize(windowProperty.nWindows_);
+            field[fullSize - 1][j].resize(windowProperty.nWindows_ + 1); // (!) Выделяем под заданное число окон + под среднее окно
 }
     // При сжатии объекта
 template<typename T>
@@ -172,6 +172,10 @@ void Statistics::partialCompute(){
 // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров
 void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
     int currWindow = 0; // Номер текущего окна
+    // Параметры среднего окна
+    QPair<double, double> meanRegressionParams = {0, 0}; // Средние регрессионные параметры
+    double meanDistanceScatter = 0; // Средняя дистанция рассеяния
+    double meanAmplitudeScatter = 0; // Средняя амплитуда рассеяния
     // По всем окнам
     for (int s = 0; s < minSizeSignals_; ){ // Пока левая граница не достигнет конца сигнала
         int currRightBound = windowProperty.width_;
@@ -210,23 +214,41 @@ void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
         }
         distanceScatter_[i][j][currWindow] = tSumDistance; // Дистанция рассеяния
         amplitudeScatter_[i][j][currWindow] = tSumDistance * minSizeSignals_ / qSqrt(qPow(tXSignal, 2) + qPow(tYSignal, 2)); // Амплитуда рассеяния
+        // Суммирование значений для среднего окна
+        meanRegressionParams.first += regressionParams_[i][j][currWindow].first; // Угловых коэффициентов
+        meanRegressionParams.second += regressionParams_[i][j][currWindow].second; // Смещения прямых
+        meanDistanceScatter += distanceScatter_[i][j][currWindow]; // Дистанций рассеяния
+        meanAmplitudeScatter += amplitudeScatter_[i][j][currWindow]; // Амплитуд рассеяния
+        // Сдвиг
         s += shiftWindow; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
     }
+    // Нормирование и запись сумм (в nWindows + 1 окно)
+    regressionParams_[i][j][currWindow].first = meanRegressionParams.first / currWindow; // Угловых коэффициентов прямых
+    regressionParams_[i][j][currWindow].second = meanRegressionParams.second / currWindow; // Смещения прямых
+    distanceScatter_[i][j][currWindow] = meanDistanceScatter / currWindow; // Дистанций рассеяния
+    amplitudeScatter_[i][j][currWindow] = meanAmplitudeScatter / currWindow; // Амплитуд рассеяния
 }
 
 // Тело цикла для расчета коэффициентов подобия
 void Statistics::calcSimilarity(int shiftWindow, int i, int j){
     int currWindow = 0; // Номер текущего окна
+    // Параметры среднего окна
+    double meanSimilarityCoeffs = 0; // Средний коэффициент подобия
     // По всем окнам
     for (int s = 0; s < minSizeSignals_; ){ // Пока левая граница не достигнет конца сигнала
         int currRightBound = windowProperty.width_;;
         if (currRightBound + s > minSizeSignals_) // Проверка правой границы
             currRightBound = minSizeSignals_ - s;
         similarityCoeffs_[i][j][currWindow] = qSqrt(regressionParams_[i][j][currWindow].first * regressionParams_[j][i][currWindow].first);
+        // Суммирование значений для среднего окна
+        meanSimilarityCoeffs += similarityCoeffs_[i][j][currWindow]; // Коэффициент подобия
+        // Сдвиг
         s += shiftWindow; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
     }
+    // Нормирование и запись сумм (в nWindows + 1 окно)
+    similarityCoeffs_[i][j][currWindow] = meanSimilarityCoeffs; // Коэффициент подобия
 }
 
 

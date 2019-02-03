@@ -26,7 +26,7 @@ struct Statistics{
     int size() const; // Текущий размер матрицы статистик
     bool isEmpty() const; // Проверка на пустоту
     int minSizeSignals() const; // Минимальная длина сигнала из группы
-    int getNumberOfWindows() const; // Получить число временных окон
+    int getNumberOfWindows() const; // Получить число временных окон (без учета среднего)
     ArrayRegressionParams const& getRegressionParams() const; // Получение регрессионных параметров
     ArrayStatCharacters const& getDistanceScatter() const; // Получение дистанций рассеяния
     ArrayStatCharacters const& getSimilarityCoeffs() const; // Получение коэффициентов подобия сигналов

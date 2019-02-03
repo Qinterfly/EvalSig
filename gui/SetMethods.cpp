@@ -55,7 +55,14 @@ void MainWindow::setTimeWindowProperty(){
 
 // Установка параметров отображения
 void MainWindow::setShowParams(){
-    showWindow_ = ui->spinBoxShowWindow->value() - 1; // Номер окна для отображения
+    if (!ui->checkBoxMiddleWindowMode->isChecked()){ // Проверка необходимости отображение среднего окна
+        ui->spinBoxShowWindow->setEnabled(true); // Включение возможности выбора номера окна
+        showWindow_ = ui->spinBoxShowWindow->value() - 1; // Номер окна для временного окна для отображения
+    }
+    else{
+        ui->spinBoxShowWindow->setEnabled(false); // Отключение возможности выбора номера окна
+        showWindow_ = ui->spinBoxShowWindow->maximum(); // Отображение среднего окна
+    }
     plotAllColorMap(); // Построение цветовой карты
 }
 
