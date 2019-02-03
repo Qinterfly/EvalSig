@@ -248,7 +248,7 @@ void Statistics::calcSimilarity(int shiftWindow, int i, int j){
         currWindow += 1; // Приращение счетчика окон
     }
     // Нормирование и запись сумм (в nWindows + 1 окно)
-    similarityCoeffs_[i][j][currWindow] = meanSimilarityCoeffs; // Коэффициент подобия
+    similarityCoeffs_[i][j][currWindow] = meanSimilarityCoeffs / currWindow; // Коэффициент подобия
 }
 
 

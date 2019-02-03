@@ -54,6 +54,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+# Иконка к проекту
+win32:RC_ICONS += $$PWD/gui/icons/app-icon.png
+
 RESOURCES += \
     gui/resource.qrc
 

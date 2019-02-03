@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>EvalSig</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/images/icons/app-icon.png</normaloff>:/images/icons/app-icon.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
@@ -303,6 +307,7 @@
    <addaction name="actionAddSignal"/>
    <addaction name="actionRemoveSignal"/>
    <addaction name="actionSaveSignal"/>
+   <addaction name="actionSaveCalculation"/>
   </widget>
   <widget class="QDockWidget" name="dockFileWidget">
    <property name="sizePolicy">
@@ -466,7 +471,7 @@
         <enum>QTabWidget::South</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabFileProperty">
         <attribute name="title">
@@ -526,7 +531,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -830,7 +835,7 @@
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/plus-48px.png</normaloff>:/images/icons/plus-48px.png</iconset>
+     <normaloff>:/images/icons/add.png</normaloff>:/images/icons/add.png</iconset>
    </property>
    <property name="text">
     <string>Добавить</string>
@@ -848,7 +853,7 @@
   <action name="actionRemoveSignal">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/trash-48px.png</normaloff>:/images/icons/trash-48px.png</iconset>
+     <normaloff>:/images/icons/remove.png</normaloff>:/images/icons/remove.png</iconset>
    </property>
    <property name="text">
     <string>Удалить</string>
@@ -866,7 +871,7 @@
   <action name="actionSaveSignal">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/save-48px.png</normaloff>:/images/icons/save-48px.png</iconset>
+     <normaloff>:/images/icons/save.png</normaloff>:/images/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Сохранить как .. </string>
@@ -884,7 +889,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/exit-48px.png</normaloff>:/images/icons/exit-48px.png</iconset>
+     <normaloff>:/images/icons/exit.png</normaloff>:/images/icons/exit.png</iconset>
    </property>
    <property name="text">
     <string>Выйти</string>
@@ -902,7 +907,7 @@
   <action name="actionNewProject">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/file-48px.png</normaloff>:/images/icons/file-48px.png</iconset>
+     <normaloff>:/images/icons/new.png</normaloff>:/images/icons/new.png</iconset>
    </property>
    <property name="text">
     <string>Новый</string>
@@ -920,7 +925,7 @@
   <action name="actionSaveCalculation">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/microsoft-excel-48px.png</normaloff>:/images/icons/microsoft-excel-48px.png</iconset>
+     <normaloff>:/images/icons/excel.png</normaloff>:/images/icons/excel.png</iconset>
    </property>
    <property name="text">
     <string>Сохранить расчет</string>

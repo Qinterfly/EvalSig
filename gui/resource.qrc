@@ -1,12 +1,14 @@
 <RCC>
     <qresource prefix="/images">
-        <file>icons/delete-48px.png</file>
-        <file>icons/exit-48px.png</file>
-        <file>icons/file-48px.png</file>
-        <file>icons/microsoft-excel-48px.png</file>
-        <file>icons/plus-48px.png</file>
-        <file>icons/save-48px.png</file>
-        <file>icons/settings-48px.png</file>
-        <file>icons/trash-48px.png</file>
+        <file>icons/add.png</file>
+        <file>icons/excel.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/new.png</file>
+        <file>icons/remove.png</file>
+        <file>icons/save.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/trash.png</file>
+        <file>icons/app-icon.png</file>
+        <file>icons/graph.png</file>
     </qresource>
 </RCC>
