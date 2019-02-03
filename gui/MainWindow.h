@@ -29,6 +29,8 @@ public slots:
     void setColor(int row, int column); // Установка цвета сигнала
     void setTimeWindowProperty(); // Установка параметров окна
     void setShowParams(); // Установка параметров отображения
+    void setVisibleFileWidget(bool); // Изменить отображения списка сигналов
+    void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
     // Методы очистки
     void clearProject(); // Очистка проекта
 

@@ -221,13 +221,15 @@
     <property name="title">
      <string>&amp;Справка</string>
     </property>
-    <addaction name="action_About"/>
-    <addaction name="action"/>
+    <addaction name="actionAboutProgram"/>
+    <addaction name="actionAboutQt"/>
    </widget>
    <widget class="QMenu" name="view">
     <property name="title">
      <string>&amp;Вид</string>
     </property>
+    <addaction name="actionVisibleFileWidget"/>
+    <addaction name="actionVisiblePropertyWidget"/>
    </widget>
    <addaction name="project"/>
    <addaction name="file"/>
@@ -524,7 +526,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -902,14 +904,51 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="actionAboutProgram">
    <property name="text">
     <string>О программе</string>
    </property>
+   <property name="toolTip">
+    <string>О программе</string>
+   </property>
+   <property name="statusTip">
+    <string>Сведения о программе</string>
+   </property>
   </action>
-  <action name="action">
+  <action name="actionAboutQt">
    <property name="text">
     <string>О Qt</string>
+   </property>
+   <property name="statusTip">
+    <string>Сведения о Qt</string>
+   </property>
+  </action>
+  <action name="actionVisibleFileWidget">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Список сигналов</string>
+   </property>
+   <property name="statusTip">
+    <string>Отображение списка сигналов</string>
+   </property>
+  </action>
+  <action name="actionVisiblePropertyWidget">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Свойства</string>
+   </property>
+   <property name="statusTip">
+    <string>Отображения свойств программы</string>
    </property>
   </action>
  </widget>

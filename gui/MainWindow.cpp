@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBoxTimeWidth, SIGNAL(editingFinished()), this, SLOT(setTimeWindowProperty())); // Установка параметров окна по ширине
     connect(ui->spinBoxOverlapFactor, SIGNAL(editingFinished()), this, SLOT(setTimeWindowProperty())); // Установка параметров окна по коэффициенту перекрытия
     connect(ui->spinBoxShowWindow, SIGNAL(valueChanged(int)), this, SLOT(setShowParams())); // Установка параметров отображения
+    connect(ui->actionVisibleFileWidget, SIGNAL(triggered(bool)), this, SLOT(setVisibleFileWidget(bool))); // Изменить отображения списка сигналов
+    connect(ui->actionVisiblePropertyWidget, SIGNAL(triggered(bool)), this, SLOT(setVisiblePropertyWidget(bool))); // Изменить отображения свойств проекта
 }
 
 // Деструктор главного окна

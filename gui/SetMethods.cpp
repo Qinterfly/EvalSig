@@ -69,4 +69,10 @@ void MainWindow::setBoundaryShowParams(){
     }
 }
 
+// Изменить отображение списка сигналов
+void MainWindow::setVisibleFileWidget(bool isChecked){ ui->dockFileWidget->setVisible(isChecked); }
+
+// Изменить отображение виджета свойств
+void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidget->setVisible(isChecked); }
+
 // ----------------------------------------------------------------------------------------------------------------------
