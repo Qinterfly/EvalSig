@@ -59,7 +59,12 @@ RESOURCES += \
     gui/resource.qrc
 
 # Библиотека QCustomPlot
-unix|win32: LIBS += -L$$PWD/lib/ -lqcustomplot
+    # Windows
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot2
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd2
+    # Unix
+unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd
 
 INCLUDEPATH += $$PWD/lib
 DEPENDPATH += $$PWD/lib
