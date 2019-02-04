@@ -33,7 +33,8 @@ public slots:
     void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
     // Методы очистки
     void clearProject(); // Очистка проекта
-
+protected:
+    bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
     // Инициализация параметров программы
     void initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала

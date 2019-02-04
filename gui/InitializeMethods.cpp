@@ -40,6 +40,11 @@ void MainWindow::initializeShowParams(){
     colorList_ << Qt::black << Qt::red << Qt::darkRed << Qt::green << Qt::darkGreen << Qt::blue;
     colorList_ << Qt::darkBlue << Qt::cyan << Qt::darkCyan << Qt::magenta << Qt::darkMagenta;
     colorList_ << Qt::yellow << Qt::darkYellow << Qt::darkGray;
+    // Установка фильтра событий
+    this->installEventFilter(this); // Для главного окна
+    // Для dock виджетов
+    ui->dockFileWidget->installEventFilter(this); // Список сигналов
+    ui->dockFileWidget->installEventFilter(this); // Свойства сигналов
 }
 
 // Инициализация всех графических окон

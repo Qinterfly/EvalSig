@@ -515,8 +515,14 @@
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
+           <property name="autoScroll">
+            <bool>true</bool>
+           </property>
            <property name="textElideMode">
             <enum>Qt::ElideRight</enum>
+           </property>
+           <property name="horizontalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
            </property>
            <property name="gridStyle">
             <enum>Qt::SolidLine</enum>

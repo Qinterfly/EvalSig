@@ -82,4 +82,27 @@ void MainWindow::setVisibleFileWidget(bool isChecked){ ui->dockFileWidget->setVi
 // Изменить отображение виджета свойств
 void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidget->setVisible(isChecked); }
 
+// Переопределение событий программы
+bool MainWindow::eventFilter(QObject * obj, QEvent * event){
+    // В случае изменения размера
+    if (event->type() == QEvent::Resize){
+        // Для главного окна
+        if (obj == this){
+            // Установка процентного максимума от ширины окна для левой панели
+            int leftPanelMaxWidth = qRound(this->width() * 0.3);
+            ui->dockFileWidget->setMaximumWidth(leftPanelMaxWidth); // Список сигналов
+            ui->dockPropertyWidget->setMaximumWidth(leftPanelMaxWidth); // Свойства
+        }
+        // Для dock виджетов
+        if (obj == ui->dockFileWidget || obj == ui->dockPropertyWidget){
+            QResizeEvent * resizeEvent = static_cast<QResizeEvent*>(event); // Событие
+            // Установка правой границы таблицы
+            int shiftSize = resizeEvent->size().width() - resizeEvent->oldSize().width(); // Величина смещения
+            if (resizeEvent->oldSize().width() == -1) shiftSize = 0; // При инициализации размеров окна
+            ui->tableFileProperty->setColumnWidth(1, ui->tableFileProperty->columnWidth(1) + shiftSize); // Смещение границы
+        }
+    }
+    return QObject::eventFilter(obj, event); // Стандартная обработка событий
+}
+
 // ----------------------------------------------------------------------------------------------------------------------
