@@ -31,6 +31,7 @@ struct Statistics{
     ArrayStatCharacters const& getDistanceScatter() const; // Получение дистанций рассеяния
     ArrayStatCharacters const& getSimilarityCoeffs() const; // Получение коэффициентов подобия сигналов
     ArrayStatCharacters const& getAmplitudeScatter() const; // Получение амплитуд рассеяния
+    ArrayStatCharacters const& getNoiseCoeffs() const; // Получение коэффициентов шума
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     bool setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
@@ -57,6 +58,7 @@ private:
     ArrayStatCharacters distanceScatter_; // Дистанция рассеяния
     ArrayStatCharacters similarityCoeffs_; // Коэффициенты подобия сигналов
     ArrayStatCharacters amplitudeScatter_; // Амплитуда рассеяния
+    ArrayStatCharacters noiseCoeffs_; // Коэффициенты шума
     int nSize_ = 0; // Размер матрицы статистических параметров
     int minSizeSignals_ = 0; // Минимальная длина сигнала из группы
     TimeWindowProperty windowProperty; // Свойства окна выделения характеристик

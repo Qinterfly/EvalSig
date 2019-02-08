@@ -52,6 +52,8 @@ private:
     // Работа с цветовыми картами
     void plotAllColorMap(); // Построение цветовые карты
     void setColorMapData(int plotInd, int nGrid); // Выставление данных для цветовой карты по индексу
+    void assignDataForColorMap(ArrayRegressionParams const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayRegressionParams
+    void assignDataForColorMap(ArrayStatCharacters const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayStatCharacters
     void clearAllColorMap(); // Очистка цветовых карт
 private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner

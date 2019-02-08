@@ -33,6 +33,7 @@ ArrayRegressionParams const& Statistics::getRegressionParams() const { return re
 ArrayStatCharacters const& Statistics::getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
 ArrayStatCharacters const& Statistics::getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
 ArrayStatCharacters const& Statistics::getAmplitudeScatter() const { return amplitudeScatter_; } // Получение амплитуд рассеяния
+ArrayStatCharacters const& Statistics::getNoiseCoeffs() const { return noiseCoeffs_; } // Получение коэффициентов шума
 
     // Добавление сигнала
 bool Statistics::addSignal(DataSignal const& dataSignal){
@@ -118,6 +119,7 @@ void Statistics::allocateAllFields(int beginColInd, int fullSize){
     allocateField(distanceScatter_, beginColInd, fullSize);    // Дистанция рассеяния
     allocateField(similarityCoeffs_, beginColInd, fullSize);   // Коэффициенты подобия сигналов
     allocateField(amplitudeScatter_, beginColInd, fullSize);   // Амплитуда рассеяния
+    allocateField(noiseCoeffs_, beginColInd, fullSize);        // Коэффициенты шума
 }
 
     // При сжатии для всех полей
@@ -126,6 +128,7 @@ void Statistics::removeAllFields(int deleteInd){
     removeField(distanceScatter_, deleteInd);    // Дистанция рассеяния
     removeField(similarityCoeffs_, deleteInd);   // Коэффициенты подобия сигналов
     removeField(amplitudeScatter_, deleteInd);   // Амплитуда рассеяния
+    removeField(noiseCoeffs_, deleteInd);        // Коэффициенты шума
 }
 
 // Нахождение минимального размера сигнала из группы
@@ -235,20 +238,24 @@ void Statistics::calcSimilarity(int shiftWindow, int i, int j){
     int currWindow = 0; // Номер текущего окна
     // Параметры среднего окна
     double meanSimilarityCoeffs = 0; // Средний коэффициент подобия
+    double meanNoiseCoeffs = 0; // Средние коэффициенты шума
     // По всем окнам
     for (int s = 0; s < minSizeSignals_; ){ // Пока левая граница не достигнет конца сигнала
         int currRightBound = windowProperty.width_;;
         if (currRightBound + s > minSizeSignals_) // Проверка правой границы
             currRightBound = minSizeSignals_ - s;
         similarityCoeffs_[i][j][currWindow] = qSqrt(regressionParams_[i][j][currWindow].first * regressionParams_[j][i][currWindow].first);
+        noiseCoeffs_[i][j][currWindow] = qSqrt(amplitudeScatter_[i][j][currWindow] * amplitudeScatter_[j][i][currWindow]);
         // Суммирование значений для среднего окна
         meanSimilarityCoeffs += similarityCoeffs_[i][j][currWindow]; // Коэффициент подобия
+        meanNoiseCoeffs += noiseCoeffs_[i][j][currWindow]; // Коэффициент шума
         // Сдвиг
         s += shiftWindow; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
     }
     // Нормирование и запись сумм (в nWindows + 1 окно)
     similarityCoeffs_[i][j][currWindow] = meanSimilarityCoeffs / currWindow; // Коэффициент подобия
+    noiseCoeffs_[i][j][currWindow] = meanNoiseCoeffs / currWindow; // Коэффициент шума
 }
 
 

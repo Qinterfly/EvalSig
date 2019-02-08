@@ -84,18 +84,31 @@ void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidge
 
 // Переопределение событий программы
 bool MainWindow::eventFilter(QObject * obj, QEvent * event){
+    // Параметры размеров
+    static const float RELATIVE_WIDTH_DOCK = 0.3f;
+    static const float RELATIVE_WIDTH_MAINWINDOW = 0.4688f;
+    static const float RELATIVE_HEIGHT_MAINWINDOW = 0.5556f;
     // В случае изменения размера
     if (event->type() == QEvent::Resize){
+        QResizeEvent * resizeEvent = static_cast<QResizeEvent*>(event); // Событие
         // Для главного окна
         if (obj == this){
+            // При инициализации окна
+            if (resizeEvent->oldSize().width() == -1){
+                QScreen *screen = QApplication::primaryScreen(); // Параметры текущего монитора
+                QRect winGeometry = this->geometry(); // Геометрия старого окна
+                // Установка параметров окна с учетом разрешения монитора
+                winGeometry.setWidth(qRound(screen->geometry().width() * RELATIVE_WIDTH_MAINWINDOW));
+                winGeometry.setHeight(qRound(screen->geometry().height() * RELATIVE_HEIGHT_MAINWINDOW));
+                this->setGeometry(winGeometry); // Установка геометрии
+            }
             // Установка процентного максимума от ширины окна для левой панели
-            int leftPanelMaxWidth = qRound(this->width() * 0.3);
+            int leftPanelMaxWidth = qRound(this->width() * RELATIVE_WIDTH_DOCK);
             ui->dockFileWidget->setMaximumWidth(leftPanelMaxWidth); // Список сигналов
             ui->dockPropertyWidget->setMaximumWidth(leftPanelMaxWidth); // Свойства
         }
         // Для dock виджетов
         if (obj == ui->dockFileWidget || obj == ui->dockPropertyWidget){
-            QResizeEvent * resizeEvent = static_cast<QResizeEvent*>(event); // Событие
             // Установка правой границы таблицы
             int shiftSize = resizeEvent->size().width() - resizeEvent->oldSize().width(); // Величина смещения
             if (resizeEvent->oldSize().width() == -1) shiftSize = 0; // При инициализации размеров окна

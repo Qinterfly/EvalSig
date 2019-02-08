@@ -57,7 +57,7 @@ void MainWindow::initializeAllPlot(){
 
 // Инициализация цветовых карт
 void MainWindow::initializeAllColorMap(){
-    int nCMapPlot = 4; // Число цветовых карт
+    int nCMapPlot = 5; // Число цветовых карт
     // Выделение буфера для хранения объектов
     vecTablePlot_.resize(nCMapPlot); // На графические объекты
     vecColorMap_.resize(nCMapPlot); // На цветовые карты
@@ -68,6 +68,7 @@ void MainWindow::initializeAllColorMap(){
     vecTablePlot_[1] = ui->distancePlot;
     vecTablePlot_[2] = ui->similarityPlot;
     vecTablePlot_[3] = ui->amplitudePlot;
+    vecTablePlot_[4] = ui->noisePlot;
     // Цветовые карты и цветовые шкалы
     for (int plotInd = 0; plotInd != nCMapPlot; ++plotInd){
         vecTablePlot_[plotInd]->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
@@ -79,7 +80,7 @@ void MainWindow::initializeAllColorMap(){
         vecColorScale_[plotInd]->setType(QCPAxis::atRight); // Метки к шкале справа
         vecColorScale_[plotInd]->axis()->setLabel(""); // Метка шкалы
         vecColorMap_[plotInd]->setColorScale(vecColorScale_[plotInd]); // Ассоциорвать распределение цветов с шкалой
-        vecColorMap_[plotInd]->setGradient(QCPColorGradient::gpPolar); // Тип градиента цвета для отображения
+        vecColorMap_[plotInd]->setGradient(QCPColorGradient::gpJet); // Тип градиента цвета для отображения
         vecColorMap_[plotInd]->setInterpolate(false); // Отключить интерполяцию
     }
 }
