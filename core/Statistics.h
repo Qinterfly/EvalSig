@@ -9,6 +9,7 @@
 struct TimeWindowProperty {
     TimeWindowProperty(int width, double overlapFactor, int sizeSignals);
     void calcWindowParams(int); // Расчет параметров окна
+    bool writeWindowParams(QString const& path, QString const& fileName); // Запись параметров окна
 
     int width_;             // Ширина временного окна
     double overlapFactor_;  // Коэффициент перекрытия окон
@@ -34,6 +35,7 @@ struct Statistics{
     ArrayStatCharacters const& getNoiseCoeffs() const; // Получение коэффициентов шума
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
+    bool writeAllStatistics(QString const& dirName); // Сохранение всех статистик
     bool setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams

@@ -2,6 +2,7 @@ archive/
 debug/
 release/
 exec/
+test/save
 *.txt
 *.xls
 *.png

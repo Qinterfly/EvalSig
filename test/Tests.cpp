@@ -55,5 +55,7 @@ void testStatistics() {
     Q_ASSERT(!stat.setWindowProperty(1024, 0.));
     Q_ASSERT(!stat.setWindowProperty(2048, 0.));
     Q_ASSERT(!stat.setWindowProperty(512, 0.5));
+    // Сохранение статистик
+    stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/");
     qDebug();
 }

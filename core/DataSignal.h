@@ -5,7 +5,9 @@
 #include <QString>
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 #include <QDebug>
+#include "FileOperate.h"
 
 struct PropertyDataSignal { // Контейнер для свойств
     QString path_;          // Путь к файлу

@@ -14,6 +14,22 @@ void TimeWindowProperty::calcWindowParams(int sizeSignals){
     shiftWindow_ = qCeil( width_ * (1 - overlapFactor_) ); // Смещение окна по времени
 }
 
+// Запись параметров окна
+bool TimeWindowProperty::writeWindowParams(QString const& path, QString const& fileName){
+    QString fileFullPath = path + fileName; // Полный путь к файлу
+    QFile file(fileFullPath); // Инициализация файла для записи
+    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
+    QTextStream outputStream(&file); // Создание потока для записи
+    outputStream.setCodec("cp1251"); // Кодировка CP1251
+    outputStream << "Ширина временного окна = " << width_ << endl;
+    outputStream << "Коэффициент перекрытия окон = " << overlapFactor_ << endl;
+    outputStream << "Число окон = " << nWindows_ << endl;
+    outputStream << "Шаг окон = " << shiftWindow_ << endl;
+    file.close(); // Закрытие файла
+    return 0;
+}
+
 // Конструктор Statistics
 Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, double overlapFactor)
     : pVecDataSignal(&vecDataSignal), nSize_(pVecDataSignal->size()),
@@ -73,7 +89,25 @@ bool Statistics::removeSignal(int deleteInd){
     }
     return 0;
 }
+    // Сохранение всех статистик
+bool Statistics::writeAllStatistics(QString const& dirName){
+    if (isEmpty()) return -1; // Проверка на пустоту статистик
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    // Запись параметров расчета
+    windowProperty.writeWindowParams(dirName, "Параметры расчета.txt");
+    // Создание поддиректорий для каждой из статистик
+    QStringList statNameList = {"Угловые коэффициенты", "Дистанции рассеяния",
+                                "Коэффициенты подобия", "Амплитуды рассеяния", "Коэффициенты шума"}; // Имена статистик
+    for (QString & statName : statNameList){
+        statName += QDir::separator(); // Добавление разделителя
+        dir.mkpath(statName);
+    }
+    // Сохранение всех статистик
 
+    return 0;
+}
     // Изменение свойств окна
 bool Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
     // Проверка необходимости изменения

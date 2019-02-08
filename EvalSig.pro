@@ -35,14 +35,16 @@ SOURCES += \
         gui/SetMethods.cpp \
         gui/ClearMethods.cpp \
         gui/ColorMapPlotting.cpp \
-        gui/GraphPlotting.cpp
+        gui/GraphPlotting.cpp \
+    core/FileOperate.cpp
 
 HEADERS += \
         core/DataSignal.h \
         core/Statistics.h \
         core/Macroses.h \
         gui/MainWindow.h \
-        test/Tests.h
+        test/Tests.h \
+    core/FileOperate.h
 
 FORMS += \
         gui/MainWindow.ui

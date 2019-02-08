@@ -1,37 +1,5 @@
 #include "DataSignal.h"
 
-// Проверка файла на существование и на режим записи / чтения
-bool checkFile(QString const& fileFullPath, QString const& mode) {
-    // mode == Read -- чтение
-    // mode == Write -- запись
-
-    // Режим чтения
-    if ( mode == "read" ){
-        // Проверка существования файла
-        if ( !QFileInfo::exists(fileFullPath) || !QFileInfo(fileFullPath).isFile() ){
-            qDebug() << "Файл:" << fileFullPath << "не найден";
-            return 0;
-        }
-        // Проверка на возможность чтения
-        if ( !QFileInfo(fileFullPath).isReadable() ){
-            qDebug() << "Файл:" << fileFullPath << "не доступен для чтения";
-            return 0;
-        }
-        // Проверка на пустоту
-        if ( QFileInfo(fileFullPath).size() == 0 ){ // Проверка на пустоту файла
-            qDebug() << "Файл:" << fileFullPath << "не содержит данных";
-            return 0;
-        }
-    }
-    // Режим записи
-    if ( mode == "write" )
-        if ( QFileInfo::exists(fileFullPath) && !QFileInfo(fileFullPath).isWritable() ){
-            qDebug() << "Файл:" << fileFullPath << "не доступен для записи";
-            return 0;
-        }
-    return 1;
-}
-
 // Конструктор от пути и имени файла
 DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFile(path, fileName); }
 // Копирующий конструктор
@@ -104,7 +72,7 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName){
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
-    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для чтения
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
     outputStream << property.dateAndTime_ << endl;    // Дата и время записи сигнала
