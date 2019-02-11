@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include "core/DataSignal.h"
 #include "core/Statistics.h"
-#include "lib/QCustomPlot.h"
+#include "include/QCustomPlot.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +24,7 @@ public slots:
     void addSignal(); // Добавить сигнал
     void removeSignal(); // Удалить сигнал
     void saveSignal(); // Сохранить сигнал
+    void saveCalcualtion(); // Сохранение результатов расчета
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
@@ -31,6 +32,8 @@ public slots:
     void setShowParams(); // Установка параметров отображения
     void setVisibleFileWidget(bool); // Изменить отображения списка сигналов
     void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
+    // Обновление
+    void updateStatusBar(); // Обновление строки состояния
     // Методы очистки
     void clearProject(); // Очистка проекта
 protected:
@@ -46,6 +49,7 @@ private:
     void setBoundaryShowParams(); // Выставления границ отображения для объектов интерфейса
     // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
+    void clearStatusBar(); // Очистка информационной строки
     // Работа с графиками
     void addGraph(); // Добавление графика
     void removeGraph(int); // Удаление графика
@@ -66,6 +70,7 @@ private:
     // Отображение
     int showWindow_; // Номер временного окна для показа
     QVector<QColor> colorList_; // Список цветов для отображения
+    QLabel * calcStatusLabel; // Информация о расчете в statusBar
     // Контейнеры для построения цветовых карт
     QVector<QCustomPlot *> vecTablePlot_; // Вектор указателей на графические обхъекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты

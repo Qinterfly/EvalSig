@@ -1,7 +1,18 @@
 #include "DataSignal.h"
 
+// ---- Временной сигнал ---------------------------------------------------------------------------------------
+
 // Конструктор от пути и имени файла
 DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFile(path, fileName); }
+DataSignal::DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty):
+    property(someProperty), data_(someData)
+{
+    if (data_.size() != property.nCount_) // Проверка на согласованность данных
+        property.nCount_ = data_.size();
+    // Сброс параметров чтения
+    property.fileName_ = "";
+    property.path_ = "";
+}
 // Копирующий конструктор
 DataSignal::DataSignal(DataSignal const& other) : property(other.property), data_(other.data_) { };
 // Перемещающий конструктор
@@ -31,6 +42,13 @@ double DataSignal::operator[](int index) const { return data_[index]; }
 // Пользовательские методы
 int DataSignal::size() const { return property.nCount_; } // Длина сигнала
 bool DataSignal::isEmpty() const { return (size() == 0); }// Проверка на пустоту сигнала
+// Получение среднего значения сигнала
+double DataSignal::mean() const {
+    double sum = 0;
+    for (double const& val : data_)
+        sum += val;
+    return (sum / size());
+}
 QVector<double> const& DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
 PropertyDataSignal const& DataSignal::getProperty() const { return property; }; // Получение всех свойств
 QString DataSignal::getName() const {return property.fileName_; } // Получение имени сигнала
@@ -91,4 +109,6 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName){
     file.close(); // Закрытие файла
     return 0;
 }
+
+// --------------------------------------------------------------------------------------------------------------------
 

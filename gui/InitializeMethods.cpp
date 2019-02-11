@@ -41,10 +41,14 @@ void MainWindow::initializeShowParams(){
     colorList_ << Qt::darkBlue << Qt::cyan << Qt::darkCyan << Qt::magenta << Qt::darkMagenta;
     colorList_ << Qt::yellow << Qt::darkYellow << Qt::darkGray;
     // Установка фильтра событий
-    this->installEventFilter(this); // Для главного окна
-    // Для dock виджетов
+        // Для главного окна
+    this->installEventFilter(this);
+        // Для dock виджетов
     ui->dockFileWidget->installEventFilter(this); // Список сигналов
     ui->dockFileWidget->installEventFilter(this); // Свойства сигналов
+    // Формирование строки состояния
+    calcStatusLabel = new QLabel(""); // Информация о расчете в statusBar
+    ui->statusBar->addPermanentWidget(calcStatusLabel);
 }
 
 // Инициализация всех графических окон

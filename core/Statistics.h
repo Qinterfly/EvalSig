@@ -3,19 +3,8 @@
 
 #include "Macroses.h"
 #include "DataSignal.h"
+#include "TimeWindowProperty.h"
 #include <QtMath>
-
-// Свойства окна выделения характеристик
-struct TimeWindowProperty {
-    TimeWindowProperty(int width, double overlapFactor, int sizeSignals);
-    void calcWindowParams(int); // Расчет параметров окна
-    bool writeWindowParams(QString const& path, QString const& fileName); // Запись параметров окна
-
-    int width_;             // Ширина временного окна
-    double overlapFactor_;  // Коэффициент перекрытия окон
-    int nWindows_;          // Число окон
-    int shiftWindow_;       // Шаг смещение левой границы окна по времени
-};
 
 // Класс статистических характеристик
 struct Statistics{
@@ -35,8 +24,9 @@ struct Statistics{
     ArrayStatCharacters const& getNoiseCoeffs() const; // Получение коэффициентов шума
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
-    bool writeAllStatistics(QString const& dirName); // Сохранение всех статистик
-    bool setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
+    void setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
+    int writeAllStatistics(QString const& dirName); // Сохранение всех статистик
+    int writeSignalList(QString const& path, QString const& fileName); // Запись списка сигналов
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams
     template<typename T>
@@ -54,6 +44,12 @@ private:
     void calcDistanceAmplitudeRegression(int shiftWindow, int i, int j);
         // Тело цикла для расчета коэффициентов подобия
     void calcSimilarity(int shiftWindow, int i, int j);
+    // Сохранение выбранной статистики
+    template<typename T>
+    int writeStatistic(T const& stat, QString const& path); // ArrayRegressionParams и ArrayStatCharacters
+    // Вспомогательные функции получения оконного распределения статистики
+    QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j); // ArrayRegressionParams
+    QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j); // ArrayStatCharacters
 private:
     QVector<DataSignal> * const pVecDataSignal = nullptr; // Указатель на вектор сигналов
     ArrayRegressionParams regressionParams_; // Параметры линейной регрессии
@@ -65,5 +61,7 @@ private:
     int minSizeSignals_ = 0; // Минимальная длина сигнала из группы
     TimeWindowProperty windowProperty; // Свойства окна выделения характеристик
 };
+
+// Вспомогательные функции
 
 #endif // STATISTICS_H

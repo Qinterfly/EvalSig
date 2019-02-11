@@ -36,7 +36,9 @@ SOURCES += \
         gui/ClearMethods.cpp \
         gui/ColorMapPlotting.cpp \
         gui/GraphPlotting.cpp \
-    core/FileOperate.cpp
+    core/FileOperate.cpp \
+    core/TimeWindowProperty.cpp \
+    gui/UpdateMethods.cpp
 
 HEADERS += \
         core/DataSignal.h \
@@ -44,7 +46,9 @@ HEADERS += \
         core/Macroses.h \
         gui/MainWindow.h \
         test/Tests.h \
-    core/FileOperate.h
+    core/FileOperate.h \
+    core/PropertyDataSignal.h \
+    core/TimeWindowProperty.h
 
 FORMS += \
         gui/MainWindow.ui
@@ -68,5 +72,5 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd2
 unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot
 else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd
 
-INCLUDEPATH += $$PWD/lib
-DEPENDPATH += $$PWD/lib
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include

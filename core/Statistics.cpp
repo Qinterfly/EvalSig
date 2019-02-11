@@ -1,34 +1,6 @@
 #include "Statistics.h"
 
-// Конструктор TimeWindowProperty
-TimeWindowProperty::TimeWindowProperty(int width, double overlapFactor, int sizeSignals)
-    : width_(width), overlapFactor_(overlapFactor) { calcWindowParams(sizeSignals); }
-
-// Расчет параметров окна
-void TimeWindowProperty::calcWindowParams(int sizeSignals){
-    if (width_ == 0) { // Обработка исключения окна нулевой ширины
-        nWindows_ = 0; shiftWindow_ = 0;
-        return;
-    }
-    nWindows_ = qCeil(sizeSignals / ( width_ * (1 - overlapFactor_) ) ); // Число окон
-    shiftWindow_ = qCeil( width_ * (1 - overlapFactor_) ); // Смещение окна по времени
-}
-
-// Запись параметров окна
-bool TimeWindowProperty::writeWindowParams(QString const& path, QString const& fileName){
-    QString fileFullPath = path + fileName; // Полный путь к файлу
-    QFile file(fileFullPath); // Инициализация файла для записи
-    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
-    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
-    QTextStream outputStream(&file); // Создание потока для записи
-    outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << "Ширина временного окна = " << width_ << endl;
-    outputStream << "Коэффициент перекрытия окон = " << overlapFactor_ << endl;
-    outputStream << "Число окон = " << nWindows_ << endl;
-    outputStream << "Шаг окон = " << shiftWindow_ << endl;
-    file.close(); // Закрытие файла
-    return 0;
-}
+// ---- Статистики группы сигналов -----------------------------------------------------------------------------
 
 // Конструктор Statistics
 Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, double overlapFactor)
@@ -90,36 +62,76 @@ bool Statistics::removeSignal(int deleteInd){
     return 0;
 }
     // Сохранение всех статистик
-bool Statistics::writeAllStatistics(QString const& dirName){
+int Statistics::writeAllStatistics(QString const& dirName){
     if (isEmpty()) return -1; // Проверка на пустоту статистик
     QDir dir(dirName); // Инициализация директории c добавлением разделителя
     if (!dir.exists()) // Проверка существования директории
         dir.mkpath(".");
-    // Запись параметров расчета
-    windowProperty.writeWindowParams(dirName, "Параметры расчета.txt");
+    windowProperty.writeWindowParams(dirName, "Параметры временного окна.txt"); // Запись параметров расчета
+    writeSignalList(dirName, "Список сигналов.txt"); // Запись списка сигналов
     // Создание поддиректорий для каждой из статистик
-    QStringList statNameList = {"Угловые коэффициенты", "Дистанции рассеяния",
+    QVector<QString> vecStatDirName = {"Угловые коэффициенты", "Дистанции рассеяния",
                                 "Коэффициенты подобия", "Амплитуды рассеяния", "Коэффициенты шума"}; // Имена статистик
-    for (QString & statName : statNameList){
-        statName += QDir::separator(); // Добавление разделителя
-        dir.mkpath(statName);
+    for (QString & statDirName : vecStatDirName){
+        dir.mkdir(statDirName); // Создание пути для каждой из статистик
+        statDirName = dirName + statDirName + QDir::separator(); // Полный путь до статистики
     }
-    // Сохранение всех статистик
+    // Сохранение статистик
+    int exitStatus = 0; // Код возврата
+    exitStatus += writeStatistic(regressionParams_, vecStatDirName[0]); // Угловые коэффициенты
+    exitStatus += writeStatistic(distanceScatter_, vecStatDirName[1]);  // Дистанция рассеяния
+    exitStatus += writeStatistic(similarityCoeffs_, vecStatDirName[2]); // Коэффициенты подобия
+    exitStatus += writeStatistic(amplitudeScatter_, vecStatDirName[3]); // Амплитуды рассеяния
+    exitStatus += writeStatistic(noiseCoeffs_, vecStatDirName[4]); // Коэффициенты шума
+    return exitStatus;
+}
 
+// Сохранение выбранной статистики
+ template<typename T>
+int Statistics::writeStatistic(T const& stat, QString const& path){
+    QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
+    int exitStatus = 0; // Код возврата
+    for (int i = 0; i != nSize_; ++i){ // По числу сигналов
+        // Добавление статистики по всем окнам в контейнер
+        PropertyDataSignal tProperty = (*pVecDataSignal)[i].getProperty(); // Получение свойств первого сигнала
+        for (int j = 0; j != nSize_; ++j){
+            tData = getWindowStatisticData(stat, i, j); // Получение временных данных
+            tProperty.nCount_ = tData.size(); // Запись длины сигнала
+            DataSignal tDataSignal(tData, tProperty); // Создание временного сигнала
+            QString fileName = QString::number(i + 1) + "-" + QString::number(j + 1) + ".txt"; // Определение имени временного сигнала
+            exitStatus += tDataSignal.writeDataFile(path, fileName); // Запись сигнала без конвертации
+        }
+    }
+    return exitStatus;
+}
+
+// Запись списка сигналов
+int Statistics::writeSignalList(QString const& path, QString const& fileName) {
+    QString fileFullPath = path + fileName; // Полный путь к файлу
+    QFile file(fileFullPath); // Инициализация файла для записи
+    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
+    QTextStream outputStream(&file); // Создание потока для записи
+    outputStream.setCodec("cp1251"); // Кодировка CP1251
+    int iSignal = 0;
+    for (DataSignal const& signal : *pVecDataSignal){
+        outputStream << QString::number(++iSignal) << ": " << signal.getName() << endl;
+    }
+    file.close(); // Закрытие файла
     return 0;
 }
+
     // Изменение свойств окна
-bool Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
+void Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
     // Проверка необходимости изменения
     if (windowProperty.width_ == widthTimeWindow && windowProperty.overlapFactor_ == overlapFactor)
-        return 0;
+        return;
     // Запись новых параметров
     windowProperty.width_ = widthTimeWindow;
     windowProperty.overlapFactor_ = overlapFactor;
     windowProperty.calcWindowParams(minSizeSignals_);
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный пересчет
-    return 0;
 }
 
 // Выделение памяти для полей структуры
@@ -292,4 +304,24 @@ void Statistics::calcSimilarity(int shiftWindow, int i, int j){
     noiseCoeffs_[i][j][currWindow] = meanNoiseCoeffs / currWindow; // Коэффициент шума
 }
 
+// ---- Вспомогательные функции --------------------------------------------------------------------------------
 
+// Получение оконного распределения статистики
+    // ArrayRegressionParams
+QVector<double> Statistics::getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j){
+    QVector<double> tData(windowProperty.nWindows_); // Вектор данных для хранения статистик
+    for (int s = 0; s != windowProperty.nWindows_; ++s){ // По всем окнам, за исключением среднего
+        tData[s] = stat[i][j][s].first; // Угловые коэффициенты
+    }
+    return tData;
+}
+    // ArrayStatCharacters
+QVector<double> Statistics::getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j){
+    QVector<double> tData(windowProperty.nWindows_); // Вектор данных для хранения статистик
+    for (int s = 0; s != windowProperty.nWindows_; ++s){ // По всем окнам, за исключением среднего
+        tData[s] = stat[i][j][s];
+    }
+    return tData;
+}
+
+// -------------------------------------------------------------------------------------------------------------

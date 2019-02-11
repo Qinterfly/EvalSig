@@ -64,4 +64,14 @@ void MainWindow::saveSignal(){
         statusBar()->showMessage("Сигнал " + fileName + " успешно записан"); // Вывод сообщения в statusBar
 }
 
+// Сохранение результатов расчета
+void MainWindow::saveCalcualtion(){
+    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+    if (saveDir.isEmpty()) return; // Проверка корректности выбора
+    lastPath_ = saveDir + QDir::separator();
+    int exitStatus = statSignal_.writeAllStatistics(lastPath_);
+    if (exitStatus == 0)
+        statusBar()->showMessage("Сохранение результатов расчета выполнено успешно");
+
+}
 // -----------------------------------------------------------------------------------------------------------------------

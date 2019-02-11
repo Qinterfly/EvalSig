@@ -558,7 +558,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -976,10 +976,10 @@
     <string>Сохранить расчет</string>
    </property>
    <property name="toolTip">
-    <string>Сохранить результаты расчета в файле с расширением .xlsx</string>
+    <string>Сохранить результаты расчета</string>
    </property>
    <property name="statusTip">
-    <string>Сохранить результаты расчета в файле с расширением .xlsx</string>
+    <string>Сохранить результаты расчета</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -1038,7 +1038,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>lib/QCustomPlot.h</header>
+   <header>include/QCustomPlot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

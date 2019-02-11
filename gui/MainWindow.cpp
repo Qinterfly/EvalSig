@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Создание соединений сигнал - слот
     connect(ui->actionAddSignal, SIGNAL(triggered()), this, SLOT(addSignal())); // Добавить сигнал
     connect(ui->actionRemoveSignal, SIGNAL(triggered()), this, SLOT(removeSignal())); // Удалить сигнал
-    connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignal())); // Удалить сигнал
+    connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignal())); // Сохранить сигнал
+    connect(ui->actionSaveCalculation, SIGNAL(triggered()), this, SLOT(saveCalcualtion())); // Сохранить результаты расчета
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(setSignalProperty()), Qt::QueuedConnection); // Установка свойств сигнала
     connect(ui->actionNewProject, SIGNAL(triggered()), this, SLOT(clearProject())); // Новый проект
     connect(ui->tableFileProperty, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(setColor(int, int))); // Установка цвета сигнала
@@ -27,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionVisibleFileWidget, SIGNAL(triggered(bool)), this, SLOT(setVisibleFileWidget(bool))); // Изменить отображения списка сигналов
     connect(ui->actionVisiblePropertyWidget, SIGNAL(triggered(bool)), this, SLOT(setVisiblePropertyWidget(bool))); // Изменить отображения свойств проекта
     connect(ui->checkBoxMiddleWindowMode, SIGNAL(clicked(bool)), this, SLOT(setShowParams())); // Переключение режима отображения окон
+    // Обновление statusBar
+    connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
+    connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar())); // При выборе сигнала
 }
 
 // Деструктор главного окна

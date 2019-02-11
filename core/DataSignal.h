@@ -8,27 +8,13 @@
 #include <QDir>
 #include <QDebug>
 #include "FileOperate.h"
-
-struct PropertyDataSignal { // Контейнер для свойств
-    QString path_;          // Путь к файлу
-    QString fileName_;      // Имя файла
-    QString dateAndTime_;   // Дата и время записи сигнала
-    QString measureObject_; // Объект измерения
-    QString measurePoint_;  // Точка установки датчика
-    QString currentCount_;  // Текущие отсчеты
-    double temperature_;    // Температура
-    QString sensorType_;    // Тип датчика
-    double physicalFactor_;  // Физический коэффициент
-    QString measureUnit_;   // Единица измерения
-    double scanPeriod_;     // Период опроса датчика
-    QString characterisic_; // Характеристика
-    int nCount_ = 0;        // Количество отсчетов
-};
+#include "PropertyDataSignal.h"
 
 struct DataSignal{
     // Конструкторы и деструктор
     DataSignal() = default;
     DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
+    DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty);
     DataSignal(DataSignal const&); // Копирующий конструктор
     DataSignal(DataSignal &&); // Перемещающий конструктор
     ~DataSignal(); // Деструктор
@@ -40,6 +26,7 @@ struct DataSignal{
     // Пользовательские методы
     int size() const; // Получение длины сигнала
     bool isEmpty() const; // Проверка на пустоту сигнала
+    double mean() const; // Получение среднего значения сигнала
     QVector<double> const& getData() const; // Получение сигнала без свойств
     PropertyDataSignal const& getProperty() const; // Получение всех свойств
     QString getName() const; // Получение имени сигнала

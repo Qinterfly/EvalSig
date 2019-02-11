@@ -14,6 +14,12 @@ void MainWindow::clearSignalPropertyList(){
     }
 }
 
+// Очистка информационной строки
+void MainWindow::clearStatusBar(){
+    statusBar()->clearMessage();
+    calcStatusLabel->clear();
+}
+
 // Очистка проекта
 void MainWindow::clearProject(){
     while(ui->listFile->count() != 0)

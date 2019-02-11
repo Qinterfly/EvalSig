@@ -51,6 +51,7 @@ void MainWindow::setTimeWindowProperty(){
     overlapFactor_ = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
     statSignal_.setWindowProperty(widthTimeWindow_, overlapFactor_); // Передача параметров контейнеру статистик
     setBoundaryShowParams(); // Выставление граничных значений параметров
+    updateStatusBar(); // Обновление информационной строки
 }
 
 // Установка параметров отображения
@@ -95,12 +96,16 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
         if (obj == this){
             // При инициализации окна
             if (resizeEvent->oldSize().width() == -1){
-                QScreen *screen = QApplication::primaryScreen(); // Параметры текущего монитора
+                QRect screenGeometry = QApplication::primaryScreen()->geometry(); // Параметры текущего монитора
                 QRect winGeometry = this->geometry(); // Геометрия старого окна
                 // Установка параметров окна с учетом разрешения монитора
-                winGeometry.setWidth(qRound(screen->geometry().width() * RELATIVE_WIDTH_MAINWINDOW));
-                winGeometry.setHeight(qRound(screen->geometry().height() * RELATIVE_HEIGHT_MAINWINDOW));
+                    // Размеры
+                winGeometry.setWidth(qRound(screenGeometry.width() * RELATIVE_WIDTH_MAINWINDOW));
+                winGeometry.setHeight(qRound(screenGeometry.height() * RELATIVE_HEIGHT_MAINWINDOW));
+
                 this->setGeometry(winGeometry); // Установка геометрии
+                this->move(qRound((screenGeometry.width() - winGeometry.width()) / 2.0), // Позиция по центру
+                           qRound((screenGeometry.height() - winGeometry.height()) / 2.0));
             }
             // Установка процентного максимума от ширины окна для левой панели
             int leftPanelMaxWidth = qRound(this->width() * RELATIVE_WIDTH_DOCK);

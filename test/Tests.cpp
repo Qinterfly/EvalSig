@@ -45,17 +45,17 @@ void testStatistics() {
     Q_ASSERT(!stat.addSignal(obj2));
     Q_ASSERT(!stat.addSignal(obj3));
     // Переключение параметров окна
-    Q_ASSERT(!stat.setWindowProperty(100, 0.5));
-    Q_ASSERT(!stat.setWindowProperty(193, 0.));
+    stat.setWindowProperty(100, 0.5);
+    stat.setWindowProperty(193, 0.);
     // Добавление сигналов другой длины
     Q_ASSERT(!stat.addSignal(obj4));
     Q_ASSERT(!stat.addSignal(obj5));
     // Переключение параметров окна
-    Q_ASSERT(!stat.setWindowProperty(10, 0.8));
-    Q_ASSERT(!stat.setWindowProperty(1024, 0.));
-    Q_ASSERT(!stat.setWindowProperty(2048, 0.));
-    Q_ASSERT(!stat.setWindowProperty(512, 0.5));
+    stat.setWindowProperty(512, 0.5);
+    stat.setWindowProperty(1024, 0.);
+    stat.setWindowProperty(2048, 0.);
+    stat.setWindowProperty(25, 0.8);
     // Сохранение статистик
-    stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/");
+    Q_ASSERT(!stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/"));
     qDebug();
 }
