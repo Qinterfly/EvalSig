@@ -24,10 +24,10 @@ int TimeWindowProperty::writeWindowParams(QString const& path, QString const& fi
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << "Ширина временного окна = " << width_ << endl;
-    outputStream << "Коэффициент перекрытия окон = " << overlapFactor_ << endl;
-    outputStream << "Число окон = " << nWindows_ << endl;
-    outputStream << "Шаг окон = " << shiftWindow_ << endl;
+    outputStream << QString("Ширина временного окна = ") << width_ << endl;
+    outputStream << QString("Коэффициент перекрытия окон = ") << overlapFactor_ << endl;
+    outputStream << QString("Число окон = ") << nWindows_ << endl;
+    outputStream << QString("Шаг окон = ") << shiftWindow_ << endl;
     file.close(); // Закрытие файла
     return 0;
 }

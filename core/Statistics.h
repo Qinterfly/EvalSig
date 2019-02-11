@@ -5,6 +5,7 @@
 #include "DataSignal.h"
 #include "TimeWindowProperty.h"
 #include <QtMath>
+#include <QTextCodec>
 
 // Класс статистических характеристик
 struct Statistics{
