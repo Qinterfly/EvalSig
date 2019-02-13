@@ -5,7 +5,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    statSignal_(vecDataSignal_, widthTimeWindow_, overlapFactor_) // Статистики
+    statSignal_(vecDataSignal_, widthTimeWindow_, shiftWindow_) // Статистики
 {
     ui->setupUi(this); // Инициализация графического интерфейса
     initializeCalculationParams(); // Выставление расчетных параметров
@@ -23,14 +23,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNewProject, SIGNAL(triggered()), this, SLOT(clearProject())); // Новый проект
     connect(ui->tableFileProperty, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(setColor(int, int))); // Установка цвета сигнала
     connect(ui->spinBoxTimeWidth, SIGNAL(editingFinished()), this, SLOT(setTimeWindowProperty())); // Установка параметров окна по ширине
-    connect(ui->spinBoxOverlapFactor, SIGNAL(editingFinished()), this, SLOT(setTimeWindowProperty())); // Установка параметров окна по коэффициенту перекрытия
+    connect(ui->spinBoxShiftWindow, SIGNAL(editingFinished()), this, SLOT(setTimeWindowProperty())); // Установка параметров окна по коэффициенту перекрытия
     connect(ui->spinBoxShowWindow, SIGNAL(valueChanged(int)), this, SLOT(setShowParams())); // Установка параметров отображения
     connect(ui->actionVisibleFileWidget, SIGNAL(triggered(bool)), this, SLOT(setVisibleFileWidget(bool))); // Изменить отображения списка сигналов
     connect(ui->actionVisiblePropertyWidget, SIGNAL(triggered(bool)), this, SLOT(setVisiblePropertyWidget(bool))); // Изменить отображения свойств проекта
     connect(ui->checkBoxMiddleWindowMode, SIGNAL(clicked(bool)), this, SLOT(setShowParams())); // Переключение режима отображения окон
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
-    connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar())); // При выборе сигнала
+    connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
 }
 
 // Деструктор главного окна

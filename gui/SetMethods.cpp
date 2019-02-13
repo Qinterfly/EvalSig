@@ -48,8 +48,12 @@ void MainWindow::setColor(int row, int column){
 // Установка параметров окна
 void MainWindow::setTimeWindowProperty(){
     widthTimeWindow_ = ui->spinBoxTimeWidth->value(); // Ширина временного окна
-    overlapFactor_ = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
-    statSignal_.setWindowProperty(widthTimeWindow_, overlapFactor_); // Передача параметров контейнеру статистик
+    shiftWindow_ = ui->spinBoxShiftWindow->value(); // Смещение временного окна
+    if (!statSignal_.isEmpty()){
+        ui->spinBoxTimeWidth->setStatusTip("Ширина временного окна = " + QString::number(vecDataSignal_[0].convertCountToTime(widthTimeWindow_)) + " c");
+        ui->spinBoxShiftWindow->setStatusTip("Смещение временного окна = " + QString::number(vecDataSignal_[0].convertCountToTime(shiftWindow_)) + " c");
+    }
+    statSignal_.setWindowProperty(widthTimeWindow_, shiftWindow_); // Передача параметров контейнеру статистик
     setBoundaryShowParams(); // Выставление граничных значений параметров
     updateStatusBar(); // Обновление информационной строки
 }

@@ -14,7 +14,8 @@ void MainWindow::updateStatusBar(){
     }
     // Цветовые карты
     if (tabInd >= 1 && tabInd <= 5){
-        calcStatusLabel->setText("Число окон: " + QString::number(statSignal_.getNumberOfWindows()));
+        calcStatusLabel->setText(QString("Мин. длина: ") + QString::number(statSignal_.minSizeSignals()) + " | "
+                                 "Число окон: " + QString::number(statSignal_.getNumberOfWindows()));
     }
 }
 

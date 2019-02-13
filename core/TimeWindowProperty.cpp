@@ -3,8 +3,8 @@
 // ---- Контейнер свойств временного окна ----------------------------------------------------------------------
 
 // Конструктор TimeWindowProperty
-TimeWindowProperty::TimeWindowProperty(int width, double overlapFactor, int sizeSignals)
-    : width_(width), overlapFactor_(overlapFactor) { calcWindowParams(sizeSignals); }
+TimeWindowProperty::TimeWindowProperty(int width, int shiftWindow, int sizeSignals)
+    : width_(width), shiftWindow_(shiftWindow) { calcWindowParams(sizeSignals); }
 
 // Расчет параметров окна
 void TimeWindowProperty::calcWindowParams(int sizeSignals){
@@ -12,8 +12,7 @@ void TimeWindowProperty::calcWindowParams(int sizeSignals){
         nWindows_ = 0; shiftWindow_ = 0;
         return;
     }
-    nWindows_ = qCeil(sizeSignals / ( width_ * (1 - overlapFactor_) ) ); // Число окон
-    shiftWindow_ = qCeil( width_ * (1 - overlapFactor_) ); // Смещение окна по времени
+    nWindows_ = qCeil( sizeSignals / double(shiftWindow_) ); // Число окон
 }
 
 // Запись параметров окна
@@ -25,9 +24,8 @@ int TimeWindowProperty::writeWindowParams(QString const& path, QString const& fi
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
     outputStream << QString("Ширина временного окна = ") << width_ << endl;
-    outputStream << QString("Коэффициент перекрытия окон = ") << overlapFactor_ << endl;
-    outputStream << QString("Число окон = ") << nWindows_ << endl;
-    outputStream << QString("Шаг окон = ") << shiftWindow_ << endl;
+    outputStream << QString("Число временных окон = ") << nWindows_ << endl;
+    outputStream << QString("Шаг временнего окна = ") << shiftWindow_ << endl;
     file.close(); // Закрытие файла
     return 0;
 }

@@ -52,6 +52,7 @@ double DataSignal::mean() const {
 QVector<double> const& DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
 PropertyDataSignal const& DataSignal::getProperty() const { return property; }; // Получение всех свойств
 QString DataSignal::getName() const {return property.fileName_; } // Получение имени сигнала
+double DataSignal::convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
 
 // Чтение текстового файла с временным сигналом
 int DataSignal::readDataFile(QString const& path, QString const& fileName){

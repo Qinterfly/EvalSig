@@ -16,6 +16,9 @@ void MainWindow::clearSignalPropertyList(){
 
 // Очистка информационной строки
 void MainWindow::clearStatusBar(){
+    // Очистка подсказок
+    ui->spinBoxTimeWidth->setStatusTip(""); // Ширина временного окна
+    ui->spinBoxShiftWindow->setStatusTip(""); // Смещение временного окна
     statusBar()->clearMessage();
     calcStatusLabel->clear();
 }

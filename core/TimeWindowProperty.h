@@ -9,12 +9,11 @@
 // Свойства окна выделения характеристик
 // закрытое поле класса Statistics
 struct TimeWindowProperty {
-    TimeWindowProperty(int width, double overlapFactor, int sizeSignals);
+    TimeWindowProperty(int width, int shiftWindow, int sizeSignals);
     void calcWindowParams(int); // Расчет параметров окна
     int writeWindowParams(QString const& path, QString const& fileName); // Запись параметров окна
 
     int width_;             // Ширина временного окна
-    double overlapFactor_;  // Коэффициент перекрытия окон
     int nWindows_;          // Число окон
     int shiftWindow_;       // Шаг смещение левой границы окна по времени
 };

@@ -3,10 +3,10 @@
 // ---- Статистики группы сигналов -----------------------------------------------------------------------------
 
 // Конструктор Statistics
-Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, double overlapFactor)
+Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow)
     : pVecDataSignal(&vecDataSignal), nSize_(pVecDataSignal->size()),
       minSizeSignals_(calcMinSizeSignals()),
-      windowProperty(widthTimeWindow, overlapFactor, minSizeSignals_)
+      windowProperty(widthTimeWindow, shiftTimeWindow, minSizeSignals_)
 {
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный расчет матрицы характеристик
@@ -70,25 +70,25 @@ int Statistics::writeAllStatistics(QString const& dirName){
     windowProperty.writeWindowParams(dirName, "Параметры временного окна.txt"); // Запись параметров расчета
     writeSignalList(dirName, "Список сигналов.txt"); // Запись списка сигналов
     // Создание поддиректорий для каждой из статистик
-    QVector<QString> vecStatDirName = {"Угловые коэффициенты", "Дистанции рассеяния",
+    QVector<QString> vecStatName = {"Угловые коэффициенты", "Дистанции рассеяния",
                                 "Коэффициенты подобия", "Амплитуды рассеяния", "Коэффициенты шума"}; // Имена статистик
-    for (QString & statDirName : vecStatDirName){
-        dir.mkdir(statDirName); // Создание пути для каждой из статистик
-        statDirName = dirName + statDirName + QDir::separator(); // Полный путь до статистики
-    }
+    // Создание пути для каждой из статистик
+    for (QString & statName : vecStatName)
+        dir.mkdir(statName);
     // Сохранение статистик
     int exitStatus = 0; // Код возврата
-    exitStatus += writeStatistic(regressionParams_, vecStatDirName[0]); // Угловые коэффициенты
-    exitStatus += writeStatistic(distanceScatter_, vecStatDirName[1]);  // Дистанция рассеяния
-    exitStatus += writeStatistic(similarityCoeffs_, vecStatDirName[2]); // Коэффициенты подобия
-    exitStatus += writeStatistic(amplitudeScatter_, vecStatDirName[3]); // Амплитуды рассеяния
-    exitStatus += writeStatistic(noiseCoeffs_, vecStatDirName[4]); // Коэффициенты шума
+    exitStatus += writeStatistic(regressionParams_, dirName, vecStatName[0]); // Угловые коэффициенты
+    exitStatus += writeStatistic(distanceScatter_, dirName, vecStatName[1]);  // Дистанция рассеяния
+    exitStatus += writeStatistic(similarityCoeffs_, dirName, vecStatName[2]); // Коэффициенты подобия
+    exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3]); // Амплитуды рассеяния
+    exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4]); // Коэффициенты шума
     return exitStatus;
 }
 
 // Сохранение выбранной статистики
  template<typename T>
-int Statistics::writeStatistic(T const& stat, QString const& path){
+int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName){
+    QString path = dirName + statName + QDir::separator(); // Полный путь до статистики
     QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
     int exitStatus = 0; // Код возврата
     for (int i = 0; i != nSize_; ++i){ // По числу сигналов
@@ -97,6 +97,7 @@ int Statistics::writeStatistic(T const& stat, QString const& path){
         for (int j = 0; j != nSize_; ++j){
             tData = getWindowStatisticData(stat, i, j); // Получение временных данных
             tProperty.nCount_ = tData.size(); // Запись длины сигнала
+            tProperty.currentCount_ = statName; // Имя статистики
             DataSignal tDataSignal(tData, tProperty); // Создание временного сигнала
             QString fileName = QString::number(i + 1) + "-" + QString::number(j + 1) + ".txt"; // Определение имени временного сигнала
             exitStatus += tDataSignal.writeDataFile(path, fileName); // Запись сигнала без конвертации
@@ -122,13 +123,13 @@ int Statistics::writeSignalList(QString const& path, QString const& fileName) {
 }
 
     // Изменение свойств окна
-void Statistics::setWindowProperty(int widthTimeWindow, double overlapFactor){
+void Statistics::setWindowProperty(int widthTimeWindow, int shiftTimeWindow){
     // Проверка необходимости изменения
-    if (windowProperty.width_ == widthTimeWindow && windowProperty.overlapFactor_ == overlapFactor)
+    if (windowProperty.width_ == widthTimeWindow && windowProperty.shiftWindow_ == shiftTimeWindow)
         return;
     // Запись новых параметров
     windowProperty.width_ = widthTimeWindow;
-    windowProperty.overlapFactor_ = overlapFactor;
+    windowProperty.shiftWindow_ = shiftTimeWindow;
     windowProperty.calcWindowParams(minSizeSignals_);
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный пересчет
@@ -192,34 +193,33 @@ void Statistics::fullCompute(){
     // Расчет регрессионных параметров, дистанций и амплитуд рассеяния
     for (int i = 0; i != nSize_; ++i)
         for (int j = 0; j != nSize_; ++j)
-            calcDistanceAmplitudeRegression(windowProperty.shiftWindow_, i, j);
+            calcDistanceAmplitudeRegression(i, j);
     // Расчет коэффициентов подобия
     for (int i = 0; i != nSize_; ++i) // По всем сигналам
         for (int j = 0; j != nSize_; ++j)
-            calcSimilarity(windowProperty.shiftWindow_, i, j);
+            calcSimilarity(i, j);
 }
 
 // Частичный пересчет статистик (при добавлении одного сигнала)
 void Statistics::partialCompute(){
-    int shiftWindow = qCeil( windowProperty.width_ * (1 - windowProperty.overlapFactor_) ); // Смещение окна по времени
     // Расчет регрессионных параметров, дистанций и амплитуд рассеяния
         // По последнему столбцу
     for (int i = 0; i != nSize_; ++i)
-        calcDistanceAmplitudeRegression(shiftWindow, i, nSize_ - 1);
+        calcDistanceAmplitudeRegression(i, nSize_ - 1);
         // По последней строке, за исключением диагонального элемента
     for (int j = 0; j != nSize_ - 1; ++j)
-        calcDistanceAmplitudeRegression(shiftWindow, nSize_ - 1, j);
+        calcDistanceAmplitudeRegression(nSize_ - 1, j);
     // Расчет коэффициентов подобия [циклы объединить нельзя]
         // По последнему столбцу
     for (int i = 0; i != nSize_; ++i)
-        calcSimilarity(shiftWindow, i, nSize_ - 1);
+        calcSimilarity(i, nSize_ - 1);
     // По последней строке, за исключением диагонального элемента
     for (int j = 0; j != nSize_ - 1; ++j)
-        calcSimilarity(shiftWindow, nSize_ - 1, j);
+        calcSimilarity(nSize_ - 1, j);
 }
 
 // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров
-void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
+void Statistics::calcDistanceAmplitudeRegression(int i, int j){
     int currWindow = 0; // Номер текущего окна
     // Параметры среднего окна
     QPair<double, double> meanRegressionParams = {0, 0}; // Средние регрессионные параметры
@@ -262,14 +262,17 @@ void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
             tYSignal += qAbs( (*pVecDataSignal)[j][s + k] - meanY );
         }
         distanceScatter_[i][j][currWindow] = tSumDistance; // Дистанция рассеяния
-        amplitudeScatter_[i][j][currWindow] = tSumDistance * minSizeSignals_ / qSqrt(qPow(tXSignal, 2) + qPow(tYSignal, 2)); // Амплитуда рассеяния
+        if (tXSignal == 0 && tYSignal == 0)
+            amplitudeScatter_[i][j][currWindow] = 0;
+        else
+            amplitudeScatter_[i][j][currWindow] = tSumDistance * minSizeSignals_ / qSqrt(qPow(tXSignal, 2) + qPow(tYSignal, 2)); // Амплитуда рассеяния
         // Суммирование значений для среднего окна
         meanRegressionParams.first += regressionParams_[i][j][currWindow].first; // Угловых коэффициентов
         meanRegressionParams.second += regressionParams_[i][j][currWindow].second; // Смещения прямых
         meanDistanceScatter += distanceScatter_[i][j][currWindow]; // Дистанций рассеяния
         meanAmplitudeScatter += amplitudeScatter_[i][j][currWindow]; // Амплитуд рассеяния
         // Сдвиг
-        s += shiftWindow; // Сдвиг левой границы окна
+        s += windowProperty.shiftWindow_; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
     }
     // Нормирование и запись сумм (в nWindows + 1 окно)
@@ -280,7 +283,7 @@ void Statistics::calcDistanceAmplitudeRegression(int shiftWindow, int i, int j){
 }
 
 // Тело цикла для расчета коэффициентов подобия
-void Statistics::calcSimilarity(int shiftWindow, int i, int j){
+void Statistics::calcSimilarity(int i, int j){
     int currWindow = 0; // Номер текущего окна
     // Параметры среднего окна
     double meanSimilarityCoeffs = 0; // Средний коэффициент подобия
@@ -296,7 +299,7 @@ void Statistics::calcSimilarity(int shiftWindow, int i, int j){
         meanSimilarityCoeffs += similarityCoeffs_[i][j][currWindow]; // Коэффициент подобия
         meanNoiseCoeffs += noiseCoeffs_[i][j][currWindow]; // Коэффициент шума
         // Сдвиг
-        s += shiftWindow; // Сдвиг левой границы окна
+        s += windowProperty.shiftWindow_; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
     }
     // Нормирование и запись сумм (в nWindows + 1 окно)

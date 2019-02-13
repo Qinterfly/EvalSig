@@ -30,6 +30,7 @@ struct DataSignal{
     QVector<double> const& getData() const; // Получение сигнала без свойств
     PropertyDataSignal const& getProperty() const; // Получение всех свойств
     QString getName() const; // Получение имени сигнала
+    double convertCountToTime(int count) const; // Перевести номер отсчета в время
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными

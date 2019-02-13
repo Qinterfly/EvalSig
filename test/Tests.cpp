@@ -33,7 +33,7 @@ void testStatistics() {
     vecDataSignals.reserve(volume);
     vecDataSignals.push_back(obj1);
     vecDataSignals.push_back(obj2);
-    Statistics stat(vecDataSignals, 200, 0.); // Создание объекта статистик
+    Statistics stat(vecDataSignals, 200, 200); // Создание объекта статистик
     // Добавление сигнала
     Q_ASSERT(!stat.addSignal(obj3));
     // Удаление всех сигналов
@@ -45,16 +45,16 @@ void testStatistics() {
     Q_ASSERT(!stat.addSignal(obj2));
     Q_ASSERT(!stat.addSignal(obj3));
     // Переключение параметров окна
-    stat.setWindowProperty(100, 0.5);
-    stat.setWindowProperty(193, 0.);
+    stat.setWindowProperty(193, 50);
+    stat.setWindowProperty(193, 193);
     // Добавление сигналов другой длины
     Q_ASSERT(!stat.addSignal(obj4));
     Q_ASSERT(!stat.addSignal(obj5));
     // Переключение параметров окна
-    stat.setWindowProperty(512, 0.5);
-    stat.setWindowProperty(1024, 0.);
-    stat.setWindowProperty(2048, 0.);
-    stat.setWindowProperty(25, 0.8);
+    stat.setWindowProperty(512, 256);
+    stat.setWindowProperty(1024, 1024);
+    stat.setWindowProperty(2048, 2048);
+    stat.setWindowProperty(10, 1);
     // Сохранение статистик
     Q_ASSERT(!stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/"));
     qDebug();

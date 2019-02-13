@@ -28,8 +28,8 @@ void MainWindow::initializeSignalPropertyList(){
 void MainWindow::initializeCalculationParams(){
     // Запись параметров временного окна
     widthTimeWindow_ = ui->spinBoxTimeWidth->value(); // Ширина окна
-    overlapFactor_ = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия
-    statSignal_.setWindowProperty(widthTimeWindow_, overlapFactor_); // Установка параметров окна
+    shiftWindow_ = ui->spinBoxShiftWindow->value(); // Смещение левой границы временного окна
+    statSignal_.setWindowProperty(widthTimeWindow_, shiftWindow_); // Установка параметров окна
 }
 
 // Инициализация параметров для отображения

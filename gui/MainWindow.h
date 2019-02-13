@@ -65,7 +65,7 @@ private:
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
-    double overlapFactor_ = 0; // Коэффициент перекрытия окон
+    int shiftWindow_ = 0; // Смещение левой границы временного окна
     Statistics statSignal_; // Статистические характеристики для сигналов
     // Отображение
     int showWindow_; // Номер временного окна для показа

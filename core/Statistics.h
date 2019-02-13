@@ -5,11 +5,10 @@
 #include "DataSignal.h"
 #include "TimeWindowProperty.h"
 #include <QtMath>
-#include <QTextCodec>
 
 // Класс статистических характеристик
 struct Statistics{
-    Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, double overlapFactor);
+    Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow);
     ~Statistics(){}
     Statistics(Statistics const&) = delete; // Запрет на копирование
     Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
@@ -25,7 +24,7 @@ struct Statistics{
     ArrayStatCharacters const& getNoiseCoeffs() const; // Получение коэффициентов шума
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
-    void setWindowProperty(int widthTimeWindow, double overlapFactor); // Изменение свойств окна
+    void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
     int writeAllStatistics(QString const& dirName); // Сохранение всех статистик
     int writeSignalList(QString const& path, QString const& fileName); // Запись списка сигналов
 private:
@@ -42,12 +41,12 @@ private:
     void fullCompute(); // Полный расчет характеристик
     void partialCompute(); // Частичный расчет характеристик
         // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров
-    void calcDistanceAmplitudeRegression(int shiftWindow, int i, int j);
+    void calcDistanceAmplitudeRegression(int i, int j);
         // Тело цикла для расчета коэффициентов подобия
-    void calcSimilarity(int shiftWindow, int i, int j);
+    void calcSimilarity(int i, int j);
     // Сохранение выбранной статистики
     template<typename T>
-    int writeStatistic(T const& stat, QString const& path); // ArrayRegressionParams и ArrayStatCharacters
+    int writeStatistic(T const& stat, QString const& dirName, QString const& statName); // ArrayRegressionParams и ArrayStatCharacters
     // Вспомогательные функции получения оконного распределения статистики
     QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j); // ArrayRegressionParams
     QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j); // ArrayStatCharacters
