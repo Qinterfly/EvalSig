@@ -2,8 +2,6 @@
 #define TIMEWINDOWPROPERTY_H
 
 #include <QString>
-#include <QFile>
-#include <QtMath>
 #include "FileOperate.h"
 
 // Свойства окна выделения характеристик

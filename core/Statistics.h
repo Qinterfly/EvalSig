@@ -4,7 +4,6 @@
 #include "Macroses.h"
 #include "DataSignal.h"
 #include "TimeWindowProperty.h"
-#include <QtMath>
 
 // Класс статистических характеристик
 struct Statistics{

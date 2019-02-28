@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "Tests.h"
 
 // Проверка временных сигналов

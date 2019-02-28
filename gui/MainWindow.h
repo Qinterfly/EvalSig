@@ -3,7 +3,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "core/DataSignal.h"
 #include "core/Statistics.h"
 #include "include/QCustomPlot.h"
 

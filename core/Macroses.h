@@ -1,5 +1,6 @@
 #ifndef MACROSES_H
 #define MACROSES_H
+
 #include <QVector>
 
 using TimeRegressionParams = QVector< QPair<double, double> >; // Распределение параметров регрессии по времени

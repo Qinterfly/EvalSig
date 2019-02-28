@@ -3,10 +3,6 @@
 
 #include <QVector>
 #include <QString>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QDebug>
 #include "FileOperate.h"
 #include "PropertyDataSignal.h"
 

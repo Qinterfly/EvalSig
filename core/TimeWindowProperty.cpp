@@ -1,3 +1,6 @@
+#include <QFile>
+#include <QtMath>
+#include <QTextStream>
 #include "TimeWindowProperty.h"
 
 // ---- Контейнер свойств временного окна ----------------------------------------------------------------------
