@@ -1,5 +1,6 @@
 #include <QDebug>
 #include "Tests.h"
+#include "core/NumericalFunctions.h"
 
 // Проверка временных сигналов
 void testDataSignal(){
@@ -59,4 +60,16 @@ void testStatistics() {
     // Сохранение статистик
     Q_ASSERT(!stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/"));
     qDebug();
+}
+
+// Проверка численных методов
+void testNumericalFunctions(){
+    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
+    DataSignal obj1(testPath, "ОП 182 1с ку.txt");
+    // Интегрирование
+    QVector<DataSignal> integrVecObj = integrate(obj1, 1, -1);
+    Q_ASSERT(!integrVecObj[0].writeDataFile(testPath, "integrObj.txt"));
+    // Аппроксимация
+    DataSignal approxObj = approximateSmoothSpline(obj1, 1e-4);
+    Q_ASSERT(!approxObj.writeDataFile(testPath, "approxObj.txt"));
 }

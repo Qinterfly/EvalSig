@@ -38,23 +38,16 @@ bool DataSignal::operator==(DataSignal const& other) const {
             property.fileName_ == other.property.fileName_);
 }
 bool DataSignal::operator!=(DataSignal const& other) const { return !(*this == other); }
-// Оператор обращения по индексу
-double DataSignal::operator[](int index) const { return data_[index]; }
 
-// Пользовательские методы
-int DataSignal::size() const { return property.nCount_; } // Длина сигнала
-bool DataSignal::isEmpty() const { return (size() == 0); }// Проверка на пустоту сигнала
 // Получение среднего значения сигнала
-double DataSignal::mean() const {
-    double sum = 0;
-    for (double const& val : data_)
-        sum += val;
-    return (sum / size());
+double DataSignal::mean() const { return meanVec(data_); }
+
+// Нормализация сигнала
+void DataSignal::normalize(QString const& option) {
+    // При усреднении к среднему значению
+    if (option == "mean")
+        normalizeVec(data_);
 }
-QVector<double> const& DataSignal::getData() const { return data_; }; // Получение сигнала без свойств
-PropertyDataSignal const& DataSignal::getProperty() const { return property; }; // Получение всех свойств
-QString DataSignal::getName() const {return property.fileName_; } // Получение имени сигнала
-double DataSignal::convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
 
 // Чтение текстового файла с временным сигналом
 int DataSignal::readDataFile(QString const& path, QString const& fileName){
@@ -113,5 +106,32 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName){
     return 0;
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// ---- Вспомогательные функции --------------------------------------------------------------------------------
+
+// Поиск минимума-максимума в векторе
+double minMaxVec(QVector<double> const& vecD, std::function<bool(double, double)> && orderFun){
+    double minMaxVal = vecD[0];
+    for (double const & val : vecD)
+        if (orderFun(qAbs(val), minMaxVal))
+            minMaxVal = qAbs(val);
+    return minMaxVal;
+}
+
+// Вычисление среднего для вектора
+double meanVec(QVector<double> const& vecD){
+    if (vecD.isEmpty()) return 0; // Обработка пустого вектора
+    double sum = 0;
+    for (double const& val : vecD)
+        sum += val;
+    return (sum / vecD.size());
+}
+
+// Нормализация вектора
+void normalizeVec(QVector<double> & vecD){
+    double meanVal = meanVec(vecD);
+    for (double & val : vecD)
+        val -= meanVal;
+}
+
+// -------------------------------------------------------------------------------------------------------------
 

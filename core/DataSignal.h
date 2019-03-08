@@ -3,10 +3,11 @@
 
 #include <QVector>
 #include <QString>
+#include <functional>
 #include "FileOperate.h"
 #include "PropertyDataSignal.h"
 
-struct DataSignal{
+struct DataSignal {
     // Конструкторы и деструктор
     DataSignal() = default;
     DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
@@ -18,15 +19,16 @@ struct DataSignal{
     DataSignal& operator=(DataSignal const&);
     bool operator==(DataSignal const&) const;
     bool operator!=(DataSignal const&) const;
-    double operator[](int) const;
+    double operator[](int index) const{ return data_[index]; }
     // Пользовательские методы
-    int size() const; // Получение длины сигнала
-    bool isEmpty() const; // Проверка на пустоту сигнала
+    int size() const { return property.nCount_; }  // Получение длины сигнала
+    bool isEmpty() const { return !size(); } // Проверка на пустоту сигнала
     double mean() const; // Получение среднего значения сигнала
-    QVector<double> const& getData() const; // Получение сигнала без свойств
-    PropertyDataSignal const& getProperty() const; // Получение всех свойств
-    QString getName() const; // Получение имени сигнала
-    double convertCountToTime(int count) const; // Перевести номер отсчета в время
+    void normalize(QString const& option); // Нормализация сигнала
+    QVector<double> const& getData() const { return data_; } // Получение сигнала без свойств
+    PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
+    QString getName() const { return property.fileName_; } // Получение имени сигнала
+    double convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными
@@ -34,5 +36,18 @@ private:
     PropertyDataSignal property; // Свойства сигнала
     QVector<double> data_;      // Временной сигнал
 };
+
+// Вспомогательные функции
+
+// Поиск минимума-максимума в векторе
+double minMaxVec(QVector<double> const& vecD, std::function<bool(double, double)> && orderFun);
+
+// Вычисление среднего для вектора
+double meanVec(QVector<double> const& vecD);
+
+// Нормализация вектора
+void normalizeVec(QVector<double> & vecD);
+
+
 
 #endif // DATASIGNAL_H

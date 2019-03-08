@@ -37,9 +37,11 @@ SOURCES += \
         gui/ClearMethods.cpp \
         gui/ColorMapPlotting.cpp \
         gui/GraphPlotting.cpp \
-    core/FileOperate.cpp \
-    core/TimeWindowProperty.cpp \
-    gui/UpdateMethods.cpp
+        core/FileOperate.cpp \
+        core/TimeWindowProperty.cpp \
+        gui/UpdateMethods.cpp \
+        core/NumericalFunctions.cpp \
+    include/csaps.cpp
 
 HEADERS += \
         core/DataSignal.h \
@@ -47,9 +49,11 @@ HEADERS += \
         core/Macroses.h \
         gui/MainWindow.h \
         test/Tests.h \
-    core/FileOperate.h \
-    core/PropertyDataSignal.h \
-    core/TimeWindowProperty.h
+        core/FileOperate.h \
+        core/PropertyDataSignal.h \
+        core/TimeWindowProperty.h \
+        core/NumericalFunctions.h \
+    include/csaps.h
 
 FORMS += \
         gui/MainWindow.ui

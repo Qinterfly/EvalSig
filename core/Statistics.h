@@ -12,15 +12,15 @@ struct Statistics{
     Statistics(Statistics const&) = delete; // Запрет на копирование
     Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
     // Интерфейс пользователя
-    int size() const; // Текущий размер матрицы статистик
-    bool isEmpty() const; // Проверка на пустоту
-    int minSizeSignals() const; // Минимальная длина сигнала из группы
-    int getNumberOfWindows() const; // Получить число временных окон (без учета среднего)
-    ArrayRegressionParams const& getRegressionParams() const; // Получение регрессионных параметров
-    ArrayStatCharacters const& getDistanceScatter() const; // Получение дистанций рассеяния
-    ArrayStatCharacters const& getSimilarityCoeffs() const; // Получение коэффициентов подобия сигналов
-    ArrayStatCharacters const& getAmplitudeScatter() const; // Получение амплитуд рассеяния
-    ArrayStatCharacters const& getNoiseCoeffs() const; // Получение коэффициентов шума
+    int size() const { return nSize_; } // Текущий размер матрицы статистик
+    bool isEmpty() const { return !size(); } // Проверка на пустоту
+    int minSizeSignals() const { return minSizeSignals_; } // Минимальная длина сигнала из группы
+    int getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
+    ArrayRegressionParams const& getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
+    ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
+    ArrayStatCharacters const& getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
+    ArrayStatCharacters const& getAmplitudeScatter() const { return amplitudeScatter_; } // Получение амплитуд рассеяния
+    ArrayStatCharacters const& getNoiseCoeffs() const { return noiseCoeffs_; } // Получение коэффициентов шума
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
@@ -60,7 +60,5 @@ private:
     int minSizeSignals_ = 0; // Минимальная длина сигнала из группы
     TimeWindowProperty windowProperty; // Свойства окна выделения характеристик
 };
-
-// Вспомогательные функции
 
 #endif // STATISTICS_H

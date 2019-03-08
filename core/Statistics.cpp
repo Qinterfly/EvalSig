@@ -16,16 +16,6 @@ Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow,
 }
 
 // Интерфейс пользователя
-int Statistics::size() const { return nSize_; } // Текущий размер матрицы статистик
-bool Statistics::isEmpty() const { return size() == 0; } // Проверка на пустоту
-int Statistics::minSizeSignals() const { return minSizeSignals_; }; // Минимальная длина сигнала из группы
-int Statistics::getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
-ArrayRegressionParams const& Statistics::getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
-ArrayStatCharacters const& Statistics::getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
-ArrayStatCharacters const& Statistics::getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
-ArrayStatCharacters const& Statistics::getAmplitudeScatter() const { return amplitudeScatter_; } // Получение амплитуд рассеяния
-ArrayStatCharacters const& Statistics::getNoiseCoeffs() const { return noiseCoeffs_; } // Получение коэффициентов шума
-
     // Добавление сигнала
 bool Statistics::addSignal(DataSignal const& dataSignal){
     int sizeSignal = dataSignal.size(); // Длина сигнала

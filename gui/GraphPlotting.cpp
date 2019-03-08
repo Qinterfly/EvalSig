@@ -12,8 +12,9 @@ void MainWindow::addGraph(){
     for (int i = 0; i != YCompare.size(); ++i)
         XCompare[i] = i + 1;
     ui->comparePlot->addGraph(); // Добавление графика в конец
+    ui->comparePlot->graph(plotInd)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->comparePlot->graph(plotInd)->setPen( QPen(colorSignal.value<QColor>()) ) ; // Выставление цвета графика
-    ui->comparePlot->graph(plotInd)->setData(XCompare, YCompare); // Передача данных
+    ui->comparePlot->graph(plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
     bool onlyEnlarge = false; // Опция одностороннего расширения пределов построения
     if (plotInd != 0) onlyEnlarge = true; // В случае multiPlot, подстраиваем под предельные значения
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
