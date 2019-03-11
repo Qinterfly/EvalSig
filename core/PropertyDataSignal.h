@@ -13,7 +13,7 @@ struct PropertyDataSignal { // Контейнер для свойств
     QString currentCount_;  // Текущие отсчеты
     double temperature_;    // Температура
     QString sensorType_;    // Тип датчика
-    double physicalFactor_;  // Физический коэффициент
+    double physicalFactor_; // Физический коэффициент
     QString measureUnit_;   // Единица измерения
     double scanPeriod_;     // Период опроса датчика
     QString characterisic_; // Характеристика

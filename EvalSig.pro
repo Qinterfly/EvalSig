@@ -54,6 +54,7 @@ HEADERS += \
         core/TimeWindowProperty.h \
         core/NumericalFunctions.h \
     include/csaps.h
+    include/fftw3.h
 
 FORMS += \
         gui/MainWindow.ui
@@ -69,6 +70,10 @@ win32:RC_ICONS += $$PWD/gui/icons/app-icon.ico
 RESOURCES += \
     gui/resource.qrc
 
+# Include
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
+
 # Библиотека QCustomPlot
     # Windows
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot2
@@ -77,5 +82,5 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd2
 unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot
 else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd
 
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
+# Библиотека FFTW
+unix|win32: LIBS += -L$$PWD/lib/ -lfftw3

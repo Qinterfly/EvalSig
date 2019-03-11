@@ -65,7 +65,10 @@ void testStatistics() {
 // Проверка численных методов
 void testNumericalFunctions(){
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
-    DataSignal obj1(testPath, "ОП 182 1с ку.txt");
+    DataSignal obj1(testPath, "Short1.txt");
+    // Вычисление спектра
+    DataSignal psd = computePowerSpectralDensity(obj1, "Hamming", 64, 0.5, 1);
+    Q_ASSERT(!psd.writeDataFile(testPath, "psdObj.txt"));
     // Интегрирование
     QVector<DataSignal> integrVecObj = integrate(obj1, 1, -1);
     Q_ASSERT(!integrVecObj[0].writeDataFile(testPath, "integrObj.txt"));

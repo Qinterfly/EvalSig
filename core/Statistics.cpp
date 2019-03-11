@@ -87,6 +87,7 @@ int Statistics::writeStatistic(T const& stat, QString const& dirName, QString co
     for (int i = 0; i != nSize_; ++i){ // По числу сигналов
         // Добавление статистики по всем окнам в контейнер
         PropertyDataSignal tProperty = (*pVecDataSignal)[i].getProperty(); // Получение свойств первого сигнала
+        tProperty.physicalFactor_ = 1; // Безразмерные коэффициенты
         for (int j = 0; j != nSize_; ++j){
             tData = getWindowStatisticData(stat, i, j); // Получение временных данных
             tProperty.nCount_ = tData.size(); // Запись длины сигнала
