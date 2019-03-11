@@ -41,7 +41,9 @@ SOURCES += \
         core/TimeWindowProperty.cpp \
         gui/UpdateMethods.cpp \
         core/NumericalFunctions.cpp \
-    include/csaps.cpp
+        gui/SignalCharacteristicsWindow.cpp \
+        gui/DataTransfer.cpp
+    include/csaps.cpp \
 
 HEADERS += \
         core/DataSignal.h \
@@ -53,11 +55,13 @@ HEADERS += \
         core/PropertyDataSignal.h \
         core/TimeWindowProperty.h \
         core/NumericalFunctions.h \
-    include/csaps.h
-    include/fftw3.h
+        gui/SignalCharacteristicsWindow.h
+    include/csaps.h \
+    include/fftw3.h \
 
 FORMS += \
-        gui/MainWindow.ui
+        gui/MainWindow.ui \
+    gui/SignalCharacteristicsWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

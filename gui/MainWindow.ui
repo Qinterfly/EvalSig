@@ -916,10 +916,10 @@
     <string>Сохранить как .. </string>
    </property>
    <property name="toolTip">
-    <string>Сохранить сигнал в файл с расширением .txt</string>
+    <string>Сохранить характеристики сигнала</string>
    </property>
    <property name="statusTip">
-    <string>Сохранить сигнал в файл с расширением .txt</string>
+    <string>Сохранить характеристики сигнала</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>

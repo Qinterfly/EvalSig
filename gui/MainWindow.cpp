@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statSignal_(vecDataSignal_, widthTimeWindow_, shiftWindow_) // Статистики
 {
     ui->setupUi(this); // Инициализация графического интерфейса
+    signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Создание соединений сигнал - слот
     connect(ui->actionAddSignal, SIGNAL(triggered()), this, SLOT(addSignal())); // Добавить сигнал
     connect(ui->actionRemoveSignal, SIGNAL(triggered()), this, SLOT(removeSignal())); // Удалить сигнал
-    connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignal())); // Сохранить сигнал
+    connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignalCharacteristics())); // Сохранить сигнал
     connect(ui->actionSaveCalculation, SIGNAL(triggered()), this, SLOT(saveCalcualtion())); // Сохранить результаты расчета
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(setSignalProperty()), Qt::QueuedConnection); // Установка свойств сигнала
     connect(ui->actionNewProject, SIGNAL(triggered()), this, SLOT(clearProject())); // Новый проект
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
+    // Дополнительные окна
+    connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished()));
 }
 
 // Деструктор главного окна

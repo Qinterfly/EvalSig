@@ -77,33 +77,33 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
 }
 
 // Нахождение оконных весовых коэффициентов
-QVector<double> computeWeightWindow(QString const& type, int windowSize){
+QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
     bool isChoosed = false; // Индикатор выбора окна
     QVector<double> window; // Весовые коэффициенты
     // Проверка размера окна
-    if (windowSize < 0)
+    if (weightWindowWidth < 0)
         qDebug() << "Неверный размер весового окна";
-    window.resize(windowSize);
+    window.resize(weightWindowWidth);
     // Окно Хэмминга
-    if (type == "Hamming"){
-        for (int i = 0; i != windowSize; ++i)
-            window[i] = 0.53836 - ( 0.46164 * qCos(2 * M_PI * i / (windowSize - 1)) );
+    if (type == "Хэмминга"){
+        for (int i = 0; i != weightWindowWidth; ++i)
+            window[i] = 0.53836 - ( 0.46164 * qCos(2 * M_PI * i / (weightWindowWidth - 1)) );
         isChoosed = true;
     }
     // Окно Ханна
-    else if (type == "Hann"){
-        for (int i = 0; i != windowSize; ++i)
-            window[i] = 0.5 * ( 1 - qCos(2 * M_PI * i / (windowSize - 1)) );
+    else if (type == "Ханна"){
+        for (int i = 0; i != weightWindowWidth; ++i)
+            window[i] = 0.5 * ( 1 - qCos(2 * M_PI * i / (weightWindowWidth - 1)) );
         isChoosed = true;
     }
     // Окно Блэкмана
-    else if (type == "Blackman"){
+    else if (type == "Блэкмана"){
         double alpha = 0.16;
         double a0 = (1.0 - alpha ) / 2.0;
         double a1 = 0.5;
         double a2 = alpha / 2.0;
-        for (int i = 0; i != windowSize; ++i)
-            window[i] = a0 - a1 * qCos(2 * M_PI * i / (windowSize - 1)) + a2 * qCos(4 * M_PI * i / (windowSize - 1));
+        for (int i = 0; i != weightWindowWidth; ++i)
+            window[i] = a0 - a1 * qCos(2 * M_PI * i / (weightWindowWidth - 1)) + a2 * qCos(4 * M_PI * i / (weightWindowWidth - 1));
         isChoosed = true;
     }
     // Проверка корректности переданного типа окна
@@ -113,7 +113,7 @@ QVector<double> computeWeightWindow(QString const& type, int windowSize){
 }
 
 // Вычисление спектральной мощности сигнала
-DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int windowSize, double overlapFactor, double smoothFactor){
+DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor, double smoothFactor){
     static const int SHIFT_IND_SPECTRUM = 2; // Сдвиг индекса начала спектра
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
@@ -125,35 +125,35 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     fftw_complex * currentFFTResult; // Результат преобразования для текущего окна
     fftw_plan plan; // План для преобразования Фурье
     // Выделение памяти для используемых объектов
-    currentData      = (double *) fftw_malloc(sizeof(double) * windowSize);
-    currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * windowSize);
+    currentData      = (double *) fftw_malloc(sizeof(double) * weightWindowWidth);
+    currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * weightWindowWidth);
     // Создание оценочного плана расчета
-    plan = fftw_plan_dft_r2c_1d(windowSize, currentData, currentFFTResult, FFTW_ESTIMATE);
+    plan = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_ESTIMATE);
     // Настройка весового окна
-    QVector<double> weightWindow = computeWeightWindow(typeWindow, windowSize);
-    int stepWindow = qCeil(windowSize * (1 - overlapFactor)); // Шаг сдвига окна
+    QVector<double> weightWindow = computeWeightWindow(typeWindow, weightWindowWidth);
+    int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
     int leftBound = 0, rightBound; // Границы окна
     // Вычислить плотность спектральной мощности по всем окнам
-    int outWindowSize = windowSize / 2 + 1; // Реальный размер окна с учетом симметрии
-    power.resize(outWindowSize - SHIFT_IND_SPECTRUM); // Изменение размеров контейнера PSD
+    int outWindowWidth = weightWindowWidth / 2 + 1; // Реальный размер окна с учетом симметрии
+    power.resize(outWindowWidth - SHIFT_IND_SPECTRUM); // Изменение размеров контейнера PSD
     int nWindows = 0; // Число окон
     while (leftBound < nInputData){
-        rightBound = leftBound + windowSize; // Правая граница весового окна
+        rightBound = leftBound + weightWindowWidth; // Правая граница весового окна
         // Если полное окно не укладывается до конца сигнала
         if (rightBound > nInputData)
             break;
         // Применение оконного преобразования к временным данным
-        for (int i = 0; i != windowSize; ++i)
+        for (int i = 0; i != weightWindowWidth; ++i)
             currentData[i] = inputData[leftBound + i] * weightWindow[i];
         fftw_execute(plan); // Выполнение дискретного преобразования Фурье
         // Запись полученных значений
         double realVal; // Действительная часть разложения
         double imagVal; // Мнимая часть разложения
         double powVal; // Мощность
-        for (int i = SHIFT_IND_SPECTRUM; i != outWindowSize; ++i){
+        for (int i = SHIFT_IND_SPECTRUM; i != outWindowWidth; ++i){
             realVal = currentFFTResult[i][0];
             imagVal = currentFFTResult[i][1];
-            powVal  = 2 / qPow(outWindowSize, 2) * (realVal * realVal + imagVal * imagVal);
+            powVal  = 2 / qPow(outWindowWidth, 2) * (realVal * realVal + imagVal * imagVal);
             if (i == 0) powVal /= 2; // Нормировка центра симметрии
             power[i - SHIFT_IND_SPECTRUM] += powVal; // Добавление текущего значения мощности в контейнер
         }
@@ -172,6 +172,19 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     tProperty.physicalFactor_ = 1; // Безразмерные величины
     DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor); // Аппроксимация выходной плотности спектральной мощности
     return powerSignal;
+}
+
+// ---- Вспомогательные ----------------------------------------------------------------------------------------
+
+// Ближайшая предыдущая степень двойки
+int previousPow2(int number){
+    if (number < 0) number = qAbs(number); // Для отрицательного числа берем модуль
+    int pow2 = 0; // Ближайшая степень двойки
+    while (number > 1){
+        number /= 2; // Целочисленное деление
+        ++pow2; // Приращение искомой степени
+    }
+    return pow2;
 }
 
 

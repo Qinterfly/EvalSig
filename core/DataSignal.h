@@ -31,7 +31,7 @@ struct DataSignal {
     double convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
-    int writeDataFile(QString const& path, QString const& fileName); // Запись файла с данными
+    int writeDataFile(QString const& path, QString const& fileName) const; // Запись файла с данными
 private:
     PropertyDataSignal property; // Свойства сигнала
     QVector<double> data_;      // Временной сигнал

@@ -1,10 +1,10 @@
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include "core/Statistics.h"
 #include "include/QCustomPlot.h"
+#include "gui/SignalCharacteristicsWindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,7 +22,7 @@ public slots:
     // Чтение, запись и удаление сигналов
     void addSignal(); // Добавить сигнал
     void removeSignal(); // Удалить сигнал
-    void saveSignal(); // Сохранить сигнал
+    void saveSignalCharacteristics(); // Сохранить характеристики сигнала
     void saveCalcualtion(); // Сохранение результатов расчета
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
@@ -35,6 +35,8 @@ public slots:
     void updateStatusBar(); // Обновление строки состояния
     // Методы очистки
     void clearProject(); // Очистка проекта
+    // Обмен данными между окнами
+    void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
@@ -61,6 +63,8 @@ private:
 private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
+    // Дополнительные окна
+    SignalCharacteristicsWindow * signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна

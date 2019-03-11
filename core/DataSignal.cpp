@@ -81,7 +81,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
 }
 
 // Запись временного сигнала
-int DataSignal::writeDataFile(QString const& path, QString const& fileName){
+int DataSignal::writeDataFile(QString const& path, QString const& fileName) const {
     if (isEmpty()) return -1; // Проверка на пустоту записываеомго сигнала
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи

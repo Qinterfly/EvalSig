@@ -49,19 +49,12 @@ void MainWindow::removeSignal(){
 }
 
 // Сохранить сигнал
-void MainWindow::saveSignal(){
+void MainWindow::saveSignalCharacteristics(){
     int saveInd = ui->listFile->currentRow(); // Индекс файла для сохранения
     if (saveInd == -1) return; // Проверка на пустоту списка
-    QString fullFilePath = QFileDialog::getSaveFileName(this, "", lastPath_, "Text files (*.txt)"); // Диалог с пользователем
-    if (fullFilePath.isEmpty()) return; // Проверка корректности выбора
-    if (!fullFilePath.endsWith(".txt"))
-        fullFilePath += ".txt"; // Добавление расширения, если это необходимо
-    QFileInfo infoName(fullFilePath); // Инфо для деления имен
-    QString fileName = infoName.fileName(); // Имя файла
-    lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
-    int exitStatus = vecDataSignal_[saveInd].writeDataFile(lastPath_, fileName); // Запись сигнала в файл
-    if (exitStatus == 0)
-        statusBar()->showMessage("Сигнал " + fileName + " успешно записан"); // Вывод сообщения в statusBar
+    signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[saveInd]); // Передача сигнала
+    signalCharacteristicsWindow_->setLastPath(lastPath_); // Передача пути по умолчанию
+    signalCharacteristicsWindow_->show(); // Отображение диалогового окна
 }
 
 // Сохранение результатов расчета
