@@ -87,4 +87,5 @@ unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplot
 else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lqcustomplotd
 
 # Библиотека FFTW
-unix|win32: LIBS += -L$$PWD/lib/ -lfftw3
+unix: LIBS += -L$$PWD/lib/ -lfftw3
+else:win32: LIBS += "$$PWD/lib/libfftw3-3.dll"

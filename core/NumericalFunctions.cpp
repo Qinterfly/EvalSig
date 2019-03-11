@@ -51,7 +51,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         // Суммирование
         for (int i = 0; i != nDataSignal; ++i){
             sum += dataImage[i];
-            resYData[i] = sum / nDataSignal;
+            resYData[i] = sum;
         }
         // Корректировка
         if (smoothFactor > 0){
@@ -65,10 +65,6 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
             for (int i = 0; i != nDataSignal; ++i)
                 resYData[i] -= corrYData[i];
         }
-        double maxVal = minMaxVec(resYData, [](double a, double b){ return a > b; }); // Поиск максимального значения
-        // Нормировка по максимуму
-        for (double & val : resYData)
-            val /= maxVal;
         resVecDataSignal.push_back(DataSignal(resYData, dataSignal.getProperty())); // Запись интеграла order - 1 порядка
         dataImage = resYData; // Перезапись образа
         resYData.fill(0); // Очистка текущего интеграла
