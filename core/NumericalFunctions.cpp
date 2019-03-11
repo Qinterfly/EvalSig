@@ -118,7 +118,6 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> const& inputData = dataSignal.getData(); // Временные данные исходного сигнала
-    QVector<double> frequency; // Частоты
     QVector<double> power; // Плотность спектральной мощности
     // Объекты, необходимые для выполнения преобразования
     double * currentData; // Значения сигнала для текущего окна

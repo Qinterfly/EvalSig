@@ -42,8 +42,8 @@ SOURCES += \
         gui/UpdateMethods.cpp \
         core/NumericalFunctions.cpp \
         gui/SignalCharacteristicsWindow.cpp \
-        gui/DataTransfer.cpp
-    include/csaps.cpp \
+        gui/DataTransfer.cpp \
+    include/csaps.cpp
 
 HEADERS += \
         core/DataSignal.h \
@@ -55,9 +55,9 @@ HEADERS += \
         core/PropertyDataSignal.h \
         core/TimeWindowProperty.h \
         core/NumericalFunctions.h \
-        gui/SignalCharacteristicsWindow.h
-    include/csaps.h \
-    include/fftw3.h \
+        gui/SignalCharacteristicsWindow.h \
+        include/csaps.h \
+    include/fftw3.h
 
 FORMS += \
         gui/MainWindow.ui \
