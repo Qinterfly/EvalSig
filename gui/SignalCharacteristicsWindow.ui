@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>353</width>
-    <height>449</height>
+    <height>494</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -160,7 +160,7 @@
        </spacer>
       </item>
       <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBoxCorrection">
+       <widget class="QCheckBox" name="checkBoxIntegrationCorrection">
         <property name="text">
          <string>Коррекция:</string>
         </property>
@@ -335,21 +335,55 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayoutSaveChoosedSignal">
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="checkBoxSaveChoosedSignal">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Сохранение исходного сигнала</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBoxChoosedSignal">
+     <property name="title">
+      <string>Исходный сигнал</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="2">
+       <spacer name="horizontalSpacerChoosedSignal">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="spinBoxChoosedSignalCorrectionFactor">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+        <property name="value">
+         <double>0.000100000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBoxChoosedSignalCorrectionFactor">
+        <property name="text">
+         <string>Коррекция: </string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

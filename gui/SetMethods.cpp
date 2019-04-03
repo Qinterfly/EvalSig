@@ -60,13 +60,20 @@ void MainWindow::setTimeWindowProperty(){
 
 // Установка параметров отображения
 void MainWindow::setShowParams(){
-    if (!ui->checkBoxMiddleWindowMode->isChecked()){ // Проверка необходимости отображение среднего окна
+    // Проверка необходимости отображение среднего окна
+    if (!ui->checkBoxMiddleWindowMode->isChecked()){
         ui->spinBoxShowWindow->setEnabled(true); // Включение возможности выбора номера окна
         showWindow_ = ui->spinBoxShowWindow->value() - 1; // Номер окна для временного окна для отображения
     }
-    else{
+    else {
         ui->spinBoxShowWindow->setEnabled(false); // Отключение возможности выбора номера окна
         showWindow_ = ui->spinBoxShowWindow->maximum(); // Отображение среднего окна
+    }
+    // Проверка необходимости интерполяции
+    bool isInterpolate = ui->checkBoxInterpolateColorMap->isChecked();
+    int nCMapPlot = vecColorMap_.size(); // Число цветовых карт
+    for (int plotInd = 0; plotInd != nCMapPlot; ++plotInd){
+        vecColorMap_[plotInd]->setInterpolate(isInterpolate); // Выставить состояние интерполяции
     }
     plotAllColorMap(); // Построение цветовой карты
 }

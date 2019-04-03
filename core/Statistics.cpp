@@ -91,7 +91,7 @@ int Statistics::writeStatistic(T const& stat, QString const& dirName, QString co
         for (int j = 0; j != nSize_; ++j){
             tData = getWindowStatisticData(stat, i, j); // Получение временных данных
             tProperty.nCount_ = tData.size(); // Запись длины сигнала
-            tProperty.currentCount_ = statName; // Имя статистики
+            tProperty.measurePoint_ = statName; // Имя статистики
             DataSignal tDataSignal(tData, tProperty); // Создание временного сигнала
             QString fileName = QString::number(i + 1) + "-" + QString::number(j + 1) + ".txt"; // Определение имени временного сигнала
             exitStatus += tDataSignal.writeDataFile(path, fileName); // Запись сигнала без конвертации

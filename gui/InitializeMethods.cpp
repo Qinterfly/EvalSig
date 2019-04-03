@@ -62,6 +62,7 @@ void MainWindow::initializeAllPlot(){
 // Инициализация цветовых карт
 void MainWindow::initializeAllColorMap(){
     int nCMapPlot = 5; // Число цветовых карт
+    bool isInterpolate = ui->checkBoxInterpolateColorMap->isChecked(); // Необходимость интерполяции
     // Выделение буфера для хранения объектов
     vecTablePlot_.resize(nCMapPlot); // На графические объекты
     vecColorMap_.resize(nCMapPlot); // На цветовые карты
@@ -85,7 +86,7 @@ void MainWindow::initializeAllColorMap(){
         vecColorScale_[plotInd]->axis()->setLabel(""); // Метка шкалы
         vecColorMap_[plotInd]->setColorScale(vecColorScale_[plotInd]); // Ассоциорвать распределение цветов с шкалой
         vecColorMap_[plotInd]->setGradient(QCPColorGradient::gpJet); // Тип градиента цвета для отображения
-        vecColorMap_[plotInd]->setInterpolate(false); // Отключить интерполяцию
+        vecColorMap_[plotInd]->setInterpolate(isInterpolate); // Выставить состояние интерполяции
     }
 }
 

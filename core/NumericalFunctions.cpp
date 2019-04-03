@@ -7,22 +7,38 @@
 // ---- Функции обработки временных сигналов -----------------------------------------------------------------------------------------
 
 // Аппроксимация сплайнами
-DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor)
+DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint)
 {
+    // ----------------------------------------------------------------------------------
+    // Число точек аппроксимации nPoint:
+    // == 0 -- аппроксимация по длине сигнала nDataSignal
+    // != 0 -- равномерное разбиение по длине сигнала с сохранением граничных значений
+    // ----------------------------------------------------------------------------------
     int nDataSignal = dataSignal.size(); // Длина временного сигнала
+    if (nPoint <= 0) nPoint = nDataSignal; // По всей длине сигнала
     csaps::DoubleArray xData(nDataSignal), yData(nDataSignal); // Данные сигнала для аппроксимации
-    // Нормализация сигнала
+    // Исходная сетка сигнала
     for (int i = 0; i != nDataSignal; ++i){
-        xData[i] = i + 1;
+        xData[i] = 1 + i;
         yData[i] = dataSignal[i];
     }
     csaps::UnivariateCubicSmoothingSpline spline(xData, yData, smoothFactor); // Сглаживание сплайном
+    // При аппроксимации по заданному набору узлов
+    if (nPoint != nDataSignal){
+        // Реаллокация памяти для хранения результирующих значений
+        xData.resize(nPoint);
+        yData.resize(nPoint);
+        // Новая координатная сетка
+        double stepXData = (nDataSignal - 1.0) / double(nPoint);
+        for (int i = 0; i != nPoint; ++i)
+            xData[i] = 1 + i * stepXData;
+    }
     // Формирование выходного временного сигнала
-    yData = spline(xData); // Вычисление сплайна на старой сетке
-    QVector<double> resData(nDataSignal);
-    for (int i = 0; i != nDataSignal; ++i)
-        resData[i] = yData[i];
-    return DataSignal(resData, dataSignal.getProperty());
+    yData = spline(xData); // Вычисление сплайна на новой сетке
+    QVector<double> resYData(nPoint);
+    for (int i = 0; i != nPoint; ++i)
+        resYData[i] = yData[i];
+    return DataSignal(resYData, dataSignal.getProperty());
 }
 
 // Интегрирование сигнала
@@ -165,8 +181,29 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     // Формирование выходного сигнала
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1; // Безразмерные величины
-    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor); // Аппроксимация выходной плотности спектральной мощности
+    int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
+    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
     return powerSignal;
+}
+
+// Корректировка временного сигнала
+DataSignal correct(DataSignal const& dataSignal, double smoothFactor){
+    int nDataSignal = dataSignal.size(); // Получение размера сигнала
+    Eigen::VectorXd xData(nDataSignal); // Узлы интерполяции корректирующего сплайна
+    Eigen::VectorXd corrYData(nDataSignal); // Вектор значений корректирующего сплайна
+    // Заполнение корректирующего вектора по всем узлам интерполяции
+    for (int i = 0; i != nDataSignal; ++i){
+        xData[i] = i + 1;
+        corrYData[i] = dataSignal[i];
+    }
+    // Создание корректирующего сплайна
+    csaps::UnivariateCubicSmoothingSpline corrSpline(xData, corrYData, smoothFactor);
+    corrYData = corrSpline(xData); // Вычисление значений в заданных узлах
+    // Коррекция по сплайну
+    QVector<double> resYData = dataSignal.getData(); // Получение данных исходного временного сигнала
+    for (int i = 0; i != nDataSignal; ++i)
+        resYData[i] -= corrYData[i];
+    return DataSignal(resYData, dataSignal.getProperty());
 }
 
 // ---- Вспомогательные ----------------------------------------------------------------------------------------

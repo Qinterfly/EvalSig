@@ -30,22 +30,24 @@ void MainWindow::plotAllColorMap(){
         vecTablePlot_[plotInd]->yAxis->setRangeReversed(true); // Инверсия значений по оси Y
         vecTablePlot_[plotInd]->yAxis->setTickLabelRotation(-90); // Поворот меток
         vecTablePlot_[plotInd]->yAxis->setTicker(textTicker); // Установка меток
-        // Отображение значений ячеек
-        QCPRange const& valRange = vecColorMap_[plotInd]->data()->valueRange(); // Диапазон значений на карте
-        for (int i = 0; i != nGrid; ++i){
-            for (int j = 0; j != nGrid; ++j){
-                double cellValue = vecColorMap_[plotInd]->data()->cell(i, j);
-                QColor cellColor = vecColorMap_[plotInd]->gradient().color(cellValue, valRange); // Цвет ячейки
-                // Находим контрастный цвет по яркости [ max(R, G, B) ]
-                QColor textCellColor;
-                if (qMax(qMax(cellColor.red(), cellColor.green()), cellColor.blue()) > 255 / 2)
-                    textCellColor = Qt::black;
-                else
-                    textCellColor = Qt::white;
-                QCPItemText * cellText = new QCPItemText(vecTablePlot_[plotInd]); // Текст для ячейки
-                cellText->setText(QString::number(cellValue)); // Значение
-                cellText->position->setCoords(i, j); // Позиция
-                cellText->setColor(textCellColor); // Установка инверсированного цвета
+        // Проверка необходимости отображения значений ячеек
+        if (!ui->checkBoxInterpolateColorMap->isChecked()) {
+            QCPRange const& valRange = vecColorMap_[plotInd]->data()->valueRange(); // Диапазон значений на карте
+            for (int i = 0; i != nGrid; ++i){
+                for (int j = 0; j != nGrid; ++j){
+                    double cellValue = vecColorMap_[plotInd]->data()->cell(i, j);
+                    QColor cellColor = vecColorMap_[plotInd]->gradient().color(cellValue, valRange); // Цвет ячейки
+                    // Находим контрастный цвет по яркости [ max(R, G, B) ]
+                    QColor textCellColor;
+                    if (qMax(qMax(cellColor.red(), cellColor.green()), cellColor.blue()) > 255 / 2)
+                        textCellColor = Qt::black;
+                    else
+                        textCellColor = Qt::white;
+                    QCPItemText * cellText = new QCPItemText(vecTablePlot_[plotInd]); // Текст для ячейки
+                    cellText->setText(QString::number(cellValue)); // Значение
+                    cellText->position->setCoords(i, j); // Позиция
+                    cellText->setColor(textCellColor); // Установка инверсированного цвета
+                }
             }
         }
         // Синхронизация значений на шкалах

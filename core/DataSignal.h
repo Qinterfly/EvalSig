@@ -19,7 +19,7 @@ struct DataSignal {
     DataSignal& operator=(DataSignal const&);
     bool operator==(DataSignal const&) const;
     bool operator!=(DataSignal const&) const;
-    double operator[](int index) const{ return data_[index]; }
+    double operator[](int index) const { return data_[index]; }
     // Пользовательские методы
     int size() const { return property.nCount_; }  // Получение длины сигнала
     bool isEmpty() const { return !size(); } // Проверка на пустоту сигнала
@@ -28,7 +28,8 @@ struct DataSignal {
     QVector<double> const& getData() const { return data_; } // Получение сигнала без свойств
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
-    double convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
+    double convertCountToTime(int count) const { return count * 1.0e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
+    double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-3 / 2.0; } // Частота Найквиста
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName) const; // Запись файла с данными

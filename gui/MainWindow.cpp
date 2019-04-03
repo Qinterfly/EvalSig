@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionVisibleFileWidget, SIGNAL(triggered(bool)), this, SLOT(setVisibleFileWidget(bool))); // Изменить отображения списка сигналов
     connect(ui->actionVisiblePropertyWidget, SIGNAL(triggered(bool)), this, SLOT(setVisiblePropertyWidget(bool))); // Изменить отображения свойств проекта
     connect(ui->checkBoxMiddleWindowMode, SIGNAL(clicked(bool)), this, SLOT(setShowParams())); // Переключение режима отображения окон
+    connect(ui->checkBoxInterpolateColorMap, SIGNAL(clicked(bool)), this, SLOT(setShowParams())); // Переключение режима интерполяции цветовых карт
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

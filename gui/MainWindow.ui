@@ -558,7 +558,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -825,6 +825,16 @@
              </property>
              <property name="text">
               <string>Отображение среднего окна:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBoxInterpolateColorMap">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string>Интерполяция цветовых карт:</string>
              </property>
             </widget>
            </item>
