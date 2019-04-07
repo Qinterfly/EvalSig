@@ -6,16 +6,28 @@
 // ---- Контейнер свойств временного окна ----------------------------------------------------------------------
 
 // Конструктор TimeWindowProperty
-TimeWindowProperty::TimeWindowProperty(int width, int shiftWindow, int sizeSignals)
-    : width_(width), shiftWindow_(shiftWindow) { calcWindowParams(sizeSignals); }
+TimeWindowProperty::TimeWindowProperty(int width, int shiftWindow, QPair<int, int> const& estimationBoundaries, int minSizeSignals)
+    : width_(width), shiftWindow_(shiftWindow) { calcWindowParams(estimationBoundaries, minSizeSignals); }
 
 // Расчет параметров окна
-void TimeWindowProperty::calcWindowParams(int sizeSignals){
-    if (width_ == 0) { // Обработка исключения окна нулевой ширины
+void TimeWindowProperty::calcWindowParams(QPair<int, int> const& estimationBoundaries, int minSizeSignals){
+    // Обработка исключения окна нулевой ширины
+    if (width_ == 0) {
         nWindows_ = 0; shiftWindow_ = 0;
         return;
     }
-    nWindows_ = qCeil( sizeSignals / double(shiftWindow_) ); // Число окон
+    // Подсчет числа окон
+    int currWindow = 0; // Номер текущего окна
+        // Пока текущая левая граница не достигнет конца правой расчетной границы
+    for (int s = estimationBoundaries.first - 1; s < estimationBoundaries.second && s < minSizeSignals; ){
+        int currRightBound = width_;
+        if (currRightBound + s > minSizeSignals) // Проверка правой границы
+            currRightBound = minSizeSignals - s;
+        // Сдвиг
+        s += shiftWindow_; // Сдвиг левой границы окна
+        currWindow += 1; // Приращение счетчика окон
+    }
+    nWindows_ = currWindow; // Установка числа окон (без учета среднего)
 }
 
 // Запись параметров окна

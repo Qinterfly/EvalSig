@@ -7,7 +7,7 @@
 
 // Класс статистических характеристик
 struct Statistics{
-    Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow);
+    Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary);
     ~Statistics(){}
     Statistics(Statistics const&) = delete; // Запрет на копирование
     Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
@@ -16,6 +16,7 @@ struct Statistics{
     bool isEmpty() const { return !size(); } // Проверка на пустоту
     int minSizeSignals() const { return minSizeSignals_; } // Минимальная длина сигнала из группы
     int getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
+    QPair<int, int> const& getEstimationBoundaries() const { return estimationBoundaries_; } // Получение границ расчета
     ArrayRegressionParams const& getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
     ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
     ArrayStatCharacters const& getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
@@ -24,6 +25,7 @@ struct Statistics{
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
+    void setEstimationBoundaries(int leftBound, int rightBound); // Выставление расчетных границ
     int writeAllStatistics(QString const& dirName); // Сохранение всех статистик
     int writeSignalList(QString const& path, QString const& fileName); // Запись списка сигналов
 private:
@@ -35,6 +37,8 @@ private:
     // Методы-обертки для выделения памяти для всех полей
     void allocateAllFields(int beginColInd, int fullSize); // При расширении для всех полей
     void removeAllFields(int deleteInd);                   // При сжатии для всех полей
+    // Методы проверки
+    void checkEstimationBoundaries(); // Проверка корректности расчетных границ
     // Расчет статистических характеристик
     int calcMinSizeSignals(); // Получение минимальной длины сигнала
     void fullCompute(); // Полный расчет характеристик
@@ -58,6 +62,7 @@ private:
     ArrayStatCharacters noiseCoeffs_; // Коэффициенты шума
     int nSize_ = 0; // Размер матрицы статистических параметров
     int minSizeSignals_ = 0; // Минимальная длина сигнала из группы
+    QPair <int, int> estimationBoundaries_; // Границы расчета
     TimeWindowProperty windowProperty; // Свойства окна выделения характеристик
 };
 

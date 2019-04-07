@@ -2,13 +2,14 @@
 #define TIMEWINDOWPROPERTY_H
 
 #include <QString>
+#include <QPair>
 #include "FileOperate.h"
 
 // Свойства окна выделения характеристик
 // закрытое поле класса Statistics
 struct TimeWindowProperty {
-    TimeWindowProperty(int width, int shiftWindow, int sizeSignals);
-    void calcWindowParams(int); // Расчет параметров окна
+    TimeWindowProperty(int width, int shiftWindow, QPair<int, int> const& estimationBoundaries, int minSizeSignals);
+    void calcWindowParams(QPair<int, int> const& estimationBoundaries, int minSizeSignals); // Расчет параметров окна
     int writeWindowParams(QString const& path, QString const& fileName); // Запись параметров окна
 
     int width_;             // Ширина временного окна

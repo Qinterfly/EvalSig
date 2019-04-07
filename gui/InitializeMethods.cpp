@@ -30,6 +30,7 @@ void MainWindow::initializeCalculationParams(){
     widthTimeWindow_ = ui->spinBoxTimeWidth->value(); // Ширина окна
     shiftWindow_ = ui->spinBoxShiftWindow->value(); // Смещение левой границы временного окна
     statSignal_.setWindowProperty(widthTimeWindow_, shiftWindow_); // Установка параметров окна
+    statSignal_.setEstimationBoundaries(ui->spinBoxLeftEstimationBoundary->value(), ui->spinBoxRightEstimationBoundary->value()); // Границы расчета
 }
 
 // Инициализация параметров для отображения
@@ -54,7 +55,15 @@ void MainWindow::initializeShowParams(){
 // Инициализация всех графических окон
 void MainWindow::initializeAllPlot(){
     // -- comparePlot --
+    int const nEstimationBoundaries = 2;
     ui->comparePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
+        // Добавление графиков линий, ограничивающих расчетную область
+    QBrush brushCompare(QColor(0, 0, 255, 25)); // Полупрозрачная синияя кисть
+    for (int plotInd = 0; plotInd != nEstimationBoundaries; ++plotInd){
+        ui->comparePlot->addGraph();
+        ui->comparePlot->graph(plotInd)->setPen(Qt::NoPen);
+        ui->comparePlot->graph(plotInd)->setBrush(brushCompare);
+    }
     // -- AllColorMap --
     initializeAllColorMap(); // Инициализация всех цветовых карт
 }

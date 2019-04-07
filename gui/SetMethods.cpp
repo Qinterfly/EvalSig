@@ -41,7 +41,7 @@ void MainWindow::setColor(int row, int column){
     ui->tableFileProperty->item(row, column)->setData(Qt::DecorationRole, selectedColor); // Установка цвета в свойствах сигнала
     ui->tableFileProperty->item(row, column)->setText(selectedColor.name()); // Имя цвета в hex
     // Для графиков
-    ui->comparePlot->graph(currentSignalInd)->setPen(QPen(selectedColor)) ; // Выставление цвета графика в окне "Сравнение"
+    ui->comparePlot->graph(SECONDARY_PLOT + currentSignalInd)->setPen(QPen(selectedColor)) ; // Выставление цвета графика в окне "Сравнение"
     ui->comparePlot->replot(); // Обновление построения
 }
 
@@ -54,7 +54,7 @@ void MainWindow::setTimeWindowProperty(){
         ui->spinBoxShiftWindow->setStatusTip("Смещение временного окна = " + QString::number(vecDataSignal_[0].convertCountToTime(shiftWindow_)) + " c");
     }
     statSignal_.setWindowProperty(widthTimeWindow_, shiftWindow_); // Передача параметров контейнеру статистик
-    setBoundaryShowParams(); // Выставление граничных значений параметров
+    setBoundariesShowParams(); // Выставление граничных значений параметров
     updateStatusBar(); // Обновление информационной строки
 }
 
@@ -79,7 +79,7 @@ void MainWindow::setShowParams(){
 }
 
 // Выставления границ отображения для объектов интерфейса
-void MainWindow::setBoundaryShowParams(){
+void MainWindow::setBoundariesShowParams(){
     int nWindows = statSignal_.getNumberOfWindows(); // Число временных окон
     // Проверка пустоты статистик и необходимости смены предела
     if (!statSignal_.isEmpty() && nWindows != ui->spinBoxShowWindow->maximum()){
@@ -93,6 +93,40 @@ void MainWindow::setVisibleFileWidget(bool isChecked){ ui->dockFileWidget->setVi
 
 // Изменить отображение виджета свойств
 void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidget->setVisible(isChecked); }
+
+// Установка границ расчета
+    // Поля -> статистики
+void MainWindow::setStatEstimationBoundaries(){
+    // Получение новых границ расчета
+    int newLeftBound = ui->spinBoxLeftEstimationBoundary->value(), newRightBound = ui->spinBoxRightEstimationBoundary->value();
+    // Проверка допустимости новых значений
+    if (newLeftBound >= newRightBound){ // Левая граница превышает или равна правой
+        std::swap(newLeftBound, newRightBound);
+        ui->spinBoxLeftEstimationBoundary->setValue(newLeftBound);
+        ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
+    }
+    statSignal_.setEstimationBoundaries(newLeftBound, newRightBound); // Выставление границ расчета статистик
+    setBoundariesShowParams(); // Выставление граничных значений параметров
+    plotEstimationBoundaries(true); // Построение граничных линий
+    updateStatusBar(); // Обновление информационной строки
+}
+
+    // Статистики -> поля
+void MainWindow::setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries){
+    // Получение старых границ расчета
+    int oldLeftBound = ui->spinBoxLeftEstimationBoundary->value(), oldRightBound = ui->spinBoxRightEstimationBoundary->value();
+    // Получение новых границ расчета
+    int newLeftBound = estimationBoundaries.first, newRightBound = estimationBoundaries.second;
+    // Проверка необходимости изменений
+    if (oldLeftBound == newLeftBound && oldRightBound == newRightBound)
+        return;
+    // Установка границ
+    ui->spinBoxLeftEstimationBoundary->setValue(newLeftBound);
+    ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
+    setBoundariesShowParams(); // Выставление граничных значений параметров
+    plotEstimationBoundaries(true); // Построение граничных линий
+    updateStatusBar(); // Обновление информационной строки
+}
 
 // Переопределение событий программы
 bool MainWindow::eventFilter(QObject * obj, QEvent * event){

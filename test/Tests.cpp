@@ -35,7 +35,7 @@ void testStatistics() {
     vecDataSignals.reserve(volume);
     vecDataSignals.push_back(obj1);
     vecDataSignals.push_back(obj2);
-    Statistics stat(vecDataSignals, 200, 200); // Создание объекта статистик
+    Statistics stat(vecDataSignals, 200, 200, 1, 200); // Создание объекта статистик
     // Добавление сигнала
     Q_ASSERT(!stat.addSignal(obj3));
     // Удаление всех сигналов

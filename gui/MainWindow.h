@@ -31,6 +31,8 @@ public slots:
     void setShowParams(); // Установка параметров отображения
     void setVisibleFileWidget(bool); // Изменить отображения списка сигналов
     void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
+    void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
+    void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
     // Методы очистки
@@ -47,13 +49,15 @@ private:
     void initializeAllPlot(); // Инициализация графических окон
     void initializeAllColorMap(); // Инициализация цветовых карт
     // Set методы
-    void setBoundaryShowParams(); // Выставления границ отображения для объектов интерфейса
+    void setBoundariesShowParams(); // Выставления границ отображения для объектов интерфейса
     // Методы очистки
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     void clearStatusBar(); // Очистка информационной строки
     // Работа с графиками
     void addGraph(); // Добавление графика
     void removeGraph(int); // Удаление графика
+    void plotEstimationBoundaries(bool isReplot = false); // Построение расчетных границ
+    void clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     // Работа с цветовыми картами
     void plotAllColorMap(); // Построение цветовые карты
     void setColorMapData(int plotInd, int nGrid); // Выставление данных для цветовой карты по индексу
@@ -74,6 +78,7 @@ private:
     int showWindow_; // Номер временного окна для показа
     QVector<QColor> colorList_; // Список цветов для отображения
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
+    int const SECONDARY_PLOT = 2; // Число вспомогательных графиков
     // Контейнеры для построения цветовых карт
     QVector<QCustomPlot *> vecTablePlot_; // Вектор указателей на графические обхъекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты

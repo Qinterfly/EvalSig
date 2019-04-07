@@ -6,10 +6,11 @@
 // ---- Статистики группы сигналов -----------------------------------------------------------------------------
 
 // Конструктор Statistics
-Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow)
+Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary)
     : pVecDataSignal(&vecDataSignal), nSize_(pVecDataSignal->size()),
       minSizeSignals_(calcMinSizeSignals()),
-      windowProperty(widthTimeWindow, shiftTimeWindow, minSizeSignals_)
+      estimationBoundaries_(leftEstimationBoundary, rightEstimationBoundary),
+      windowProperty(widthTimeWindow, shiftTimeWindow, estimationBoundaries_, minSizeSignals_)
 {
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный расчет матрицы характеристик
@@ -28,7 +29,8 @@ bool Statistics::addSignal(DataSignal const& dataSignal){
     }
     else { // Полный пересчет
         minSizeSignals_ = sizeSignal; // Запись новой наименьшой длины сигнала
-        windowProperty.calcWindowParams(minSizeSignals_); // Пересчет параметров окна
+        checkEstimationBoundaries(); // Проверка расчетных границ
+        windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Пересчет параметров окна
         allocateAllFields(0, nSize_ + 1); // Инциализация дополнительных полей
         ++nSize_; // Увеличение размера матрицы статистик
         fullCompute(); // Вызов метода полного пересчета
@@ -48,7 +50,8 @@ bool Statistics::removeSignal(int deleteInd){
     int tempMinSizeSignals = calcMinSizeSignals(); // Получение нового минимального размера группы сигналов
     if (tempMinSizeSignals != minSizeSignals_){ // Если после удаление минимальный размер сигналов изменился
         minSizeSignals_ = tempMinSizeSignals; // Запись нового размера
-        windowProperty.calcWindowParams(minSizeSignals_); // Пересчет параметров окна
+        checkEstimationBoundaries(); // Проверка расчетных границ
+        windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Пересчет параметров окна
         allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
         fullCompute(); // Вызов метода полного пересчета
     }
@@ -68,7 +71,7 @@ int Statistics::writeAllStatistics(QString const& dirName){
     // Создание пути для каждой из статистик
     for (QString & statName : vecStatName)
         dir.mkdir(statName);
-    // Сохранение статистик
+    // Сохранение статистик по всем окнам
     int exitStatus = 0; // Код возврата
     exitStatus += writeStatistic(regressionParams_, dirName, vecStatName[0]); // Угловые коэффициенты
     exitStatus += writeStatistic(distanceScatter_, dirName, vecStatName[1]);  // Дистанция рассеяния
@@ -79,7 +82,7 @@ int Statistics::writeAllStatistics(QString const& dirName){
 }
 
 // Сохранение выбранной статистики
- template<typename T>
+template<typename T>
 int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName){
     QString path = dirName + statName + QDir::separator(); // Полный путь до статистики
     QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
@@ -124,7 +127,18 @@ void Statistics::setWindowProperty(int widthTimeWindow, int shiftTimeWindow){
     // Запись новых параметров
     windowProperty.width_ = widthTimeWindow;
     windowProperty.shiftWindow_ = shiftTimeWindow;
-    windowProperty.calcWindowParams(minSizeSignals_);
+    windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_);
+    allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
+    fullCompute(); // Полный пересчет
+}
+
+    // Выставление расчетных границ
+void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
+    // Проверка необходимости изменения
+    if (leftBound == estimationBoundaries_.first && rightBound == estimationBoundaries_.second)
+        return;
+    estimationBoundaries_ = {leftBound, rightBound}; // Установка границ
+    windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Расчет новых параметров временного окна
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный пересчет
 }
@@ -170,6 +184,13 @@ void Statistics::removeAllFields(int deleteInd){
     removeField(similarityCoeffs_, deleteInd);   // Коэффициенты подобия сигналов
     removeField(amplitudeScatter_, deleteInd);   // Амплитуда рассеяния
     removeField(noiseCoeffs_, deleteInd);        // Коэффициенты шума
+}
+
+// Проверка корректности расчетных границ
+void Statistics::checkEstimationBoundaries(){
+    // Проверка левой границы
+    if (estimationBoundaries_.first >= minSizeSignals_)
+        estimationBoundaries_.first = 1;
 }
 
 // Нахождение минимального размера сигнала из группы
@@ -219,8 +240,9 @@ void Statistics::calcDistanceAmplitudeRegression(int i, int j){
     QPair<double, double> meanRegressionParams = {0, 0}; // Средние регрессионные параметры
     double meanDistanceScatter = 0; // Средняя дистанция рассеяния
     double meanAmplitudeScatter = 0; // Средняя амплитуда рассеяния
-    // По всем окнам
-    for (int s = 0; s < minSizeSignals_; ){ // Пока левая граница не достигнет конца сигнала
+    // По расчетной области
+        // Пока текущая левая граница не достигнет конца правой расчетной границы
+    for (int s = estimationBoundaries_.first - 1; s < estimationBoundaries_.second && s < minSizeSignals_; ){
         int currRightBound = windowProperty.width_;
         if (currRightBound + s > minSizeSignals_) // Проверка правой границы
             currRightBound = minSizeSignals_ - s;
@@ -282,9 +304,10 @@ void Statistics::calcSimilarity(int i, int j){
     // Параметры среднего окна
     double meanSimilarityCoeffs = 0; // Средний коэффициент подобия
     double meanNoiseCoeffs = 0; // Средние коэффициенты шума
-    // По всем окнам
-    for (int s = 0; s < minSizeSignals_; ){ // Пока левая граница не достигнет конца сигнала
-        int currRightBound = windowProperty.width_;;
+    // По расчетной области
+        // Пока текущая левая граница не достигнет конца правой расчетной границы
+    for (int s = estimationBoundaries_.first - 1; s < estimationBoundaries_.second && s < minSizeSignals_; ){
+        int currRightBound = windowProperty.width_;
         if (currRightBound + s > minSizeSignals_) // Проверка правой границы
             currRightBound = minSizeSignals_ - s;
         similarityCoeffs_[i][j][currWindow] = qSqrt(regressionParams_[i][j][currWindow].first * regressionParams_[j][i][currWindow].first);

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>900</width>
-    <height>600</height>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -429,7 +429,7 @@
    <property name="minimumSize">
     <size>
      <width>225</width>
-     <height>275</height>
+     <height>319</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -558,7 +558,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -749,8 +749,14 @@
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
           <layout class="QVBoxLayout" name="tabCalcPropertylLayout">
+           <property name="spacing">
+            <number>6</number>
+           </property>
            <item>
             <layout class="QFormLayout" name="tabCalcFormLayout">
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="labelTimeWidth">
                <property name="text">
@@ -768,23 +774,6 @@
                </property>
                <property name="value">
                 <number>512</number>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="labelShowWindow">
-               <property name="text">
-                <string>Номер окна показа:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QSpinBox" name="spinBoxShowWindow">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>221196</number>
                </property>
               </widget>
              </item>
@@ -811,35 +800,66 @@
             </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxMiddleWindowMode">
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-              </font>
+            <layout class="QGridLayout" name="tabCalcGridLayout">
+             <property name="leftMargin">
+              <number>0</number>
              </property>
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
+             <property name="topMargin">
+              <number>0</number>
              </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Отображение среднего окна:</string>
-             </property>
-            </widget>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBoxLeftEstimationBoundary">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>221119996</number>
+               </property>
+               <property name="stepType">
+                <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelEstimationBoundaries">
+               <property name="text">
+                <string>Границы: </string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QSpinBox" name="spinBoxRightEstimationBoundary">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>22111996</number>
+               </property>
+               <property name="stepType">
+                <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+               </property>
+               <property name="value">
+                <number>1024</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <spacer name="horizontalSpacerBoundaries">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxInterpolateColorMap">
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
-             <property name="text">
-              <string>Интерполяция цветовых карт:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
+            <spacer name="verticalSpacerTabCalcGrid">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -852,6 +872,75 @@
             </spacer>
            </item>
           </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabViewProperty">
+        <attribute name="title">
+         <string>Вида</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QGridLayout" name="tabViewPropertygridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelShowWindow">
+             <property name="text">
+              <string>Номер окна показа:   </string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="spinBoxShowWindow">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>221196</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBoxInterpolateColorMap">
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Интерполяция цветовых карт:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBoxMiddleWindowMode">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Отображение среднего окна:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacerViewProperty">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
