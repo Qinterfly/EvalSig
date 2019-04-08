@@ -2,8 +2,8 @@
 #include <QDir>
 #include <QtMath>
 #include "Statistics.h"
-#include "include/QXlsx/header/xlsxdocument.h"
-#include "include/QXlsx/header/xlsxformat.h"
+#include "xlsxdocument.h"
+#include "xlsxformat.h"
 
 
 // ---- Статистики группы сигналов -----------------------------------------------------------------------------

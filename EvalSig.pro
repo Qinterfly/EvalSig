@@ -91,7 +91,7 @@ unix: LIBS += -L$$PWD/lib/ -lfftw3
 else:win32: LIBS += "$$PWD/lib/libfftw3-3.dll"
 
 # Библиотека QXlsx
-QXLSX_PARENTPATH = $$PWD/include/QXlsx         # Директория проекта
+QXLSX_PARENTPATH = $$PWD/include/QXlsx        # Директория проекта
 QXLSX_HEADERPATH = $$QXLSX_PARENTPATH/header/ # Заголовочные файлы
 QXLSX_SOURCEPATH = $$QXLSX_PARENTPATH/source/ # Файлы исходных кодов
-include($$QXLSX_PARENTPATH/QXlsx.pri)       # Проект
+include($$QXLSX_PARENTPATH/QXlsx.pri)         # Проект
