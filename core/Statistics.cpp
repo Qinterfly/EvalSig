@@ -2,6 +2,9 @@
 #include <QDir>
 #include <QtMath>
 #include "Statistics.h"
+#include "include/QXlsx/header/xlsxdocument.h"
+#include "include/QXlsx/header/xlsxformat.h"
+
 
 // ---- Статистики группы сигналов -----------------------------------------------------------------------------
 
@@ -78,6 +81,8 @@ int Statistics::writeAllStatistics(QString const& dirName){
     exitStatus += writeStatistic(similarityCoeffs_, dirName, vecStatName[2]); // Коэффициенты подобия
     exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3]); // Амплитуды рассеяния
     exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4]); // Коэффициенты шума
+    // Сохранение средних значений всех статистик
+    exitStatus += writeMeanStatistics(dirName, "Средние значения статистик");
     return exitStatus;
 }
 
@@ -102,6 +107,46 @@ int Statistics::writeStatistic(T const& stat, QString const& dirName, QString co
     }
     return exitStatus;
 }
+
+// Сохранение средних значений всех статистик
+int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileName){
+    QString fullFilePath = dirName + fileName + ".xlsx"; // Полный путь к файлу
+    int exitStatus = 0; // Код возврата
+    QXlsx::Document xlsxDocument; // Создание документа расширения .xlsx
+    // Установка формата документа
+    QXlsx::Format tableFormat;
+    tableFormat.setHorizontalAlignment(QXlsx::Format::AlignHCenter); // Выравнивание по горизонтали
+    tableFormat.setVerticalAlignment(QXlsx::Format::AlignVCenter); // Выравнивание по вертикали
+    xlsxDocument.setColumnWidth(1, 6, 11); // Ширина рабочих столбцов
+    // Заполнение шапки документа
+        // Расчетный диапазон
+    QString tempString = "Границы участка: " + QString::number(estimationBoundaries_.first) + " - " + QString::number(estimationBoundaries_.second);
+    xlsxDocument.write("A1", tempString);
+        // Длина участка
+    tempString = "Длина участка: " + QString::number(estimationBoundaries_.second - estimationBoundaries_.first + 1);
+    xlsxDocument.write("A2", tempString);
+        // Заголовки таблицы
+    xlsxDocument.write("A4", "Сигнал", tableFormat); xlsxDocument.write("B4", "Угловые", tableFormat);
+    xlsxDocument.write("C4", "Дистанции", tableFormat); xlsxDocument.write("D4", "Подобия", tableFormat); // ... в той же строке
+    xlsxDocument.write("E4", "Амплитуды", tableFormat); xlsxDocument.write("F4", "Шума", tableFormat);    // ... в той же строке
+    int lastLine = 4; // Номер последней линии шапки
+    // Запись расчетных данных
+    int nMeanWindow = windowProperty.nWindows_; // Номер среднего окна
+    for (int i = 0; i != nSize_; ++i){
+        for (int j = 0; j != nSize_; ++j){
+            ++lastLine; // Приращение счетчика текущей линии
+            xlsxDocument.write("A" + QString::number(lastLine), QString::number(i + 1) + " - " + QString::number(j + 1), tableFormat);     // Сигнал
+            xlsxDocument.write("B" + QString::number(lastLine), QString::number(regressionParams_[i][j][nMeanWindow].first), tableFormat); // Угловые
+            xlsxDocument.write("C" + QString::number(lastLine), QString::number(distanceScatter_[i][j][nMeanWindow]), tableFormat);        // Дистанции
+            xlsxDocument.write("D" + QString::number(lastLine), QString::number(similarityCoeffs_[i][j][nMeanWindow]), tableFormat);       // Подобия
+            xlsxDocument.write("E" + QString::number(lastLine), QString::number(amplitudeScatter_[i][j][nMeanWindow]), tableFormat);       // Амплитуды
+            xlsxDocument.write("F" + QString::number(lastLine), QString::number(noiseCoeffs_[i][j][nMeanWindow]), tableFormat);            // Шума
+        }
+    }
+    exitStatus = !xlsxDocument.saveAs(fullFilePath); // Сохранение документа
+    return exitStatus;
+}
+
 
 // Запись списка сигналов
 int Statistics::writeSignalList(QString const& path, QString const& fileName) {

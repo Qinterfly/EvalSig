@@ -50,6 +50,7 @@ private:
     // Сохранение выбранной статистики
     template<typename T>
     int writeStatistic(T const& stat, QString const& dirName, QString const& statName); // ArrayRegressionParams и ArrayStatCharacters
+    int writeMeanStatistics(QString const& dirName, QString const& fileName); // Сохранение средних значений статистик
     // Вспомогательные функции получения оконного распределения статистики
     QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j); // ArrayRegressionParams
     QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j); // ArrayStatCharacters

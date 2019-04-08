@@ -101,7 +101,7 @@ void MainWindow::assignDataForColorMap(ArrayRegressionParams const& arrData, int
     for (int i = 0; i != nGrid; ++i){
         for (int j = 0; j != nGrid; ++j){
             double ZAngle = arrData[i][j][showWindow_].first; // Срез углового коэффициента
-            vecColorMap_[plotInd]->data()->setCell(i, j, ZAngle);
+            vecColorMap_[plotInd]->data()->setCell(j, i, ZAngle); // (!) С учетом будущего reverse i<->j
         }
     }
 }
@@ -110,7 +110,7 @@ void MainWindow::assignDataForColorMap(ArrayStatCharacters const& arrData, int p
     for (int i = 0; i != nGrid; ++i){
         for (int j = 0; j != nGrid; ++j){
             double Z = arrData[i][j][showWindow_]; // Срез углового коэффициента
-            vecColorMap_[plotInd]->data()->setCell(i, j, Z);
+            vecColorMap_[plotInd]->data()->setCell(j, i, Z); // (!) С учетом будущего reverse i<->j
         }
     }
 }
