@@ -32,10 +32,10 @@ struct DataSignal {
     double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-3 / 2.0; } // Частота Найквиста
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
-    int writeDataFile(QString const& path, QString const& fileName) const; // Запись файла с данными
+    int writeDataFile(QString const& path, QString const& fileName, int leftInd = 0, int rightInd = -1) const; // Запись временного сигнала на выбранном участке
 private:
     PropertyDataSignal property; // Свойства сигнала
-    QVector<double> data_;      // Временной сигнал
+    QVector<double> data_;       // Временной сигнал
 };
 
 // Вспомогательные функции
@@ -48,7 +48,5 @@ double meanVec(QVector<double> const& vecD);
 
 // Нормализация вектора
 void normalizeVec(QVector<double> & vecD);
-
-
 
 #endif // DATASIGNAL_H

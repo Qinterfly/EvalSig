@@ -13,9 +13,9 @@ void MainWindow::addGraph(){
     for (int i = 0; i != YCompare.size(); ++i)
         XCompare[i] = i + 1;
     ui->comparePlot->addGraph(); // Добавление графика в конец
-    ui->comparePlot->graph(SECONDARY_PLOT + plotInd)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
-    ui->comparePlot->graph(SECONDARY_PLOT + plotInd)->setPen( QPen(colorSignal.value<QColor>()) ) ; // Выставление цвета графика
-    ui->comparePlot->graph(SECONDARY_PLOT + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setPen( QPen(colorSignal.value<QColor>()) ) ; // Выставление цвета графика
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
     bool onlyEnlarge = false; // Опция одностороннего расширения пределов построения
     if (plotInd != 0) onlyEnlarge = true; // В случае multiPlot, подстраиваем под предельные значения
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
@@ -26,7 +26,7 @@ void MainWindow::addGraph(){
 // Удалить график
 void MainWindow::removeGraph(int deleteInd){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
-    ui->comparePlot->removeGraph(SECONDARY_PLOT + deleteInd); // Удаление графика
+    ui->comparePlot->removeGraph(SECONDARY_PLOT_IND + deleteInd); // Удаление графика
     ui->comparePlot->rescaleAxes(false); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения
@@ -34,7 +34,7 @@ void MainWindow::removeGraph(int deleteInd){
 
 // Построение графиков расчетных границ
 void MainWindow::plotEstimationBoundaries(bool isReplot){
-    if (ui->comparePlot->graphCount() == SECONDARY_PLOT) return; // При отсутствии сигналов не отображать
+    if (ui->comparePlot->graphCount() == SECONDARY_PLOT_IND) return; // При отсутствии сигналов не отображать
     // Граничные значения графика
         // По X
     double leftBound = statSignal_.getEstimationBoundaries().first; // Левая граница
@@ -51,7 +51,7 @@ void MainWindow::plotEstimationBoundaries(bool isReplot){
 
 // Очистка данных графиков расчетных границ
 void MainWindow::clearDataEstimationsBoundaries(){
-    for (int plotInd = 0; plotInd != SECONDARY_PLOT; ++plotInd)
+    for (int plotInd = 0; plotInd != SECONDARY_PLOT_IND; ++plotInd)
         ui->comparePlot->graph(plotInd)->data()->clear();
 }
 

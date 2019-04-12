@@ -25,11 +25,7 @@ void MainWindow::clearStatusBar(){
 
 // Очистка проекта
 void MainWindow::clearProject(){
-    while(ui->listFile->count() != 0)
-        removeSignal(); // Удаление всех сигналов
-    // Очистка графиков
-    ui->comparePlot->clearGraphs();
-    ui->comparePlot->replot();
+    while (ui->listFile->count() != 0) removeSignal(); // Удаление всех сигналов
 }
 
 // -----------------------------------------------------------------------------------------------------------------

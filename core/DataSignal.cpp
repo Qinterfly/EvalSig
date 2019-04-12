@@ -80,27 +80,29 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
     return 0;
 }
 
-// Запись временного сигнала
-int DataSignal::writeDataFile(QString const& path, QString const& fileName) const {
+// Запись временного сигнала на выбранном участке
+int DataSignal::writeDataFile(QString const& path, QString const& fileName, int leftInd, int rightInd) const {
     if (isEmpty()) return -1; // Проверка на пустоту записываеомго сигнала
+    if (leftInd > rightInd) return -1; // Проверка на корректность области сохранения
+    if (rightInd == -1) rightInd = property.nCount_ - 1; // Обработка индекса последнего значения
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << property.dateAndTime_ << endl;    // Дата и время записи сигнала
-    outputStream << property.measureObject_ << endl;  // Объект измерения
-    outputStream << property.measurePoint_ << endl;   // Точка установки датчика
-    outputStream << property.currentCount_ << endl;   // Текущие отсчеты
-    outputStream << property.temperature_ << endl;    // Температура
-    outputStream << property.sensorType_ << endl;     // Тип датчика
+    outputStream << property.dateAndTime_ << endl;     // Дата и время записи сигнала
+    outputStream << property.measureObject_ << endl;   // Объект измерения
+    outputStream << property.measurePoint_ << endl;    // Точка установки датчика
+    outputStream << property.currentCount_ << endl;    // Текущие отсчеты
+    outputStream << property.temperature_ << endl;     // Температура
+    outputStream << property.sensorType_ << endl;      // Тип датчика
     outputStream << property.physicalFactor_ << endl;  // Физический коэффициент
-    outputStream << property.measureUnit_ << endl;    // Единица измерения
-    outputStream << property.scanPeriod_ << endl;     // Период опроса датчика
-    outputStream << property.characterisic_ << endl;  // Характеристика
-    outputStream << property.nCount_ << endl;         // Количество отсчетов
-    for (int i = 0; i != property.nCount_; ++i )
+    outputStream << property.measureUnit_ << endl;     // Единица измерения
+    outputStream << property.scanPeriod_ << endl;      // Период опроса датчика
+    outputStream << property.characterisic_ << endl;   // Характеристика
+    outputStream << rightInd - leftInd + 1 << endl;    // Количество отсчетов
+    for (int i = leftInd; i <= rightInd; ++i )
         outputStream << data_[i] / property.physicalFactor_ << endl;
     file.close(); // Закрытие файла
     return 0;

@@ -8,6 +8,11 @@
 
 // ---- Статистики группы сигналов -----------------------------------------------------------------------------
 
+// Объявление вспомогательных функций
+    // Перевод числа в строку
+QString numberToString(int const& value);
+QString numberToString(double const& value, QString const& delimiter = ",");
+
 // Конструктор Statistics
 Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary)
     : pVecDataSignal(&vecDataSignal), nSize_(pVecDataSignal->size()),
@@ -120,10 +125,10 @@ int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileN
     xlsxDocument.setColumnWidth(1, 6, 11); // Ширина рабочих столбцов
     // Заполнение шапки документа
         // Расчетный диапазон
-    QString tempString = "Границы участка: " + QString::number(estimationBoundaries_.first) + " - " + QString::number(estimationBoundaries_.second);
+    QString tempString = "Границы участка: " + numberToString(estimationBoundaries_.first) + " - " + numberToString(estimationBoundaries_.second);
     xlsxDocument.write("A1", tempString);
         // Длина участка
-    tempString = "Длина участка: " + QString::number(estimationBoundaries_.second - estimationBoundaries_.first + 1);
+    tempString = "Длина участка: " + numberToString(estimationBoundaries_.second - estimationBoundaries_.first + 1);
     xlsxDocument.write("A2", tempString);
         // Заголовки таблицы
     xlsxDocument.write("A4", "Сигнал", tableFormat); xlsxDocument.write("B4", "Угловые", tableFormat);
@@ -135,12 +140,12 @@ int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileN
     for (int i = 0; i != nSize_; ++i){
         for (int j = 0; j != nSize_; ++j){
             ++lastLine; // Приращение счетчика текущей линии
-            xlsxDocument.write("A" + QString::number(lastLine), QString::number(i + 1) + " - " + QString::number(j + 1), tableFormat);     // Сигнал
-            xlsxDocument.write("B" + QString::number(lastLine), QString::number(regressionParams_[i][j][nMeanWindow].first), tableFormat); // Угловые
-            xlsxDocument.write("C" + QString::number(lastLine), QString::number(distanceScatter_[i][j][nMeanWindow]), tableFormat);        // Дистанции
-            xlsxDocument.write("D" + QString::number(lastLine), QString::number(similarityCoeffs_[i][j][nMeanWindow]), tableFormat);       // Подобия
-            xlsxDocument.write("E" + QString::number(lastLine), QString::number(amplitudeScatter_[i][j][nMeanWindow]), tableFormat);       // Амплитуды
-            xlsxDocument.write("F" + QString::number(lastLine), QString::number(noiseCoeffs_[i][j][nMeanWindow]), tableFormat);            // Шума
+            xlsxDocument.write("A" + numberToString(lastLine), numberToString(i + 1) + " - " + numberToString(j + 1), tableFormat);     // Сигнал
+            xlsxDocument.write("B" + numberToString(lastLine), numberToString(regressionParams_[i][j][nMeanWindow].first), tableFormat); // Угловые
+            xlsxDocument.write("C" + numberToString(lastLine), numberToString(distanceScatter_[i][j][nMeanWindow]), tableFormat);        // Дистанции
+            xlsxDocument.write("D" + numberToString(lastLine), numberToString(similarityCoeffs_[i][j][nMeanWindow]), tableFormat);       // Подобия
+            xlsxDocument.write("E" + numberToString(lastLine), numberToString(amplitudeScatter_[i][j][nMeanWindow]), tableFormat);       // Амплитуды
+            xlsxDocument.write("F" + numberToString(lastLine), numberToString(noiseCoeffs_[i][j][nMeanWindow]), tableFormat);            // Шума
         }
     }
     exitStatus = !xlsxDocument.saveAs(fullFilePath); // Сохранение документа
@@ -388,5 +393,9 @@ QVector<double> Statistics::getWindowStatisticData(ArrayStatCharacters const& st
     }
     return tData;
 }
+
+// Перевод числа в строку
+QString numberToString(int const& value){ return QString::number(value); }
+QString numberToString(double const& value, QString const& delimiter) { return QString::number(value).replace(".", delimiter); }
 
 // -------------------------------------------------------------------------------------------------------------

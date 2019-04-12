@@ -41,7 +41,7 @@ void MainWindow::setColor(int row, int column){
     ui->tableFileProperty->item(row, column)->setData(Qt::DecorationRole, selectedColor); // Установка цвета в свойствах сигнала
     ui->tableFileProperty->item(row, column)->setText(selectedColor.name()); // Имя цвета в hex
     // Для графиков
-    ui->comparePlot->graph(SECONDARY_PLOT + currentSignalInd)->setPen(QPen(selectedColor)) ; // Выставление цвета графика в окне "Сравнение"
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + currentSignalInd)->setPen(QPen(selectedColor)) ; // Выставление цвета графика в окне "Сравнение"
     ui->comparePlot->replot(); // Обновление построения
 }
 

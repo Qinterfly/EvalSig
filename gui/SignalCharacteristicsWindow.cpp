@@ -95,8 +95,8 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
             double correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value(); // Коэффициент коррекции
             DataSignal corrDataSignal = correct(*pDataSignal_, correctionFactor); // Скорректированный временной сигнала
             saveStatus += corrDataSignal.writeDataFile(lastPath_, signalName + "-Скоррект" + ".txt"); // Сохранение скорректированного временного сигнала
-        } else
-            saveStatus += pDataSignal_->writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
+        }
+        saveStatus += pDataSignal_->writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
     }
     if (saveStatus == 0) // В случае успешного сохранения
         emit this->accepted();

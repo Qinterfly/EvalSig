@@ -78,7 +78,7 @@ private:
     int showWindow_; // Номер временного окна для показа
     QVector<QColor> colorList_; // Список цветов для отображения
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
-    int const SECONDARY_PLOT = 2; // Число вспомогательных графиков
+    int const SECONDARY_PLOT_IND = 2; // Число вспомогательных графиков
     // Контейнеры для построения цветовых карт
     QVector<QCustomPlot *> vecTablePlot_; // Вектор указателей на графические обхъекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
