@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QTextStream>
+#include <QDebug>
 #include "DataSignal.h"
 
 // ---- Временной сигнал ---------------------------------------------------------------------------------------
@@ -15,9 +16,25 @@ DataSignal::DataSignal(QVector<double> const& someData, PropertyDataSignal const
     property.fileName_ = "";
     property.path_ = "";
 }
-// Копирующий конструктор
-DataSignal::DataSignal(DataSignal const& other) : property(other.property), data_(other.data_) { };
-// Перемещающий конструктор
+// Копирующий конструктор по заданной области
+DataSignal::DataSignal(DataSignal const& other, int leftInd, int rightInd) : property(other.property) {
+    int lastInd = property.nCount_ - 1; // Индекс последнего элемента
+    // Обработка обратной индексации
+    if (rightInd == -1) rightInd = lastInd;
+    // Проверка согласованности границ участка
+    if (leftInd > rightInd) return;
+    // Проверка на выход за границы
+    if (rightInd > lastInd){
+        rightInd = lastInd;
+        qDebug() << "Осуществлена перестановка индексов при копировании временного сигнала" << endl;
+    }
+    property.nCount_ = rightInd - leftInd + 1; // Установка числа отсчетов в сигнале
+    // Копирование значений сигнала
+    data_.resize(property.nCount_); // Аллоцирование памяти
+    for (int i = leftInd; i <= rightInd; ++i)
+        data_[i - leftInd] = other.data_[i];
+}
+// Перемещающий конструктор для всего сигнала
 DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), data_(tmpOther.data_) { }
 // Деструктор
 DataSignal::~DataSignal() { property.nCount_ = 0; }
@@ -83,8 +100,8 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
 // Запись временного сигнала на выбранном участке
 int DataSignal::writeDataFile(QString const& path, QString const& fileName, int leftInd, int rightInd) const {
     if (isEmpty()) return -1; // Проверка на пустоту записываеомго сигнала
-    if (leftInd > rightInd) return -1; // Проверка на корректность области сохранения
     if (rightInd == -1) rightInd = property.nCount_ - 1; // Обработка индекса последнего значения
+    if (leftInd > rightInd) return -1; // Проверка на корректность области сохранения
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок

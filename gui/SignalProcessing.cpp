@@ -55,6 +55,7 @@ void MainWindow::saveSignalCharacteristics(){
     int saveInd = ui->listFile->currentRow(); // Индекс файла для сохранения
     if (saveInd == -1) return; // Проверка на пустоту списка
     signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[saveInd]); // Передача сигнала
+    signalCharacteristicsWindow_->setEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Границы расчета
     signalCharacteristicsWindow_->setLastPath(lastPath_); // Передача пути по умолчанию
     signalCharacteristicsWindow_->show(); // Отображение диалогового окна
 }

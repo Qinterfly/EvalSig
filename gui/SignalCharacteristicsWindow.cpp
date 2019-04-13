@@ -29,6 +29,11 @@ void SignalCharacteristicsWindow::setDataSignal(DataSignal const& dataSignal){
     setBoundaries(); // Установка границ изменения параметров
 }
 
+// Установка расчетных границ
+void SignalCharacteristicsWindow::setEstimationBoundaries(QPair <int, int> const& estimationBoundaries){
+    pEstimationBoundaries_ = &estimationBoundaries;
+}
+
 // Установка пути по умолчанию
 void SignalCharacteristicsWindow::setLastPath(QString const& lastPath){
     lastPath_ = lastPath;
@@ -61,10 +66,12 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
     bool isIntegration = ui->groupBoxIntegration->isChecked(); // Интегрирования
     bool isPowerSpectralDensity = ui->groupBoxPowerSpectralDensity->isChecked(); // Спектрального разложения
     bool isChoosedSignal = ui->groupBoxChoosedSignal->isChecked(); // Сохранение выбранного сигнала
+    // Срез сигнала по расчетной области
+    DataSignal resDataSignal(*pDataSignal_, pEstimationBoundaries_->first - 1, pEstimationBoundaries_->second - 1); // -1 при переводе отсчетов в индексы
     // Аппроксимация
     if (isApproximation){
         double smoothFactor = ui->spinBoxApproximationSmoothFactor->value(); // Коэффициент сглаживания
-        DataSignal approxDataSignal = approximateSmoothSpline(*pDataSignal_, smoothFactor); // Аппроксимация сигнала
+        DataSignal approxDataSignal = approximateSmoothSpline(resDataSignal, smoothFactor); // Аппроксимация сигнала
         saveStatus += approxDataSignal.writeDataFile(lastPath_, signalName + "-Аппрок" + ".txt"); // Сохранение результата аппроксимации
     }
     // Интегрирование
@@ -74,7 +81,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         // Проверка необходимости коррекции
         if (ui->checkBoxIntegrationCorrection->isChecked())
             correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value();
-        QVector<DataSignal> integrVecDataSignal = integrate(*pDataSignal_, integrationOrder, correctionFactor); // Интегрирование сигнала
+        QVector<DataSignal> integrVecDataSignal = integrate(resDataSignal, integrationOrder, correctionFactor); // Интегрирование сигнала
         // Сохранение результатов интегрирования
         for (int i = 0; i != integrVecDataSignal.size(); ++i)
             saveStatus += integrVecDataSignal[i].writeDataFile(lastPath_, signalName + "-Интегр_" + QString::number(i + 1) + ".txt");
@@ -85,7 +92,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
         double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
         double smoothFactor = ui->spinBoxPSDSmoothFactor->value(); // Коэффициент сглаживания
-        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(*pDataSignal_, weightWindowType, weightWindowWidth, overlapFactor, smoothFactor); // Вычисление спектра сигнала
+        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor, smoothFactor); // Вычисление спектра сигнала
         powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
     }
     // Сохранение выбранного сигнала
@@ -93,10 +100,10 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         // Проверка необходимости коррекции
         if (ui->checkBoxChoosedSignalCorrectionFactor->isChecked()){
             double correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value(); // Коэффициент коррекции
-            DataSignal corrDataSignal = correct(*pDataSignal_, correctionFactor); // Скорректированный временной сигнала
+            DataSignal corrDataSignal = correct(resDataSignal, correctionFactor); // Скорректированный временной сигнала
             saveStatus += corrDataSignal.writeDataFile(lastPath_, signalName + "-Скоррект" + ".txt"); // Сохранение скорректированного временного сигнала
         }
-        saveStatus += pDataSignal_->writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
+        saveStatus += resDataSignal.writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
     }
     if (saveStatus == 0) // В случае успешного сохранения
         emit this->accepted();

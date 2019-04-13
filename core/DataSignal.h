@@ -12,8 +12,8 @@ struct DataSignal {
     DataSignal() = default;
     DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
     DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty);
-    DataSignal(DataSignal const&); // Копирующий конструктор
-    DataSignal(DataSignal &&); // Перемещающий конструктор
+    DataSignal(DataSignal const& other, int leftInd = 0, int rightInd = -1); // Копирующий конструктор по заданной области
+    DataSignal(DataSignal &&); // Перемещающий конструктор для всего сигнала
     ~DataSignal(); // Деструктор
     // Операторы
     DataSignal& operator=(DataSignal const&);
