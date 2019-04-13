@@ -9,44 +9,30 @@ QT += gui-private
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
+# DEFINES += QT_DEPRECATED_WARNINGS
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 isEmpty(QXLSX_PARENTPATH) {
-    message( 'QXLSX_PARENTPATH is empty. use default value.' )
     QXLSX_PARENTPATH = ../
-} else {
-    message( 'QXLSX_PARENTPATH is not empty.' )
-    message( $${QXLSX_PARENTPATH} )
 }
 
 isEmpty(QXLSX_HEADERPATH) {
-    message( 'QXLSX_HEADERPATH is empty. use default value.' )
     QXLSX_HEADERPATH = ../QXlsx/header/
-} else {
-    message( 'QXLSX_HEADERPATH is not empty.' )
-    message( $${QXLSX_HEADERPATH} )
 }
 
 isEmpty(QXLSX_SOURCEPATH) {
-    message( 'QXLSX_SOURCEPATH is empty. use default value.' )
     QXLSX_SOURCEPATH = ../QXlsx/source/
-} else {
-    message( 'QXLSX_SOURCEPATH is not empty.' )
-    message( $${QXLSX_SOURCEPATH} )
 }
 
 # INCLUDEPATH += . 
 INCLUDEPATH += $${QXLSX_PARENTPATH}
 INCLUDEPATH += $${QXLSX_HEADERPATH}
 
-######################################################################
-# source code 
-
+# Заголовочные файлы
 HEADERS += \
 $${QXLSX_HEADERPATH}xlsxabstractooxmlfile.h \
 $${QXLSX_HEADERPATH}xlsxabstractooxmlfile_p.h \
@@ -95,6 +81,7 @@ $${QXLSX_HEADERPATH}xlsxzipreader_p.h \
 $${QXLSX_HEADERPATH}xlsxzipwriter_p.h \
 $${QXLSX_HEADERPATH}xlsxcelllocation.h
 
+# Файлы реализации
 SOURCES += \
 $${QXLSX_SOURCEPATH}xlsxabstractooxmlfile.cpp \
 $${QXLSX_SOURCEPATH}xlsxabstractsheet.cpp \
@@ -130,60 +117,31 @@ $${QXLSX_SOURCEPATH}xlsxzipwriter.cpp \
 $${QXLSX_SOURCEPATH}xlsxcelllocation.cpp
 
 
-######################################################################
-# custom setting for compiler & system
-
+# Настройки по умолчанию для компилятора и системы
+    # Windows
 win32-g++ {
-    message("compiling for windows g++. mingw or msys or cygwin.")
     INCLUDEPATH += $${QXLSX_HEADERPATH}win32-gcc 
-	CONFIG(debug, debug|release) {
-	} else {
-	}	
 }
 win32-msvc2013 {
-    message("compiling for visual studio 2013")
-    INCLUDEPATH += $${QXLSX_HEADERPATH}msvc2013 
-	CONFIG(debug, debug|release) {
-	} else {
-	}		
+    INCLUDEPATH += $${QXLSX_HEADERPATH}msvc2013 		
 }
 win32-msvc2015 {
-    message("compiling for visual studio 2015")
-    INCLUDEPATH += $${QXLSX_HEADERPATH}msvc2015 
-	CONFIG(debug, debug|release) {
-	} else {
-	}		
+    INCLUDEPATH += $${QXLSX_HEADERPATH}msvc2015 	
 }
 win32-msvc2017 {
-    message("compiling for visual studio 2017")
     INCLUDEPATH += $${QXLSX_HEADERPATH}msvc2017 
-	CONFIG(debug, debug|release) {
-	} else {
-	}		
 }
+    # *Unix
 unix {
    !contains(QT_ARCH, x86_64){
        LIB=lib32
-       message("compiling for 32bit linux/unix system")
     } else {
        LIB=lib64
-       message("compiling for 64bit linux/unix system")
    }
-
-   INCLUDEPATH += $${QXLSX_HEADERPATH}unix-gcc
-
-    # target.path = /usr/lib
-    # INSTALLS += target
-	
-	CONFIG(debug, debug|release) {
-	} else {
-	}		
+   INCLUDEPATH += $${QXLSX_HEADERPATH}unix-gcc	
 }
+    # Mac
 mac {
-    message("compiling for mac os")
-    INCLUDEPATH += $${QXLSX_HEADERPATH}mac
-	CONFIG(debug, debug|release) {
-	} else {
-	}		
+    INCLUDEPATH += $${QXLSX_HEADERPATH}mac	
 }
 
