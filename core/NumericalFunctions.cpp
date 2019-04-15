@@ -126,10 +126,10 @@ QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
 
 // Вычисление спектральной мощности сигнала
 DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor, double smoothFactor){
-    static const int SHIFT_IND_SPECTRUM = 2; // Сдвиг индекса начала спектра
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
-    QVector<double> const& inputData = dataSignal.getData(); // Временные данные исходного сигнала
+    QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
+    normalizeVec(inputData); // (!) Нормализация исходных данных
     QVector<double> power; // Плотность спектральной мощности
     // Объекты, необходимые для выполнения преобразования
     double * currentData; // Значения сигнала для текущего окна
@@ -146,7 +146,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     int leftBound = 0, rightBound; // Границы окна
     // Вычислить плотность спектральной мощности по всем окнам
     int outWindowWidth = weightWindowWidth / 2 + 1; // Реальный размер окна с учетом симметрии
-    power.resize(outWindowWidth - SHIFT_IND_SPECTRUM); // Изменение размеров контейнера PSD
+    power.resize(outWindowWidth); // Изменение размеров контейнера PSD
     int nWindows = 0; // Число окон
     while (leftBound < nInputData){
         rightBound = leftBound + weightWindowWidth; // Правая граница весового окна
@@ -161,12 +161,12 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
         double realVal; // Действительная часть разложения
         double imagVal; // Мнимая часть разложения
         double powVal; // Мощность
-        for (int i = SHIFT_IND_SPECTRUM; i != outWindowWidth; ++i){
+        for (int i = 0; i != outWindowWidth; ++i){
             realVal = currentFFTResult[i][0];
             imagVal = currentFFTResult[i][1];
             powVal  = 2 / qPow(outWindowWidth, 2) * (realVal * realVal + imagVal * imagVal);
             if (i == 0) powVal /= 2; // Нормировка центра симметрии
-            power[i - SHIFT_IND_SPECTRUM] += powVal; // Добавление текущего значения мощности в контейнер
+            power[i] += powVal; // Добавление текущего значения мощности в контейнер
         }
         ++nWindows; // Приращение числа окон
         leftBound += stepWindow; // Сдвиг левой границы окна
@@ -181,6 +181,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     // Формирование выходного сигнала
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1; // Безразмерные величины
+    tProperty.nCount_ = power.size(); // Длина спектра
     int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
     DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
     return powerSignal;
@@ -218,6 +219,4 @@ int previousPow2(int number){
     }
     return pow2;
 }
-
-
 

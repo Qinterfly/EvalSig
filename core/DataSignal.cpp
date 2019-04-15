@@ -24,10 +24,7 @@ DataSignal::DataSignal(DataSignal const& other, int leftInd, int rightInd) : pro
     // Проверка согласованности границ участка
     if (leftInd > rightInd) return;
     // Проверка на выход за границы
-    if (rightInd > lastInd){
-        rightInd = lastInd;
-        qDebug() << "Осуществлена перестановка индексов при копировании временного сигнала" << endl;
-    }
+    if (rightInd > lastInd) rightInd = lastInd;
     property.nCount_ = rightInd - leftInd + 1; // Установка числа отсчетов в сигнале
     // Копирование значений сигнала
     data_.resize(property.nCount_); // Аллоцирование памяти
