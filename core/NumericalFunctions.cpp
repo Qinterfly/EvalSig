@@ -3,6 +3,7 @@
 #include "core/NumericalFunctions.h"
 #include "include/csaps.h"
 #include "include/fftw3.h"
+#include "Eigen/Dense"
 
 // ---- Функции обработки временных сигналов -----------------------------------------------------------------------------------------
 
@@ -39,6 +40,59 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
     for (int i = 0; i != nPoint; ++i)
         resYData[i] = yData[i];
     return DataSignal(resYData, dataSignal.getProperty());
+}
+
+// Аппроксимация по методу наименьших квадратов
+DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    if (nPoint <= 0) nPoint = nDataSignal; // Обработка исключения по числу разбиений
+    QVector<double> xData(nDataSignal); // Вектор отсчетов
+    // Заполнение вектора отсчетов
+    double stepXData = 1.0 / double(nDataSignal - 1);
+    for (int i = 0; i != nDataSignal; ++i)
+        xData[i] = i * stepXData;
+    // Формирование СЛАУ
+    int nSystem = order + 1; // Размер системы
+    Eigen::MatrixXd AMat(nSystem, nSystem); // Матрица невязок
+    Eigen::VectorXd XVec(nSystem); // Вектор полиномиальных коэффициентов
+    Eigen::VectorXd BVec(nSystem); // Вектор правой части
+    double elemSumMat = 0, elemSumVec = 0; // Сумма элементов, входящих в невязку
+    double tVal = 0; // Контейнер текущих операций
+        // Матрица невязок
+    for (int i = 0; i != nSystem; ++i){
+        for (int j = 0; j != nSystem; ++j){
+            elemSumMat = 0; elemSumVec = 0;
+            // Поэлементная сумма
+            for (int s = 0; s != nDataSignal; ++s){
+                tVal = qPow(xData[s], i); // Элемент, входящий в обе суммы
+                elemSumMat += tVal * qPow(xData[s], j); // Сумма в левой части
+                elemSumVec += tVal * dataSignal[s]; // Сумма в правой части
+            }
+            AMat(i, j) = elemSumMat; // Запись суммы в матрицу невязок
+            BVec(i) = elemSumVec; // Запись суммы в вектор правой части
+        }
+    }
+    // Получение решения системы
+    XVec = AMat.colPivHouseholderQr().solve(BVec);
+    // При аппроксимации по заданному набору узлов
+    if (nPoint != nDataSignal){
+        // Реаллокация памяти для хранения результирующих значений
+        xData.resize(nPoint);
+        // Новая координатная сетка
+        stepXData = 1.0 / double(nPoint - 1);
+        for (int i = 0; i != nPoint; ++i)
+            xData[i] = i * stepXData;
+    }
+    // Вычисление значения полинома на новой сетке
+    QVector<double> yData(nPoint);
+    for (int i = 0; i != nPoint; ++i){
+        tVal = 0;
+        // Суммирование значений для заданного узла
+        for (int s = 0; s != nSystem; ++s)
+            tVal += XVec[s] * qPow(xData[i], s);
+        yData[i] = tVal;
+    }
+    return DataSignal(yData, dataSignal.getProperty());
 }
 
 // Интегрирование сигнала
@@ -183,7 +237,8 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     tProperty.physicalFactor_ = 1; // Безразмерные величины
     tProperty.nCount_ = power.size(); // Длина спектра
     int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
-    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
+//    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
+    DataSignal powerSignal = DataSignal(power, tProperty);
     return powerSignal;
 }
 
