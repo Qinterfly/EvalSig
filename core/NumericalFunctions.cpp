@@ -48,9 +48,8 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
     if (nPoint <= 0) nPoint = nDataSignal; // Обработка исключения по числу разбиений
     QVector<double> xData(nDataSignal); // Вектор отсчетов
     // Заполнение вектора отсчетов
-    double stepXData = 1.0 / double(nDataSignal - 1);
     for (int i = 0; i != nDataSignal; ++i)
-        xData[i] = i * stepXData;
+        xData[i] = 1 + i;
     // Формирование СЛАУ
     int nSystem = order + 1; // Размер системы
     Eigen::MatrixXd AMat(nSystem, nSystem); // Матрица невязок
@@ -79,9 +78,9 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
         // Реаллокация памяти для хранения результирующих значений
         xData.resize(nPoint);
         // Новая координатная сетка
-        stepXData = 1.0 / double(nPoint - 1);
+        double stepXData = (nDataSignal - 1.0) / double(nPoint);
         for (int i = 0; i != nPoint; ++i)
-            xData[i] = i * stepXData;
+            xData[i] = 1 + i * stepXData;
     }
     // Вычисление значения полинома на новой сетке
     QVector<double> yData(nPoint);
