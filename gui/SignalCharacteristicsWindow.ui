@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>353</width>
-    <height>494</height>
+    <height>462</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -187,27 +187,6 @@
       <bool>true</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelWeightWindowWidth">
-        <property name="text">
-         <string>Ширина окна: </string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelOverlapFactor">
-        <property name="text">
-         <string>Перекрытие окон:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelWeightWindowType">
-        <property name="text">
-         <string>Тип весового окна:</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="comboBoxWeightWindowType">
         <item>
@@ -227,12 +206,38 @@
         </item>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelPSDSmoothFactor">
+      <item row="2" column="2">
+       <spacer name="horizontalSpacerOverlapFactor">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelWeightWindowType">
         <property name="text">
-         <string>Сглаживание:</string>
+         <string>Тип весового окна:</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacerWeightWindowWidth">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item row="0" column="2">
        <spacer name="horizontalSpacerWeightWindowType">
@@ -246,22 +251,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="spinBoxPSDSmoothFactor">
-        <property name="decimals">
-         <number>6</number>
-        </property>
-        <property name="maximum">
-         <double>1.000000000000000</double>
-        </property>
-        <property name="stepType">
-         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
       </item>
       <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
@@ -279,6 +268,13 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelWeightWindowWidth">
+        <property name="text">
+         <string>Ширина окна: </string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QSpinBox" name="spinBoxWeightWindowWidth">
         <property name="minimum">
@@ -292,44 +288,12 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <spacer name="horizontalSpacerWeightWindowWidth">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelOverlapFactor">
+        <property name="text">
+         <string>Перекрытие окон:</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="2">
-       <spacer name="horizontalSpacerOverlapFactor">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="2">
-       <spacer name="horizontalSpacerPSDSmoothFactor">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
      </layout>
     </widget>

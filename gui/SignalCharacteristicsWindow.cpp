@@ -91,8 +91,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         QString const& weightWindowType = ui->comboBoxWeightWindowType->currentText();  // Тип окна
         int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
         double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
-        double smoothFactor = ui->spinBoxPSDSmoothFactor->value(); // Коэффициент сглаживания
-        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor, smoothFactor); // Вычисление спектра сигнала
+        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor); // Вычисление спектра сигнала
         powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
     }
     // Сохранение выбранного сигнала

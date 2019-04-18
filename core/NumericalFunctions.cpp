@@ -203,7 +203,7 @@ QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
 }
 
 // Вычисление спектральной мощности сигнала
-DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor, double smoothFactor){
+DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor){
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
@@ -260,8 +260,6 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1; // Безразмерные величины
     int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
-//    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
-//    DataSignal powerSignal = DataSignal(power, tProperty);
     DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), spectrumLength);
     return powerSignal;
 }

@@ -67,7 +67,7 @@ void testNumericalFunctions(){
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
     // Вычисление спектра
-    DataSignal psd = computePowerSpectralDensity(obj1, "Хэмминга", 64, 0.5, 1);
+    DataSignal psd = computePowerSpectralDensity(obj1, "Хэмминга", 64, 0.5);
     Q_ASSERT(!psd.writeDataFile(testPath, "psdObj.txt"));
     // Интегрирование
     QVector<DataSignal> integrVecObj = integrate(obj1, 1, -1);
