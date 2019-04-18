@@ -56,8 +56,8 @@ void MainWindow::initializeShowParams(){
 void MainWindow::initializeAllPlot(){
     // -- comparePlot --
     int const nEstimationBoundaries = 2;
-    ui->comparePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
-        // Добавление графиков линий, ограничивающих расчетную область
+//    ui->comparePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)
+    // Добавление графиков линий, ограничивающих расчетную область
     QBrush brushCompare(QColor(0, 0, 255, 25)); // Полупрозрачная синияя кисть
     for (int plotInd = 0; plotInd != nEstimationBoundaries; ++plotInd){
         ui->comparePlot->addGraph();

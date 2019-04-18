@@ -239,8 +239,11 @@ void Statistics::removeAllFields(int deleteInd){
 // Проверка корректности расчетных границ
 void Statistics::checkEstimationBoundaries(){
     // Проверка левой границы
-    if (estimationBoundaries_.first >= minSizeSignals_)
+    if (!pVecDataSignal->isEmpty() && estimationBoundaries_.first >= minSizeSignals_)
         estimationBoundaries_.first = 1;
+    // Проверка правой границы
+    if (!pVecDataSignal->isEmpty() && estimationBoundaries_.second > minSizeSignals_)
+        estimationBoundaries_.second = minSizeSignals_;
 }
 
 // Нахождение минимального размера сигнала из группы

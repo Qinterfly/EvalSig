@@ -3,11 +3,11 @@
 
 #include <QMainWindow>
 #include "core/Statistics.h"
-#include "include/QCustomPlot.h"
+#include "gui/QCustomPlotZoom.h"
 #include "gui/SignalCharacteristicsWindow.h"
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -80,7 +80,7 @@ private:
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
     int const SECONDARY_PLOT_IND = 2; // Число вспомогательных графиков
     // Контейнеры для построения цветовых карт
-    QVector<QCustomPlot *> vecTablePlot_; // Вектор указателей на графические обхъекты
+    QVector<QCustomPlotZoom *> vecTablePlot_; // Вектор указателей на графические обхъекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
 };

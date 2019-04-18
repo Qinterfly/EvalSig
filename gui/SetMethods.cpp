@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include <QMouseEvent>
 
 // ---- Методы для определения параметров программы -------------------------------------------------------------------------
 
@@ -103,6 +104,11 @@ void MainWindow::setStatEstimationBoundaries(){
     if (newLeftBound >= newRightBound){ // Левая граница превышает или равна правой
         std::swap(newLeftBound, newRightBound);
         ui->spinBoxLeftEstimationBoundary->setValue(newLeftBound);
+        ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
+    }
+    // Проверка выхода расчетной границы за минимальную длину сигнала из группы
+    if (!statSignal_.isEmpty() && newRightBound > statSignal_.minSizeSignals()){
+        newRightBound = statSignal_.minSizeSignals();
         ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
     }
     statSignal_.setEstimationBoundaries(newLeftBound, newRightBound); // Выставление границ расчета статистик

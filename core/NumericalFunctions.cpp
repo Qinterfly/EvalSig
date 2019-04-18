@@ -30,7 +30,7 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
         xData.resize(nPoint);
         yData.resize(nPoint);
         // Новая координатная сетка
-        double stepXData = (nDataSignal - 1.0) / double(nPoint);
+        double stepXData = (nDataSignal - 1.0) / double(nPoint - 1);
         for (int i = 0; i != nPoint; ++i)
             xData[i] = 1 + i * stepXData;
     }
@@ -78,7 +78,7 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
         // Реаллокация памяти для хранения результирующих значений
         xData.resize(nPoint);
         // Новая координатная сетка
-        double stepXData = (nDataSignal - 1.0) / double(nPoint);
+        double stepXData = (nDataSignal - 1.0) / double(nPoint - 1);
         for (int i = 0; i != nPoint; ++i)
             xData[i] = 1 + i * stepXData;
     }
@@ -139,6 +139,31 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         resYData.fill(0); // Очистка текущего интеграла
     }
     return resVecDataSignal;
+}
+
+// Линейная интерполяция сигнала
+DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    if (nDataSignal == nPoint) return dataSignal; // Обработка необходимости интерполяции
+    // Формирование новой расчетной сетки
+    QVector<double> xData(nPoint), yData(nPoint);
+    double stepXData = (nDataSignal - 1) / double(nPoint - 1);
+    for (int i = 0; i != nPoint; ++i)
+        xData[i] = 1 + i * stepXData;
+    /* Будем пользоваться тем, что переданный сигнал сформирован на равномерной сетке
+    с шагом в 1. В этом случае индекс начала отрезка интерполяции может быть найден без прохода
+    по соответсвующей сетке. */
+    int leftInd = 0, rightInd; // Индекс начала и конца отрезка интерполяции
+    // Проводим интерполяции всех точек отрезка, за исключением границ
+    for (int i = 1; i != nPoint - 1; ++i){
+        leftInd = qFloor(xData[i]) - 1;
+        rightInd = leftInd + 1;
+        yData[i] = (dataSignal[rightInd] - dataSignal[leftInd]) * (xData[i] - rightInd) + dataSignal[leftInd];
+    }
+    // Копируем начало и конец отрезка
+    yData[0] = dataSignal[0];
+    yData[nPoint - 1] = dataSignal[nDataSignal - 1];
+    return DataSignal(yData, dataSignal.getProperty());
 }
 
 // Нахождение оконных весовых коэффициентов
@@ -234,10 +259,10 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     // Формирование выходного сигнала
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1; // Безразмерные величины
-    tProperty.nCount_ = power.size(); // Длина спектра
     int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
 //    DataSignal powerSignal = approximateSmoothSpline(DataSignal(power, tProperty), smoothFactor, spectrumLength); // Аппроксимация выходной плотности спектральной мощности
-    DataSignal powerSignal = DataSignal(power, tProperty);
+//    DataSignal powerSignal = DataSignal(power, tProperty);
+    DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), spectrumLength);
     return powerSignal;
 }
 

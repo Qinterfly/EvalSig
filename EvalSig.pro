@@ -43,6 +43,7 @@ SOURCES += \
         core/NumericalFunctions.cpp \
         gui/SignalCharacteristicsWindow.cpp \
         gui/DataTransfer.cpp \
+        gui/QCustomPlotZoom.cpp \
     include/csaps.cpp
 
 HEADERS += \
@@ -56,6 +57,7 @@ HEADERS += \
         core/TimeWindowProperty.h \
         core/NumericalFunctions.h \
         gui/SignalCharacteristicsWindow.h \
+        gui/QCustomPlotZoom.h \
         include/csaps.h \
     include/fftw3.h
 
