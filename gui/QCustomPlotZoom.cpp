@@ -6,7 +6,8 @@
 // Конструктор
 QCustomPlotZoom::QCustomPlotZoom(QWidget * parent)
     : QCustomPlot(parent),
-    rubberBand_(new QRubberBand(QRubberBand::Rectangle, this)){}
+    rubberBand_(new QRubberBand(QRubberBand::Rectangle, this))
+{}
 
 // Деструктор
 QCustomPlotZoom::~QCustomPlotZoom()
@@ -37,12 +38,7 @@ void QCustomPlotZoom::mouseMoveEvent(QMouseEvent * event)
 {
     // Если область выделена
     if (rubberBand_->isVisible())
-    {
         rubberBand_->setGeometry(QRect(origin_, event->pos()).normalized()); // Изменение размера области вслед за курсором мыши
-        QToolTip::showText( event->globalPos(), QString::number(xAxis->pixelToCoord(event->x()), 'g', 2) +
-                                            ", " +
-                                            QString::number(yAxis->pixelToCoord(event->y()), 'g', 2) );
-    }
     QCustomPlot::mouseMoveEvent(event);
 }
 
@@ -70,12 +66,12 @@ void QCustomPlotZoom::mouseReleaseEvent(QMouseEvent * event)
 }
 
 // При входе в область виджета
-void QCustomPlotZoom::enterEvent(QEvent * event){
+void QCustomPlotZoom::enterEvent(QEvent * /* event */){
     QApplication::setOverrideCursor(Qt::CrossCursor); // Изменение формы курсора
 }
 
  // При выходе из области виджета
-void QCustomPlotZoom::leaveEvent(QEvent * event){
+void QCustomPlotZoom::leaveEvent(QEvent * /* event */){
     QApplication::restoreOverrideCursor(); // Возвращение исходной формы курсора
 }
 
