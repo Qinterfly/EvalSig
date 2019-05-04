@@ -10,6 +10,7 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
 QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, double smoothFactor); // Интегрирование
 DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint); // Линейная интерполяция сигнала
 DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int widthWindow, double overlapFactor); // Вычисление спектральной мощности сигнала
+DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindow, int widthWindow, double overlapFactor, QPair<double, double> const& freqSegment); // Фильтрация сигнала по частотам
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала
 
 // Вспомогательные

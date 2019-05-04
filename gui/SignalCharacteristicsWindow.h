@@ -24,6 +24,7 @@ public:
 public slots:
     void saveCharacteristics(); // Сохранение выбранных характеристик
     void checkWeightWindowWidth(); // Проверка ширины весового окна
+    void checkBandpassFrequencies(); // Проверка частот в полосе пропускания
     void reject() override; // Переопределение закрытия окна
 private:
     void setBoundaries(); // Установка границ изменения параметров

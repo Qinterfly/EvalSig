@@ -215,7 +215,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     currentData      = (double *) fftw_malloc(sizeof(double) * weightWindowWidth);
     currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * weightWindowWidth);
     // Создание оценочного плана расчета
-    plan = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_ESTIMATE);
+    plan = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_MEASURE);
     // Настройка весового окна
     QVector<double> weightWindow = computeWeightWindow(typeWindow, weightWindowWidth);
     int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
@@ -280,6 +280,72 @@ DataSignal correct(DataSignal const& dataSignal, double smoothFactor){
     for (int i = 0; i != nDataSignal; ++i)
         resYData[i] -= corrYData[i];
     return DataSignal(resYData, dataSignal.getProperty());
+}
+
+// Фильтрация сигнала по частотам
+DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor, QPair<double, double> const& freqSegment){
+    int nInputData = dataSignal.size(); // Длина временных данных
+    // Входные-выходные данные
+    QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
+    normalizeVec(inputData); // (!) Нормализация исходных данных
+    QVector<double> resultData; // Результирующие отфильтрованные данные
+    // Объекты, необходимые для выполнения преобразования
+    double * currentData; // Значения сигнала для текущего окна
+    fftw_complex * currentFFTResult; // Результат преобразования для текущего окна
+    fftw_plan planForward, planInverse; // Планы для преобразования Фурье
+    // Выделение памяти для используемых объектов
+    currentData      = (double *) fftw_malloc(sizeof(double) * weightWindowWidth);
+    currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * weightWindowWidth);
+    // Создание плана расчета
+    planForward = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_MEASURE); // Прямое преобразование
+    planInverse = fftw_plan_dft_c2r_1d(weightWindowWidth, currentFFTResult, currentData, FFTW_MEASURE); // Обратное преобразования
+    // Настройка весового окна
+    QVector<double> weightWindow = computeWeightWindow(typeWindow, weightWindowWidth);
+    int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
+    int leftBound = 0, rightBound; // Границы окна
+    // FFT-IFFT
+    int outWindowWidth = weightWindowWidth / 2 + 1; // Реальный размер окна с учетом симметрии
+    resultData.resize(nInputData); // Изменение размеров контейнера с результирующими данными
+    int nWindows = 0; // Число окон
+    double stepFreq = dataSignal.nyquistFrequency() / (outWindowWidth - 1);
+    QPair<int, int> indSegment = {qFloor(freqSegment.first / stepFreq), qCeil(freqSegment.second / stepFreq)}; // Индексы границ сегмента
+    while (leftBound < nInputData){
+        rightBound = leftBound + weightWindowWidth; // Правая граница весового окна
+        // Если полное окно не укладывается до конца сигнала
+        if (rightBound > nInputData)
+            break;
+        // Применение оконного преобразования к временным данным
+        for (int i = 0; i != weightWindowWidth; ++i)
+            currentData[i] = inputData[leftBound + i] * weightWindow[i];
+        fftw_execute(planForward); // Выполнение прямого преобразования Фурье
+        // Обнуление значений вплоть до первой целевой частоты f_1
+        for (int i = 0; i <= indSegment.first; ++i){
+            currentFFTResult[i][0] = 0;
+            currentFFTResult[i][1] = 0;
+        }
+        // Обнуление значений после второй целевой частоты f_2
+        for (int i = indSegment.second; i < outWindowWidth; ++i){
+            currentFFTResult[i][0] = 0;
+            currentFFTResult[i][1] = 0;
+        }
+        fftw_execute(planInverse); // Выполнение обратного преобразования Фурье
+        // Применение оконного преобразования к результату обратного преобразования и вставка с перекрытием
+        for (int i = 0; i != weightWindowWidth; ++i){
+            currentData[i] *= weightWindow[i]; // Домножение на весовое окно
+            resultData[leftBound + i] += currentData[i]; // Вставка с перекрытием
+        }
+        ++nWindows; // Приращение числа окон
+        leftBound += stepWindow; // Сдвиг левой границы окна
+    }
+    // Освобождение ресурсов, использованных для преобразования
+    fftw_destroy_plan(planForward);
+    fftw_destroy_plan(planInverse);
+    fftw_free(currentData);
+    fftw_free(currentFFTResult);
+    // Формирование выходного сигнала
+    PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
+    tProperty.physicalFactor_ = 1; // Безразмерные величины
+    return DataSignal(resultData, tProperty);
 }
 
 // ---- Вспомогательные ----------------------------------------------------------------------------------------
