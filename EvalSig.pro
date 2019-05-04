@@ -44,7 +44,8 @@ SOURCES += \
         gui/SignalCharacteristicsWindow.cpp \
         gui/DataTransfer.cpp \
         gui/QCustomPlotZoom.cpp \
-    include/csaps.cpp
+     include/csaps.cpp
+
 
 HEADERS += \
         core/DataSignal.h \

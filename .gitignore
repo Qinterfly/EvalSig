@@ -4,6 +4,7 @@ doc/
 release/
 exec/
 test/save
+profile/
 *.txt
 *.xls
 *.png

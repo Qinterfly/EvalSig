@@ -8,7 +8,7 @@
 // Класс статистических характеристик
 struct Statistics{
     Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary);
-    ~Statistics(){}
+    ~Statistics() = default; // Деструктор
     Statistics(Statistics const&) = delete; // Запрет на копирование
     Statistics& operator=(Statistics const&) = delete; // Присваивание осуществяется в случае полного пересчета
     // Интерфейс пользователя
@@ -17,11 +17,17 @@ struct Statistics{
     int minSizeSignals() const { return minSizeSignals_; } // Минимальная длина сигнала из группы
     int getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
     QPair<int, int> const& getEstimationBoundaries() const { return estimationBoundaries_; } // Получение границ расчета
+        // Статистические характеристики
     ArrayRegressionParams const& getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
-    ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; } // Получение дистанций рассеяния
-    ArrayStatCharacters const& getSimilarityCoeffs() const { return similarityCoeffs_; } // Получение коэффициентов подобия сигналов
-    ArrayStatCharacters const& getAmplitudeScatter() const { return amplitudeScatter_; } // Получение амплитуд рассеяния
-    ArrayStatCharacters const& getNoiseCoeffs() const { return noiseCoeffs_; } // Получение коэффициентов шума
+    ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; }     // Получение дистанций рассеяния
+    ArrayStatCharacters const& getSimilarityCoeffs() const { return similarityCoeffs_; }   // Получение коэффициентов подобия сигналов
+    ArrayStatCharacters const& getAmplitudeScatter() const { return amplitudeScatter_; }   // Получение амплитуд рассеяния
+    ArrayStatCharacters const& getNoiseCoeffs() const { return noiseCoeffs_; }             // Получение коэффициентов шума
+        // Метрики
+    double getMeanSegment(int ind) const { return meanSegment_[ind]; }             // Среднее на отрезке
+    double getSquareMeanSegment(int ind) const { return squareMeanSegment_[ind]; } // Среднее квадратическое отклонение на отрезке
+    double getMinSegment(int ind) const { return minMaxSegment_[ind].first; }      // Минимум на отрезке
+    double getMaxSegment(int ind) const { return minMaxSegment_[ind].second; }     // Максимум на отрезке
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
@@ -54,6 +60,12 @@ private:
     // Вспомогательные функции получения оконного распределения статистики
     QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j); // ArrayRegressionParams
     QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j); // ArrayStatCharacters
+    // Расчет метрик сигналов
+    void calcAllMetrics(); // Расчет всех метрик
+    void calcMetric(int iSignal); // Расчет метрики сигнала по индексу
+    // Методы-обертки для выделения памяти для всех метрик
+    void allocateAllMetrics(); // При расширении для всех метрик
+    void removeAllMetrics(int deleteInd);   // При сжатии для всех метрик
 private:
     QVector<DataSignal> * const pVecDataSignal = nullptr; // Указатель на вектор сигналов
     ArrayRegressionParams regressionParams_; // Параметры линейной регрессии
@@ -65,6 +77,10 @@ private:
     int minSizeSignals_ = 0; // Минимальная длина сигнала из группы
     QPair <int, int> estimationBoundaries_; // Границы расчета
     TimeWindowProperty windowProperty; // Свойства окна выделения характеристик
+    // Метрики сигналов на интервале
+    QVector<double> meanSegment_; // Среднее значение
+    QVector<double> squareMeanSegment_; // Среднее квадратическое отклонение
+    QVector< QPair<double, double> > minMaxSegment_; // Минимум и максимум
 };
 
 #endif // STATISTICS_H

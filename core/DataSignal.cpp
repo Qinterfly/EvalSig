@@ -33,8 +33,6 @@ DataSignal::DataSignal(DataSignal const& other, int leftInd, int rightInd) : pro
 }
 // Перемещающий конструктор для всего сигнала
 DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), data_(tmpOther.data_) { }
-// Деструктор
-DataSignal::~DataSignal() { property.nCount_ = 0; }
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
@@ -72,21 +70,22 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
     QTextStream inputStream(&file); // Создание потока чтения
     inputStream.setCodec("cp1251"); // Кодировка CP1251
     // Инициализация свойств класса
-    property.path_ = path;                                       // Путь к файлу
-    property.fileName_ = fileName;                               // Имя файла
-    property.dateAndTime_ = inputStream.readLine();              // Дата и время записи сигнала
-    property.measureObject_ = inputStream.readLine();            // Объект измерения
-    property.measurePoint_ = inputStream.readLine();             // Точка установки датчика
-    property.currentCount_ = inputStream.readLine();             // Текущие отсчеты
-    property.temperature_ = inputStream.readLine().toDouble();   // Температура
-    property.sensorType_ = inputStream.readLine();               // Тип датчика
+    property.path_ = path;                                        // Путь к файлу
+    property.fileName_ = fileName;                                // Имя файла
+    property.dateAndTime_ = inputStream.readLine();               // Дата и время записи сигнала
+    property.measureObject_ = inputStream.readLine();             // Объект измерения
+    property.measurePoint_ = inputStream.readLine();              // Точка установки датчика
+    property.currentCount_ = inputStream.readLine();              // Текущие отсчеты
+    property.temperature_ = inputStream.readLine().toDouble();    // Температура
+    property.sensorType_ = inputStream.readLine();                // Тип датчика
     property.physicalFactor_ = inputStream.readLine().toDouble(); // Физический коэффициент
-    property.measureUnit_ = inputStream.readLine();              // Единица измерения
-    property.scanPeriod_ = inputStream.readLine().toDouble();    // Период опроса датчика
-    property.characterisic_ = inputStream.readLine();            // Характеристика
-    property.nCount_ = inputStream.readLine().toInt();           // Количество отсчетов
+    property.measureUnit_ = inputStream.readLine();               // Единица измерения
+    property.scanPeriod_ = inputStream.readLine().toDouble();     // Период опроса датчика
+    property.characterisic_ = inputStream.readLine();             // Характеристика
+    property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
+    property.isSpectrum = property.fileName_.contains("Спектр");  // Является ли сигнал спектром
     // Чтение временного сигнала
-    data_.clear(); // Очистка сигнала (remove, size -> 0, capacity -> 0)
+    data_.clear(); // Очистка сигнала (remove, size -> 0, capacity /-> 0)
     data_.resize(property.nCount_); // size() == nCount_
     for (int i = 0; i != property.nCount_; ++i )
         data_[i] = inputStream.readLine().toDouble() * property.physicalFactor_;

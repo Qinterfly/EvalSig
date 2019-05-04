@@ -22,6 +22,8 @@ private slots:
 private:
     QRubberBand * rubberBand_;
     QPoint origin_; // Положение левого верхнего угла прямоугольника
+    QCPRange rangeXAxis2_; // Диапазон по дополнительной горизонтальной оси
+    QCPRange rangeYAxis2_; // Диапазон по дополнительной вертикальной оси
 };
 
 #endif // QCUSTOMPLOTZOOM_H

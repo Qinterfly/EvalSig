@@ -22,6 +22,8 @@ Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow,
 {
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный расчет матрицы характеристик
+    allocateAllMetrics(); // Выделение памяти для всех метрик
+    calcAllMetrics();     // Расчет всех метрик
 }
 
 // Интерфейс пользователя
@@ -43,6 +45,8 @@ bool Statistics::addSignal(DataSignal const& dataSignal){
         ++nSize_; // Увеличение размера матрицы статистик
         fullCompute(); // Вызов метода полного пересчета
     }
+    allocateAllMetrics(); // Выделение памяти для всех метрик
+    calcMetric(nSize_ - 1); // Расчет метрик
     return 0;
 }
     // Удаление сигнала
@@ -63,6 +67,7 @@ bool Statistics::removeSignal(int deleteInd){
         allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
         fullCompute(); // Вызов метода полного пересчета
     }
+    removeAllMetrics(deleteInd); // Удаление метрик сигнала по индексу
     return 0;
 }
     // Сохранение всех статистик
@@ -191,6 +196,7 @@ void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
     windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Расчет новых параметров временного окна
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный пересчет
+    calcAllMetrics(); // Пересчет всех метрик
 }
 
 // Выделение памяти для полей структуры
@@ -375,6 +381,53 @@ void Statistics::calcSimilarity(int i, int j){
     // Нормирование и запись сумм (в nWindows + 1 окно)
     similarityCoeffs_[i][j][currWindow] = meanSimilarityCoeffs / currWindow; // Коэффициент подобия
     noiseCoeffs_[i][j][currWindow] = meanNoiseCoeffs / currWindow; // Коэффициент шума
+}
+
+// Расчет всех метрик
+void Statistics::calcAllMetrics(){
+    for (int iSignal = 0; iSignal != nSize_; ++iSignal)
+        calcMetric(iSignal);
+}
+
+// Расчет метрики сигнала по индексу
+void Statistics::calcMetric(int iSignal){
+    int nPoints = estimationBoundaries_.second - estimationBoundaries_.first + 1; // Число расчетных точек
+    double min = (*pVecDataSignal)[iSignal][estimationBoundaries_.first - 1], max = min; // Min - Max
+    double mean = 0, meanSquare = 0; // Mean
+    double elem; // Элемент вектора
+    // Расчет среднего и экстремумов
+    for (int jInd = estimationBoundaries_.first - 1; jInd != estimationBoundaries_.second; ++jInd){
+        elem = (*pVecDataSignal)[iSignal][jInd]; // Текущий элемент вектора
+        mean += elem; // Среднее
+        if (elem > max) max = elem; // Максимум
+        if (elem < min) min = elem; // Минимум
+    }
+    mean /= nPoints; // Нормировка к числу элементов
+    // Расчет среднего квадратического
+    for (int jInd = estimationBoundaries_.first - 1; jInd != estimationBoundaries_.second; ++jInd)
+        meanSquare += qPow( (*pVecDataSignal)[iSignal][jInd] - mean, 2 );
+    meanSquare = qSqrt(meanSquare / nPoints); // Извлечение корня и нормировка к числу элементов
+    // Занесение значений в контейнеры
+    meanSegment_[iSignal] = mean;
+    squareMeanSegment_[iSignal] = meanSquare;
+    minMaxSegment_[iSignal] = {min, max};
+}
+
+// Методы-обертки для выделения памяти для всех метрик
+    // При расширении для всех метрик
+void Statistics::allocateAllMetrics(){
+    // Проверка необходимости изменения размеров векторов
+    if ( nSize_ != meanSegment_.size() ){
+        meanSegment_.resize(nSize_);       // Среднее на участке
+        squareMeanSegment_.resize(nSize_); // Среднее квадратическое
+        minMaxSegment_.resize(nSize_);     // Минимумы - максимумы на участке
+    }
+}
+    // При сжатии для всех метрик
+void Statistics::removeAllMetrics(int deleteInd){
+    meanSegment_.remove(deleteInd);       // Среднее на участке
+    squareMeanSegment_.remove(deleteInd); // Среднее квадратическое
+    minMaxSegment_.remove(deleteInd);     // Минимумы - максимумы на участке
 }
 
 // ---- Вспомогательные функции --------------------------------------------------------------------------------

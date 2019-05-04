@@ -10,13 +10,15 @@ void MainWindow::updateStatusBar(){
     int tabInd = ui->showModeWidget->currentIndex(); // Индекс графика
     // Сравнение сигналов
     if (tabInd == 0){
-        calcStatusLabel->setText("Среднее: " + QString::number(vecDataSignal_[currSignalIndex].mean()));
+        calcStatusLabel->setText("Сред: " + QString::number(statSignal_.getMeanSegment(currSignalIndex), 'g', 3) + " | "
+                                    + "Сред. квадр: " + QString::number(statSignal_.getSquareMeanSegment(currSignalIndex), 'g', 3) + " | "
+                                    + "Мин/макс: " + QString::number(statSignal_.getMinSegment(currSignalIndex), 'g', 3) + " / "
+                                                   + QString::number(statSignal_.getMaxSegment(currSignalIndex), 'g', 3));
     }
     // Цветовые карты
-    if (tabInd >= 1 && tabInd <= 5){
+    if (tabInd >= 1 && tabInd <= 5)
         calcStatusLabel->setText(QString("Мин. длина: ") + QString::number(statSignal_.minSizeSignals()) + " | "
-                                 "Число окон: " + QString::number(statSignal_.getNumberOfWindows()));
-    }
+                                             + "Число окон: " + QString::number(statSignal_.getNumberOfWindows()));
 }
 
 // -------------------------------------------------------------------------------------------------------------

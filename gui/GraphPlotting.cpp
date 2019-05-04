@@ -18,6 +18,10 @@ void MainWindow::addGraph(){
     ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
     bool onlyEnlarge = false; // Опция одностороннего расширения пределов построения
     if (plotInd != 0) onlyEnlarge = true; // В случае multiPlot, подстраиваем под предельные значения
+    if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
+        ui->comparePlot->xAxis2->setVisible(true); //
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+    }
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения
@@ -27,6 +31,11 @@ void MainWindow::addGraph(){
 void MainWindow::removeGraph(int deleteInd){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     ui->comparePlot->removeGraph(SECONDARY_PLOT_IND + deleteInd); // Удаление графика
+    bool isExistSpectrum = false; // Флаг наличия графиков спектров
+    for (auto dataSignal : vecDataSignal_) // Проверка существования спектров в наборе графиков
+        if ( dataSignal.isSpectrum() ) { isExistSpectrum = true; break; }
+    if (!isExistSpectrum) // В случае, если спектров не осталось, скрываем частоты
+        ui->comparePlot->xAxis2->setVisible(false);
     ui->comparePlot->rescaleAxes(false); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения

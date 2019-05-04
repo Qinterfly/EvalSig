@@ -6,6 +6,8 @@
 #include "ui_SignalCharacteristicsWindow.h"
 #include "core/NumericalFunctions.h"
 
+// ---- Свойства сохраняемого сигнала --------------------------------------------------------------------------
+
 // Конструктор окна свойств сохраняемого сигнала
 SignalCharacteristicsWindow::SignalCharacteristicsWindow(QWidget *parent) :
     QDialog(parent),
@@ -122,3 +124,5 @@ void SignalCharacteristicsWindow::checkWeightWindowWidth(){
 void SignalCharacteristicsWindow::reject(){
     this->hide(); // Простое скрытие (для удержания настроек)
 }
+
+// -------------------------------------------------------------------------------------------------------------

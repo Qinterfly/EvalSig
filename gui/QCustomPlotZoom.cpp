@@ -7,7 +7,7 @@
 QCustomPlotZoom::QCustomPlotZoom(QWidget * parent)
     : QCustomPlot(parent),
     rubberBand_(new QRubberBand(QRubberBand::Rectangle, this))
-{}
+{ }
 
 // Деструктор
 QCustomPlotZoom::~QCustomPlotZoom()
@@ -22,12 +22,16 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
     if (event->button() == Qt::LeftButton)
     {
         origin_ = event->pos(); // Положение левого верхнего угла
+        rangeXAxis2_ = xAxis2->range(); // Диапазон по дополнительной горизонтальной оси
+        rangeYAxis2_ = yAxis2->range(); // Диапазон по дополнительной вертикальной оси
         rubberBand_->setGeometry(QRect(origin_, QSize())); // Формирование области выделения
         rubberBand_->show(); // Включение отображения области выделения
     }
     // Снятие выделения области
     if (event->button() == Qt::RightButton){
         rescaleAxes(); // Сброс выделения
+        xAxis2->setRange(rangeXAxis2_); // Возврат к диапазонам до масштабирования по X2
+        yAxis2->setRange(rangeYAxis2_); // Возврат к диапазонам до масштабирования по Y2
         replot(); // Обновление графика
     }
     QCustomPlot::mousePressEvent(event);
@@ -52,13 +56,23 @@ void QCustomPlotZoom::mouseReleaseEvent(QMouseEvent * event)
         // Получение координат граничных точек области
         int xp1, yp1, xp2, yp2;
         zoomRect.getCoords(&xp1, &yp1, &xp2, &yp2);
-        auto x1 = xAxis->pixelToCoord(xp1);
-        auto x2 = xAxis->pixelToCoord(xp2);
-        auto y1 = yAxis->pixelToCoord(yp1);
-        auto y2 = yAxis->pixelToCoord(yp2);
+        // Основные координаты
+        auto x1m = xAxis->pixelToCoord(xp1);
+        auto x2m = xAxis->pixelToCoord(xp2);
+        auto y1m = yAxis->pixelToCoord(yp1);
+        auto y2m = yAxis->pixelToCoord(yp2);
+        // Дополнительные координаты
+        auto x1a = xAxis2->pixelToCoord(xp1);
+        auto x2a = xAxis2->pixelToCoord(xp2);
+        auto y1a = yAxis2->pixelToCoord(yp1);
+        auto y2a = yAxis2->pixelToCoord(yp2);
         // Изменение диапазона осей по этой области
-        xAxis->setRange(x1, x2);
-        yAxis->setRange(y1, y2);
+            // По основным осям
+        xAxis->setRange(x1m, x2m);
+        yAxis->setRange(y1m, y2m);
+            // По дополнительным осям
+        xAxis2->setRange(x1a, x2a);
+        yAxis2->setRange(y1a, y2a);
         rubberBand_->hide(); // Скрытие прямоугольника выделения
         replot(); // Обновление графика
     }

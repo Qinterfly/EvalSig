@@ -59,6 +59,12 @@ void testStatistics() {
     stat.setWindowProperty(10, 1);
     // Сохранение статистик
     Q_ASSERT(!stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/"));
+    // Удаление сигналов
+    stat.removeSignal(4);
+    stat.removeSignal(3);
+    stat.removeSignal(2);
+    stat.removeSignal(1);
+    stat.removeSignal(0);
     qDebug();
 }
 
