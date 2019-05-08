@@ -11,6 +11,7 @@ void MainWindow::updateStatusBar(){
     // Сравнение сигналов
     if (tabInd == 0){
         calcStatusLabel->setText("Сред: " + QString::number(statSignal_.getMeanSegment(currSignalIndex), 'g', 3) + " | "
+                                    + "Лок. откл: " + QString::number(statSignal_.getLocalDeviationSegment(currSignalIndex), 'g', 3) + " | "
                                     + "Сред. квадр: " + QString::number(statSignal_.getSquareMeanSegment(currSignalIndex), 'g', 3) + " | "
                                     + "Мин/макс: " + QString::number(statSignal_.getMinSegment(currSignalIndex), 'g', 3) + " / "
                                                    + QString::number(statSignal_.getMaxSegment(currSignalIndex), 'g', 3));

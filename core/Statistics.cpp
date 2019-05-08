@@ -71,7 +71,7 @@ bool Statistics::removeSignal(int deleteInd){
     return 0;
 }
     // Сохранение всех статистик
-int Statistics::writeAllStatistics(QString const& dirName){
+int Statistics::writeAllStatistics(QString const& dirName) const {
     if (isEmpty()) return -1; // Проверка на пустоту статистик
     QDir dir(dirName); // Инициализация директории c добавлением разделителя
     if (!dir.exists()) // Проверка существования директории
@@ -98,7 +98,7 @@ int Statistics::writeAllStatistics(QString const& dirName){
 
 // Сохранение выбранной статистики
 template<typename T>
-int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName){
+int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName) const {
     QString path = dirName + statName + QDir::separator(); // Полный путь до статистики
     QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
     int exitStatus = 0; // Код возврата
@@ -119,7 +119,7 @@ int Statistics::writeStatistic(T const& stat, QString const& dirName, QString co
 }
 
 // Сохранение средних значений всех статистик
-int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileName){
+int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileName) const{
     QString fullFilePath = dirName + fileName + ".xlsx"; // Полный путь к файлу
     int exitStatus = 0; // Код возврата
     QXlsx::Document xlsxDocument; // Создание документа расширения .xlsx
@@ -159,7 +159,7 @@ int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileN
 
 
 // Запись списка сигналов
-int Statistics::writeSignalList(QString const& path, QString const& fileName) {
+int Statistics::writeSignalList(QString const& path, QString const& fileName) const {
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
@@ -319,7 +319,7 @@ void Statistics::calcDistanceAmplitudeRegression(int i, int j){
             numeratorA += ( (*pVecDataSignal)[i][s + k] - meanX ) * ( (*pVecDataSignal)[j][s + k] - meanY );
             denominatorA += qPow( (*pVecDataSignal)[i][s + k] - meanX, 2 );
         }
-        if (numeratorA == 0 && denominatorA == 0)
+        if (numeratorA == 0.0 && denominatorA == 0.0)
             regressionParams_[i][j][currWindow].first = 0; // Угловой коэффициент
         else
             regressionParams_[i][j][currWindow].first = numeratorA / denominatorA; // Угловой коэффициент
@@ -337,7 +337,7 @@ void Statistics::calcDistanceAmplitudeRegression(int i, int j){
             tYSignal += qAbs( (*pVecDataSignal)[j][s + k] - meanY );
         }
         distanceScatter_[i][j][currWindow] = tSumDistance; // Дистанция рассеяния
-        if (tXSignal == 0 && tYSignal == 0)
+        if (tXSignal == 0.0 && tYSignal == 0.0)
             amplitudeScatter_[i][j][currWindow] = 0;
         else
             amplitudeScatter_[i][j][currWindow] = tSumDistance * minSizeSignals_ / qSqrt(qPow(tXSignal, 2) + qPow(tYSignal, 2)); // Амплитуда рассеяния
@@ -391,26 +391,45 @@ void Statistics::calcAllMetrics(){
 
 // Расчет метрики сигнала по индексу
 void Statistics::calcMetric(int iSignal){
+    static double TOLERANCE = 1e-9; // Точность сравнения
     int nPoints = estimationBoundaries_.second - estimationBoundaries_.first + 1; // Число расчетных точек
     double min = (*pVecDataSignal)[iSignal][estimationBoundaries_.first - 1], max = min; // Min - Max
     double mean = 0, meanSquare = 0; // Mean
-    double elem; // Элемент вектора
+    double deviation = 0; // Локальное отклонение
+    double elemCur; // Текущий элемент вектора
     // Расчет среднего и экстремумов
     for (int jInd = estimationBoundaries_.first - 1; jInd != estimationBoundaries_.second; ++jInd){
-        elem = (*pVecDataSignal)[iSignal][jInd]; // Текущий элемент вектора
-        mean += elem; // Среднее
-        if (elem > max) max = elem; // Максимум
-        if (elem < min) min = elem; // Минимум
+        elemCur = (*pVecDataSignal)[iSignal][jInd]; // Текущий элемент вектора
+        mean += elemCur; // Среднее
+        if (elemCur > max) max = elemCur; // Максимум
+        if (elemCur < min) min = elemCur; // Минимум
     }
     mean /= nPoints; // Нормировка к числу элементов
     // Расчет среднего квадратического
     for (int jInd = estimationBoundaries_.first - 1; jInd != estimationBoundaries_.second; ++jInd)
         meanSquare += qPow( (*pVecDataSignal)[iSignal][jInd] - mean, 2 );
     meanSquare = qSqrt(meanSquare / nPoints); // Извлечение корня и нормировка к числу элементов
+    // Расчет локального отклонения
+    double elemPrev = (*pVecDataSignal)[iSignal][estimationBoundaries_.first - 1]; // Предыдущий элемент вектора
+    double tAmplitude = qAbs(elemPrev); // Инициализация начального отклонения
+    for (int jInd = estimationBoundaries_.first; jInd != estimationBoundaries_.second; ++jInd){
+        elemCur = (*pVecDataSignal)[iSignal][jInd]; // Текущий элемент вектора
+        // Проверка перехода через среднее значение либо на равенство среднему
+        if ( (elemCur - mean) * (elemPrev - mean) < 0 || qAbs(elemCur - mean) <= TOLERANCE ){
+            deviation += qPow(tAmplitude, 2);
+            tAmplitude = mean;
+        }
+        // Нахождение амплитуды
+        if ( qAbs(elemCur) > tAmplitude )
+            tAmplitude = qAbs(elemCur);
+        elemPrev = elemCur; // Сохранение значения для следующей итерации
+    }
+    deviation = qSqrt(deviation / nPoints); // Извлечение корня и нормировка к числу элементов
     // Занесение значений в контейнеры
     meanSegment_[iSignal] = mean;
     squareMeanSegment_[iSignal] = meanSquare;
     minMaxSegment_[iSignal] = {min, max};
+    localDeviationSegment_[iSignal] = deviation;
 }
 
 // Методы-обертки для выделения памяти для всех метрик
@@ -418,23 +437,65 @@ void Statistics::calcMetric(int iSignal){
 void Statistics::allocateAllMetrics(){
     // Проверка необходимости изменения размеров векторов
     if ( nSize_ != meanSegment_.size() ){
-        meanSegment_.resize(nSize_);       // Среднее на участке
-        squareMeanSegment_.resize(nSize_); // Среднее квадратическое
-        minMaxSegment_.resize(nSize_);     // Минимумы - максимумы на участке
+        meanSegment_.resize(nSize_);           // Среднее на участке
+        squareMeanSegment_.resize(nSize_);     // Среднее квадратическое
+        minMaxSegment_.resize(nSize_);         // Минимумы - максимумы на участке
+        localDeviationSegment_.resize(nSize_); // Локальное отклонение
     }
 }
     // При сжатии для всех метрик
 void Statistics::removeAllMetrics(int deleteInd){
-    meanSegment_.remove(deleteInd);       // Среднее на участке
-    squareMeanSegment_.remove(deleteInd); // Среднее квадратическое
-    minMaxSegment_.remove(deleteInd);     // Минимумы - максимумы на участке
+    meanSegment_.remove(deleteInd);           // Среднее на участке
+    squareMeanSegment_.remove(deleteInd);     // Среднее квадратическое
+    minMaxSegment_.remove(deleteInd);         // Минимумы - максимумы на участке
+    localDeviationSegment_.remove(deleteInd); // Локальное отклонение
+}
+
+// Сохранение метрик по всем сигналам
+int Statistics::writeAllMetrics(QString const& dirName, QString const& fileName) const {
+    QString fullFilePath = dirName + fileName + ".xlsx"; // Полный путь к файлу
+    int exitStatus = 0; // Код возврата
+    QXlsx::Document xlsxDocument; // Создание документа расширения .xlsx
+    // Установка формата документа
+    QXlsx::Format tableFormat;
+    tableFormat.setHorizontalAlignment(QXlsx::Format::AlignHCenter); // Выравнивание по горизонтали
+    tableFormat.setVerticalAlignment(QXlsx::Format::AlignVCenter); // Выравнивание по вертикали
+    xlsxDocument.setColumnWidth(1, 1, 22); // Ширина столбца с именем сигнала
+    xlsxDocument.setColumnWidth(2, 6, 15); // Ширина рабочих столбцов
+    // Заполнение шапки документа
+        // Расчетный диапазон
+    QString tempString = "Границы участка: " + numberToString(estimationBoundaries_.first) + " - " + numberToString(estimationBoundaries_.second);
+    xlsxDocument.write("A1", tempString);
+        // Длина участка
+    tempString = "Длина участка: " + numberToString(estimationBoundaries_.second - estimationBoundaries_.first + 1);
+    xlsxDocument.write("A2", tempString);
+        // Заголовки таблицы
+    xlsxDocument.write("A4", "Имя сигнала", tableFormat);
+    xlsxDocument.write("B4", "Среднее", tableFormat);
+    xlsxDocument.write("C4", "Среднее квадр.", tableFormat);
+    xlsxDocument.write("D4", "Минимум", tableFormat);
+    xlsxDocument.write("E4", "Максимум", tableFormat);
+    xlsxDocument.write("F4", "Локальное откл.", tableFormat);
+    int lastLine = 4; // Номер последней линии шапки
+    // Запись расчетных данных
+    for (int i = 0; i != nSize_; ++i){
+        ++lastLine; // Приращение счетчика текущей линии
+        xlsxDocument.write("A" + numberToString(lastLine), (*pVecDataSignal)[i].getName(), tableFormat);              // Имя сигнала
+        xlsxDocument.write("B" + numberToString(lastLine), numberToString(getMeanSegment(i)), tableFormat);           // Среднее
+        xlsxDocument.write("C" + numberToString(lastLine), numberToString(getSquareMeanSegment(i)), tableFormat);     // Среднее квадратическое
+        xlsxDocument.write("D" + numberToString(lastLine), numberToString(getMinSegment(i)), tableFormat);            // Минимум
+        xlsxDocument.write("E" + numberToString(lastLine), numberToString(getMaxSegment(i)), tableFormat);            // Максимум
+        xlsxDocument.write("F" + numberToString(lastLine), numberToString(getLocalDeviationSegment(i)), tableFormat); // Локальное отклонение
+    }
+    exitStatus = !xlsxDocument.saveAs(fullFilePath); // Сохранение документа
+    return exitStatus;
 }
 
 // ---- Вспомогательные функции --------------------------------------------------------------------------------
 
 // Получение оконного распределения статистики
     // ArrayRegressionParams
-QVector<double> Statistics::getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j){
+QVector<double> Statistics::getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j) const {
     QVector<double> tData(windowProperty.nWindows_); // Вектор данных для хранения статистик
     for (int s = 0; s != windowProperty.nWindows_; ++s){ // По всем окнам, за исключением среднего
         tData[s] = stat[i][j][s].first; // Угловые коэффициенты
@@ -442,7 +503,7 @@ QVector<double> Statistics::getWindowStatisticData(ArrayRegressionParams const& 
     return tData;
 }
     // ArrayStatCharacters
-QVector<double> Statistics::getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j){
+QVector<double> Statistics::getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j) const {
     QVector<double> tData(windowProperty.nWindows_); // Вектор данных для хранения статистик
     for (int s = 0; s != windowProperty.nWindows_; ++s){ // По всем окнам, за исключением среднего
         tData[s] = stat[i][j][s];

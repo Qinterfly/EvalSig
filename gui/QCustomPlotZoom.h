@@ -22,7 +22,7 @@ private slots:
 private:
     QRubberBand * rubberBand_;
     QPoint origin_; // Положение левого верхнего угла прямоугольника
-    bool isZoomed = false; // Флаг масштабированного изображения
+    bool isZoomed_ = false; // Флаг масштабированного изображения
     QCPRange rangeXAxis2_; // Диапазон по дополнительной горизонтальной оси
     QCPRange rangeYAxis2_; // Диапазон по дополнительной вертикальной оси
 };

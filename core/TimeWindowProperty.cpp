@@ -31,7 +31,7 @@ void TimeWindowProperty::calcWindowParams(QPair<int, int> const& estimationBound
 }
 
 // Запись параметров окна
-int TimeWindowProperty::writeWindowParams(QString const& path, QString const& fileName){
+int TimeWindowProperty::writeWindowParams(QString const& path, QString const& fileName) const {
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок

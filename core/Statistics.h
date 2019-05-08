@@ -24,16 +24,18 @@ struct Statistics{
     ArrayStatCharacters const& getAmplitudeScatter() const { return amplitudeScatter_; }   // Получение амплитуд рассеяния
     ArrayStatCharacters const& getNoiseCoeffs() const { return noiseCoeffs_; }             // Получение коэффициентов шума
         // Метрики
-    double getMeanSegment(int ind) const { return meanSegment_[ind]; }             // Среднее на отрезке
-    double getSquareMeanSegment(int ind) const { return squareMeanSegment_[ind]; } // Среднее квадратическое отклонение на отрезке
-    double getMinSegment(int ind) const { return minMaxSegment_[ind].first; }      // Минимум на отрезке
-    double getMaxSegment(int ind) const { return minMaxSegment_[ind].second; }     // Максимум на отрезке
+    double getMeanSegment(int ind) const { return meanSegment_[ind]; }              // Среднее на отрезке
+    double getSquareMeanSegment(int ind) const { return squareMeanSegment_[ind]; }  // Среднее квадратическое отклонение на отрезке
+    double getMinSegment(int ind) const { return minMaxSegment_[ind].first; }       // Минимум на отрезке
+    double getMaxSegment(int ind) const { return minMaxSegment_[ind].second; }      // Максимум на отрезке
+    double getLocalDeviationSegment(int ind) const { return localDeviationSegment_[ind]; } // Локальное отклонение
     bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
     bool removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
     void setEstimationBoundaries(int leftBound, int rightBound); // Выставление расчетных границ
-    int writeAllStatistics(QString const& dirName); // Сохранение всех статистик
-    int writeSignalList(QString const& path, QString const& fileName); // Запись списка сигналов
+    int writeAllStatistics(QString const& dirName) const; // Сохранение всех статистик
+    int writeSignalList(QString const& path, QString const& fileName) const; // Запись списка сигналов
+    int writeAllMetrics(QString const& dirName, QString const& fileName) const; // Сохранение метрик по всем сигналам
 private:
     // Выделение памяти для полей структуры типа ArrayStatCharacters и ArrayRegressionParams
     template<typename T>
@@ -55,11 +57,11 @@ private:
     void calcSimilarity(int i, int j);
     // Сохранение выбранной статистики
     template<typename T>
-    int writeStatistic(T const& stat, QString const& dirName, QString const& statName); // ArrayRegressionParams и ArrayStatCharacters
-    int writeMeanStatistics(QString const& dirName, QString const& fileName); // Сохранение средних значений статистик
+    int writeStatistic(T const& stat, QString const& dirName, QString const& statName) const; // ArrayRegressionParams и ArrayStatCharacters
+    int writeMeanStatistics(QString const& dirName, QString const& fileName) const; // Сохранение средних значений статистик
     // Вспомогательные функции получения оконного распределения статистики
-    QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j); // ArrayRegressionParams
-    QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j); // ArrayStatCharacters
+    QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j) const; // ArrayRegressionParams
+    QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j) const; // ArrayStatCharacters
     // Расчет метрик сигналов
     void calcAllMetrics(); // Расчет всех метрик
     void calcMetric(int iSignal); // Расчет метрики сигнала по индексу
@@ -81,6 +83,7 @@ private:
     QVector<double> meanSegment_; // Среднее значение
     QVector<double> squareMeanSegment_; // Среднее квадратическое отклонение
     QVector< QPair<double, double> > minMaxSegment_; // Минимум и максимум
+    QVector<double> localDeviationSegment_; // Локальное отклонение
 };
 
 #endif // STATISTICS_H

@@ -10,7 +10,7 @@
 struct TimeWindowProperty {
     TimeWindowProperty(int width, int shiftWindow, QPair<int, int> const& estimationBoundaries, int minSizeSignals);
     void calcWindowParams(QPair<int, int> const& estimationBoundaries, int minSizeSignals); // Расчет параметров окна
-    int writeWindowParams(QString const& path, QString const& fileName); // Запись параметров окна
+    int writeWindowParams(QString const& path, QString const& fileName) const; // Запись параметров окна в файл
 
     int width_;             // Ширина временного окна
     int nWindows_;          // Число окон

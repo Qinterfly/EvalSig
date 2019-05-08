@@ -65,9 +65,10 @@ void MainWindow::saveCalcualtion(){
     QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
     if (saveDir.isEmpty()) return; // Проверка корректности выбора
     lastPath_ = saveDir + QDir::separator();
-    int exitStatus = statSignal_.writeAllStatistics(lastPath_);
+    int exitStatus = statSignal_.writeAllStatistics(lastPath_); // Запись статистик
+    exitStatus += statSignal_.writeAllMetrics(lastPath_, "Метрики сигналов"); // Запись метрик сигналов
     if (exitStatus == 0)
-        statusBar()->showMessage("Сохранение результатов расчета выполнено успешно");
+        statusBar()->showMessage("Результаты сохранены");
 
 }
 // -----------------------------------------------------------------------------------------------------------------------

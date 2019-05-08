@@ -22,10 +22,10 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
     if (event->button() == Qt::LeftButton)
     {
         origin_ = event->pos(); // Положение левого верхнего угла
-        if (!isZoomed){ // Если масштабирование первое
+        if (!isZoomed_){ // Если масштабирование первое
             rangeXAxis2_ = xAxis2->range(); // Диапазон по дополнительной горизонтальной оси
             rangeYAxis2_ = yAxis2->range(); // Диапазон по дополнительной вертикальной оси
-            isZoomed = true; // Изображение смаштабировано
+            isZoomed_ = true; // Изображение смаштабировано
         }
         rubberBand_->setGeometry(QRect(origin_, QSize())); // Формирование области выделения
         rubberBand_->show(); // Включение отображения области выделения
@@ -35,7 +35,7 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
         rescaleAxes(); // Сброс выделения
         xAxis2->setRange(rangeXAxis2_); // Возврат к диапазонам до масштабирования по X2
         yAxis2->setRange(rangeYAxis2_); // Возврат к диапазонам до масштабирования по Y2
-        isZoomed = false; // Сброс флага масштабированного изображения
+        isZoomed_ = false; // Сброс флага масштабированного изображения
         replot(); // Обновление графика
     }
     QCustomPlot::mousePressEvent(event);

@@ -337,6 +337,9 @@ DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindo
         ++nWindows; // Приращение числа окон
         leftBound += stepWindow; // Сдвиг левой границы окна
     }
+    // Нормировка результатов расчета
+    for (double &res : resultData)
+        res /= nWindows;
     // Освобождение ресурсов, использованных для преобразования
     fftw_destroy_plan(planForward);
     fftw_destroy_plan(planInverse);
