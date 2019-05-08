@@ -411,17 +411,17 @@ void Statistics::calcMetric(int iSignal){
     meanSquare = qSqrt(meanSquare / nPoints); // Извлечение корня и нормировка к числу элементов
     // Расчет локального отклонения
     double elemPrev = (*pVecDataSignal)[iSignal][estimationBoundaries_.first - 1]; // Предыдущий элемент вектора
-    double tAmplitude = qAbs(elemPrev); // Инициализация начального отклонения
+    double tAmplitude = qAbs(elemPrev - mean); // Инициализация начального отклонения
     for (int jInd = estimationBoundaries_.first; jInd != estimationBoundaries_.second; ++jInd){
         elemCur = (*pVecDataSignal)[iSignal][jInd]; // Текущий элемент вектора
         // Проверка перехода через среднее значение либо на равенство среднему
         if ( (elemCur - mean) * (elemPrev - mean) < 0 || qAbs(elemCur - mean) <= TOLERANCE ){
             deviation += qPow(tAmplitude, 2);
-            tAmplitude = mean;
+            tAmplitude = 0.0;
         }
         // Нахождение амплитуды
-        if ( qAbs(elemCur) > tAmplitude )
-            tAmplitude = qAbs(elemCur);
+        if ( qAbs(elemCur - mean) > tAmplitude )
+            tAmplitude = qAbs(elemCur - mean);
         elemPrev = elemCur; // Сохранение значения для следующей итерации
     }
     deviation = qSqrt(deviation / nPoints); // Извлечение корня и нормировка к числу элементов
