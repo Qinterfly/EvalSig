@@ -12,10 +12,8 @@ void MainWindow::initializeSignalPropertyList(){
         QTableWidgetItem * item = ui->tableFileProperty->item(i, 0); // Получение элемента таблицы
         item->setFlags(item->flags() ^ Qt::ItemIsEditable); // Отключение возможности изменения содержимого колонок
     }
-    // Отключение изменений специальных строк
-        // Полное имя файла
-    QTableWidgetItem * item = ui->tableFileProperty->item(0, 1);
-    item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+    // Отключение изменений специальных строк     
+    QTableWidgetItem * item;
         // Количество отсчётов
     item = ui->tableFileProperty->item(11, 1);
     item->setFlags(item->flags() ^ Qt::ItemIsEditable);

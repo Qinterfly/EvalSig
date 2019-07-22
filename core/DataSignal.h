@@ -34,6 +34,17 @@ struct DataSignal {
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName, int leftInd = 0, int rightInd = -1) const; // Запись временного сигнала на выбранном участке
+    // Изменение параметров сигнала
+    void setFileName(QString const& fileName);             // Имя файла
+    void setDateAndTime(QString const& dateAndTime);       // Время записи
+    void setMeasureObject(QString const& measureObject);   // Объект измерения
+    void setMeasurePoint(QString const& measurePoint);     // Точка установки датчика
+    void setTemperature(double temperature);               // Температура
+    void setSensorType(QString const& sensorType);         // Тип датчика
+    void setPhysicalFactor(double physicalFactor);         // Физический коэффициент
+    void setMeasureUnit(QString const& measureUnit);       // Единицы измерения
+    void setScanPeriod(int scanPeriod);                    // Период опроса датчика
+    void setCharacteristic(QString const& characteristic); // Характеристика
 private:
     PropertyDataSignal property; // Свойства сигнала
     QVector<double> data_;       // Временной сигнал

@@ -17,6 +17,7 @@ struct Statistics{
     int minSizeSignals() const { return minSizeSignals_; } // Минимальная длина сигнала из группы
     int getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
     QPair<int, int> const& getEstimationBoundaries() const { return estimationBoundaries_; } // Получение границ расчета
+    void recalculate(); // Пересчет
         // Статистические характеристики
     ArrayRegressionParams const& getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
     ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; }     // Получение дистанций рассеяния

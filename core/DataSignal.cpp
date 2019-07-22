@@ -81,7 +81,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
     property.physicalFactor_ = inputStream.readLine().toDouble(); // Физический коэффициент
     property.measureUnit_ = inputStream.readLine();               // Единица измерения
     property.scanPeriod_ = inputStream.readLine().toDouble();     // Период опроса датчика
-    property.characterisic_ = inputStream.readLine();             // Характеристика
+    property.characteristic_ = inputStream.readLine();             // Характеристика
     property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
     property.isSpectrum = property.fileName_.contains("Спектр");  // Является ли сигнал спектром
     // Чтение временного сигнала
@@ -113,12 +113,29 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName, int 
     outputStream << property.physicalFactor_ << endl;  // Физический коэффициент
     outputStream << property.measureUnit_ << endl;     // Единица измерения
     outputStream << property.scanPeriod_ << endl;      // Период опроса датчика
-    outputStream << property.characterisic_ << endl;   // Характеристика
+    outputStream << property.characteristic_ << endl;   // Характеристика
     outputStream << rightInd - leftInd + 1 << endl;    // Количество отсчетов
     for (int i = leftInd; i <= rightInd; ++i )
         outputStream << data_[i] / property.physicalFactor_ << endl;
     file.close(); // Закрытие файла
     return 0;
+}
+
+// Изменение параметров сигнала
+void DataSignal::setFileName(QString const& fileName) { property.fileName_ = fileName; }                         // Имя файла
+void DataSignal::setDateAndTime(QString const& dateAndTime) { property.dateAndTime_ = dateAndTime; }             // Время записи
+void DataSignal::setMeasureObject(QString const& measureObject) { property.measureObject_ = measureObject; }     // Объект измерения
+void DataSignal::setMeasurePoint(QString const& measurePoint) { property.measurePoint_ = measurePoint; };        // Точка установки датчика
+void DataSignal::setTemperature(double temperature) { property.temperature_ = temperature; }                     // Температура
+void DataSignal::setSensorType(QString const& sensorType) { property.sensorType_ = sensorType; }                 // Тип датчика
+void DataSignal::setCharacteristic(QString const& characteristic) { property.characteristic_ = characteristic; } // Характеристика
+void DataSignal::setMeasureUnit(QString const& measureUnit) { property.measureUnit_ = measureUnit; }             // Единицы измерения
+void DataSignal::setScanPeriod(int scanPeriod){ property.scanPeriod_ = scanPeriod; }                             // Период опроса датчика
+// Физический коэффициент
+void DataSignal::setPhysicalFactor(double physicalFactor){
+    for (double & elem : data_)
+        elem = elem / property.physicalFactor_ * physicalFactor;
+    property.physicalFactor_ = physicalFactor;
 }
 
 // ---- Вспомогательные функции --------------------------------------------------------------------------------

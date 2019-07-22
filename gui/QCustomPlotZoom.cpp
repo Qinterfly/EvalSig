@@ -22,7 +22,7 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
     if (event->button() == Qt::LeftButton)
     {
         origin_ = event->pos(); // Положение левого верхнего угла
-        if (!isZoomed_){ // Если масштабирование первое
+        if ( !isZoomed_ ){ // Если масштабирование первое
             rangeXAxis2_ = xAxis2->range(); // Диапазон по дополнительной горизонтальной оси
             rangeYAxis2_ = yAxis2->range(); // Диапазон по дополнительной вертикальной оси
             isZoomed_ = true; // Изображение смаштабировано

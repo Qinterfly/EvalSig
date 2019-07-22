@@ -33,6 +33,7 @@ public slots:
     void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
     void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
     void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
+    void changeDataSignal(int row, int column); // Изменение параметров сигналов
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
     // Методы очистки
@@ -56,6 +57,7 @@ private:
     // Работа с графиками
     void addGraph(); // Добавление графика
     void removeGraph(int); // Удаление графика
+    void replotGraph(int); // Обновление графика
     void plotEstimationBoundaries(bool isReplot = false); // Построение расчетных границ
     void clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     // Работа с цветовыми картами
@@ -80,7 +82,7 @@ private:
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
     int const SECONDARY_PLOT_IND = 2; // Число вспомогательных графиков
     // Контейнеры для построения цветовых карт
-    QVector<QCustomPlotZoom *> vecTablePlot_; // Вектор указателей на графические обхъекты
+    QVector<QCustomPlotZoom *> vecTablePlot_; // Вектор указателей на графические объекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
 };

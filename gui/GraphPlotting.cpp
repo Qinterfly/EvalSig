@@ -41,6 +41,30 @@ void MainWindow::removeGraph(int deleteInd){
     ui->comparePlot->replot(); // Обновление окна построения
 }
 
+// Обновление графика
+void MainWindow::replotGraph(int plotInd){
+    QVector<double> const& YCompare = vecDataSignal_[plotInd].getData(); // Вектор значений
+    QVector<double> XCompare(YCompare.size()); // Вектор отсчетов
+    for (int i = 0; i != YCompare.size(); ++i)
+        XCompare[i] = i + 1;
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
+    if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
+        ui->comparePlot->xAxis2->setVisible(true); //
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+    }
+    // Выставление пределов
+    if (plotInd != 0) // В случае multiPlot, подстраиваем под предельные значения
+        ui->comparePlot->rescaleAxes(true); // Масштабирование осей
+    else {
+        // Экстремумы данных
+        double minData = *std::min_element(YCompare.begin(), YCompare.end());
+        double maxData = *std::max_element(YCompare.begin(), YCompare.end());
+        ui->comparePlot->yAxis->setRange(minData, maxData);
+    }
+    plotEstimationBoundaries(); // Построение графиков расчетных границ
+    ui->comparePlot->replot(); // Обновление окна построения
+}
+
 // Построение графиков расчетных границ
 void MainWindow::plotEstimationBoundaries(bool isReplot){
     if (ui->comparePlot->graphCount() == SECONDARY_PLOT_IND) return; // При отсутствии сигналов не отображать
@@ -55,7 +79,7 @@ void MainWindow::plotEstimationBoundaries(bool isReplot){
     // Построение графиков
     ui->comparePlot->graph(0)->setData({leftBound, rightBound}, {maxY, maxY}, true); // Верхний
     ui->comparePlot->graph(1)->setData({leftBound, rightBound}, {minY, minY}, true); // Нижний
-    if (isReplot) ui->comparePlot->replot(); // Обновление окна построений
+    if ( isReplot ) ui->comparePlot->replot(); // Обновление окна построений
 }
 
 // Очистка данных графиков расчетных границ

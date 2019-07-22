@@ -566,11 +566,11 @@
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
            </attribute>
-           <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>117</number>
-           </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>75</number>
+           </attribute>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>117</number>
            </attribute>
            <attribute name="verticalHeaderVisible">
             <bool>false</bool>

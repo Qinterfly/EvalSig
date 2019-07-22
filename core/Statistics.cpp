@@ -96,7 +96,7 @@ int Statistics::writeAllStatistics(QString const& dirName) const {
     return exitStatus;
 }
 
-// Сохранение выбранной статистики
+    // Сохранение выбранной статистики
 template<typename T>
 int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName) const {
     QString path = dirName + statName + QDir::separator(); // Полный путь до статистики
@@ -118,7 +118,7 @@ int Statistics::writeStatistic(T const& stat, QString const& dirName, QString co
     return exitStatus;
 }
 
-// Сохранение средних значений всех статистик
+    // Сохранение средних значений всех статистик
 int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileName) const{
     QString fullFilePath = dirName + fileName + ".xlsx"; // Полный путь к файлу
     int exitStatus = 0; // Код возврата
@@ -158,7 +158,7 @@ int Statistics::writeMeanStatistics(QString const& dirName, QString const& fileN
 }
 
 
-// Запись списка сигналов
+    // Запись списка сигналов
 int Statistics::writeSignalList(QString const& path, QString const& fileName) const {
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для записи
@@ -198,6 +198,9 @@ void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
     fullCompute(); // Полный пересчет
     calcAllMetrics(); // Пересчет всех метрик
 }
+
+    // Пересчет
+void Statistics::recalculate(){ fullCompute(); }
 
 // Выделение памяти для полей структуры
     // При расширении объекта

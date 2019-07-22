@@ -11,19 +11,19 @@ void MainWindow::setSignalProperty(){
         clearSignalPropertyList(); // Очистка листа с свойствами сигнала
         return;
     }
-    PropertyDataSignal const& propSignal = vecDataSignal_[signalInd].getProperty(); // Получение свойств по индексу
-    ui->tableFileProperty->item(0, 1)->setText(propSignal.path_ + propSignal.fileName_); // Полный путь к файлу
-    ui->tableFileProperty->item(1, 1)->setText(propSignal.dateAndTime_); // Дата и время
-    ui->tableFileProperty->item(2, 1)->setText(propSignal.measureObject_); // Объект измерения
-    ui->tableFileProperty->item(3, 1)->setText(propSignal.measurePoint_); // Точка установки
-    ui->tableFileProperty->item(4, 1)->setText(propSignal.currentCount_); // Текущие отсчеты
-    ui->tableFileProperty->item(5, 1)->setText(QString::number(propSignal.temperature_)); // Температура
-    ui->tableFileProperty->item(6, 1)->setText(propSignal.sensorType_); // Тип датчика
+    PropertyDataSignal const& propSignal = vecDataSignal_[signalInd].getProperty();          // Получение свойств по индексу
+    ui->tableFileProperty->item(0, 1)->setText(propSignal.fileName_);                        // Имя файла
+    ui->tableFileProperty->item(1, 1)->setText(propSignal.dateAndTime_);                     // Дата и время
+    ui->tableFileProperty->item(2, 1)->setText(propSignal.measureObject_);                   // Объект измерения
+    ui->tableFileProperty->item(3, 1)->setText(propSignal.measurePoint_);                    // Точка установки
+    ui->tableFileProperty->item(4, 1)->setText(propSignal.currentCount_);                    // Текущие отсчеты
+    ui->tableFileProperty->item(5, 1)->setText(QString::number(propSignal.temperature_));    // Температура
+    ui->tableFileProperty->item(6, 1)->setText(propSignal.sensorType_);                      // Тип датчика
     ui->tableFileProperty->item(7, 1)->setText(QString::number(propSignal.physicalFactor_)); // Физический коэффициент
-    ui->tableFileProperty->item(8, 1)->setText(propSignal.measureUnit_); // Единица измерения
-    ui->tableFileProperty->item(9, 1)->setText(QString::number(propSignal.scanPeriod_)); // Период опроса датчика
-    ui->tableFileProperty->item(10, 1)->setText(propSignal.characterisic_); // Характеристика
-    ui->tableFileProperty->item(11, 1)->setText(QString::number(propSignal.nCount_)); // Количество отсчетов
+    ui->tableFileProperty->item(8, 1)->setText(propSignal.measureUnit_);                     // Единица измерения
+    ui->tableFileProperty->item(9, 1)->setText(QString::number(propSignal.scanPeriod_));     // Период опроса датчика
+    ui->tableFileProperty->item(10, 1)->setText(propSignal.characteristic_);                  // Характеристика
+    ui->tableFileProperty->item(11, 1)->setText(QString::number(propSignal.nCount_));        // Количество отсчетов
     // Цвет графика
     QListWidgetItem * listItem = ui->listFile->item(signalInd); // Получение элемента списка
     QVariant varItem = listItem->data(Qt::DecorationRole); // Получение цвета в формате QVariant
@@ -132,6 +132,71 @@ void MainWindow::setStatEstimationBoundaries(QPair<int, int> const& estimationBo
     setBoundariesShowParams(); // Выставление граничных значений параметров
     plotEstimationBoundaries(true); // Построение граничных линий
     updateStatusBar(); // Обновление информационной строки
+}
+
+// Изменение параметров сигнала
+void MainWindow::changeDataSignal(int row, int column){
+    if ( column != 1 ) return; // Если не выбрано значение
+    int currentSignalInd = ui->listFile->currentRow(); // Индекс выбранного сигнала
+    QTableWidgetItem * item = ui->tableFileProperty->item(row, column); // Получение объекта таблицы
+    if ( !item->isSelected() ) return; // Если поле не выбрано пользователем
+    switch ( row ){
+    // Имя файла
+    case 0:
+    {
+        QString const& fileName = item->text(); // Полное имя файла
+        vecDataSignal_[currentSignalInd].setFileName(fileName);
+        ui->listFile->item(currentSignalInd)->setText(QFileInfo(fileName).baseName()); // Имя в списке без расширения
+        break;
+    }
+    // Время и дата
+    case 1:
+        vecDataSignal_[currentSignalInd].setDateAndTime(item->text());
+        break;
+    // Объект измерения
+    case 2:
+        vecDataSignal_[currentSignalInd].setMeasureObject(item->text());
+        break;
+    // Точка установки датчика
+    case 3:
+        vecDataSignal_[currentSignalInd].setMeasurePoint(item->text());
+        break;
+    // Температура
+    case 5:
+        vecDataSignal_[currentSignalInd].setTemperature(item->text().toDouble());
+        break;
+    // Тип датчика
+    case 6:
+        vecDataSignal_[currentSignalInd].setSensorType(item->text());
+        break;
+    // Физический коэффициент
+    case 7:
+    {
+        double tVal = item->text().toDouble();
+        if ( qAbs(tVal) == 0.0 ) return; // Запрет нулевого коэффициента
+        vecDataSignal_[currentSignalInd].setPhysicalFactor(tVal); // Установка коэффициента
+        statSignal_.recalculate();      // Пересчет статистик
+        replotGraph(currentSignalInd);  // Обновление графика
+        plotAllColorMap();              // Построение цветовых карт
+        break;
+    }
+    // Единица измерения
+    case 8:
+        vecDataSignal_[currentSignalInd].setMeasureUnit(item->text());
+        break;
+    // Период опроса
+    case 9:
+    {
+        int tVal = item->text().toInt();
+        if ( qAbs(tVal) == 0.0 ) return; // Запрет нулевого периода опроса
+        vecDataSignal_[currentSignalInd].setScanPeriod(tVal);
+        break;
+    }
+    // Характеристика
+    case 10:
+        vecDataSignal_[currentSignalInd].setCharacteristic(item->text());
+        break;
+    }
 }
 
 // Переопределение событий программы
