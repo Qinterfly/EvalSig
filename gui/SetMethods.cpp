@@ -207,7 +207,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
     static const float RELATIVE_HEIGHT_MAINWINDOW = 0.5556f;
     // В случае изменения размера
     if (event->type() == QEvent::Resize){
-        QResizeEvent * resizeEvent = static_cast<QResizeEvent*>(event); // Событие
+        QResizeEvent * resizeEvent = dynamic_cast<QResizeEvent*>(event); // Событие
         // Для главного окна
         if (obj == this){
             // При инициализации окна

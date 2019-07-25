@@ -7,7 +7,7 @@
 
 // ---- Функции обработки временных сигналов -------------------------------------------------------------------
 
-// Аппроксимация сплайнами
+// Аппроксимация сглаживающими сплайнами
 DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint)
 {
     // Число точек аппроксимации nPoint:
@@ -256,9 +256,8 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
         pow /= nWindows;
     // Формирование выходного сигнала
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
-    tProperty.physicalFactor_ = 1; // Безразмерные величины
-    int const spectrumLength = qRound(tProperty.scanPeriod_ / 2.0); // Результирующая длина спектра
-    DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), spectrumLength);
+    tProperty.physicalFactor_ = 1.0 / nWindows; // Безразмерные величины
+    DataSignal powerSignal = DataSignal(power, tProperty);
     return powerSignal;
 }
 

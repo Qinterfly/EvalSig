@@ -9,7 +9,7 @@ void MainWindow::addSignal(){
     QStringList listFullFilePath = QFileDialog::getOpenFileNames(this, "Выберите один или несколько файлов с временными сигналами", lastPath_, "Text files (*.txt)");
     if (listFullFilePath.isEmpty()) return;
     int indFile = 0; // Номер файла в обработке
-    for ( QString fullFilePath : listFullFilePath){
+    for ( QString const& fullFilePath : listFullFilePath){
         int exitStatus = 0; // Код возврата
         ++indFile; // Инкремент номера обрабатываемого файла
         QFileInfo infoName(fullFilePath); // Создание информационного объекта

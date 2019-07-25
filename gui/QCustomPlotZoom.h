@@ -11,8 +11,8 @@ class QWidget;
 struct QCustomPlotZoom : public QCustomPlot {
     Q_OBJECT
 public:
-    QCustomPlotZoom(QWidget * parent = 0);
-    virtual ~QCustomPlotZoom();
+    QCustomPlotZoom(QWidget * parent = nullptr);
+    ~QCustomPlotZoom() override;
 private slots:
     void mousePressEvent(QMouseEvent * event) override; // При нажатии кнопки мыши
     void mouseMoveEvent(QMouseEvent * event) override; // При сдвиге мыши
