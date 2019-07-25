@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>353</width>
-    <height>525</height>
+    <height>528</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -319,7 +319,7 @@
          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
         </property>
         <property name="value">
-         <number>50000</number>
+         <number>10000</number>
         </property>
        </widget>
       </item>

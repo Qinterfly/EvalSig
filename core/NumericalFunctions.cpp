@@ -4,6 +4,7 @@
 #include "include/csaps.h"
 #include "include/fftw3.h"
 #include "Eigen/Dense"
+#include "Eigen_unsupported/Splines"
 
 // ---- Функции обработки временных сигналов -------------------------------------------------------------------
 
@@ -164,6 +165,26 @@ DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint){
     return DataSignal(yData, dataSignal.getProperty());
 }
 
+// Интерполяция сплайном
+DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nResPoints){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    if (nDataSignal == nResPoints) return dataSignal;
+    Eigen::RowVectorXd time(nDataSignal), signal(nDataSignal); // Выделяем память с запасом под исходные и конечные вектора
+    // Заполнение исходных векторов
+    double timeStep = (inputBounds.second - inputBounds.first) / (nDataSignal - 1);
+    for (int i = 0; i != nDataSignal; ++i){
+        time[i] = inputBounds.first + i * timeStep;
+        signal[i] = dataSignal[i];
+    }
+    Spline spline(time, signal); // Вычисление сплайна
+    // Заполнение результирующих векторов
+    QVector<double> resData(nResPoints);
+    timeStep = (inputBounds.second - inputBounds.first) / (nResPoints - 1); // Шаг по времени по результирующей сетке
+    for (int i = 0; i != nResPoints; ++i)
+        resData[i] = spline(inputBounds.first + i * timeStep);
+    return DataSignal(resData, dataSignal.getProperty());
+}
+
 // Нахождение оконных весовых коэффициентов
 QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
     bool isChoosed = false; // Индикатор выбора окна
@@ -201,7 +222,8 @@ QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
 }
 
 // Вычисление спектральной мощности сигнала
-DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor){
+DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor,
+                                       int lengthSpectrum, int windowSmoothWidth){
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
@@ -257,7 +279,10 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     // Формирование выходного сигнала
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1.0 / nWindows; // Безразмерные величины
-    DataSignal powerSignal = DataSignal(power, tProperty);
+    tProperty.isSpectrum = 1; // Спектр
+    DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), lengthSpectrum); // Линейная интерполяция
+    if (windowSmoothWidth != 0) // Пропуск сглаживания при нулевой ширине окна
+        powerSignal = movingAverageFilter(powerSignal, windowSmoothWidth); // Сглаживание скользящим средним
     return powerSignal;
 }
 
@@ -350,6 +375,23 @@ DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindo
     return DataSignal(resultData, tProperty);
 }
 
+// Фильтрация сигнала скользящим средним
+DataSignal movingAverageFilter(DataSignal const& dataSignal, int windowWidth){
+    int nDataSignal = dataSignal.size();
+    if (windowWidth > nDataSignal) windowWidth = nDataSignal; // Проверка ширины окна
+    QVector<double> resData(nDataSignal);
+    double elemSum = 0; // Поэлементная сумма
+    // Проход до ширины окна
+    for (int i = 0; i != windowWidth; ++i){
+        elemSum += dataSignal[i];
+        resData[i] = elemSum / (i + 1);
+    }
+    // Проход по полным окнам
+    for (int i = windowWidth; i != nDataSignal; ++i)
+        resData[i] = resData[i - 1] + (dataSignal[i] - dataSignal[i - windowWidth]) / windowWidth;
+    return DataSignal(resData, dataSignal.getProperty());
+}
+
 // ---- Вспомогательные ----------------------------------------------------------------------------------------
 
 // Ближайшая предыдущая степень двойки
@@ -361,6 +403,32 @@ int previousPow2(int number){
         ++pow2; // Приращение искомой степени
     }
     return pow2;
+}
+
+// Вектор с nPoint равномерно распределенных значений [leftBound, rightBound]
+QVector<double> linspace(double leftBound, double rightBound, int nPoint){
+    QVector<double> linVec(nPoint);
+    double step = (rightBound - leftBound) / (nPoint - 1);
+    for (int i = 0; i != nPoint; ++i)
+        linVec[i] = leftBound + i * step;
+    return linVec;
+}
+
+// Интерполяция сплайнами
+Spline::Spline(Eigen::VectorXd const &vecX, Eigen::VectorXd const &vecY) : xMin_(vecX.minCoeff()), xMax_(vecX.maxCoeff()),
+                                                                     order_(std::min<long>(vecX.rows() - 1, 3))
+{
+    long nVec = vecX.size();
+    Eigen::VectorXd vecXS(nVec);
+    for (int i = 0; i != nVec; ++i)
+        vecXS(i) = scaleValue(vecX(i));
+    spline_ = Eigen::SplineFitting<Spline1d>::Interpolate(vecY.transpose(), order_, vecXS.transpose());
+}
+double Spline::operator()(double x) const {
+    return spline_(scaleValue(x))(0);
+}
+double Spline::scaleValue(double x) const {
+    return (x - xMin_) / (xMax_ - xMin_);
 }
 
 // -------------------------------------------------------------------------------------------------------------

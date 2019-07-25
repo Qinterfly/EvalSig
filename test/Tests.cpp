@@ -76,7 +76,7 @@ void testNumericalFunctions(){
     DataSignal filt = bandpassFilter(obj1, "Хэмминга", 64, 0.5, {10, 20});
     Q_ASSERT(!filt.writeDataFile(testPath, "filtObj.txt"));
     // Вычисление спектра
-    DataSignal psd = computePowerSpectralDensity(obj1, "Хэмминга", 64, 0.5);
+    DataSignal psd = computePowerSpectralDensity(obj1, "Хэмминга", 64, 0.5, 512, 3);
     Q_ASSERT(!psd.writeDataFile(testPath, "psdObj.txt"));
     // Интегрирование
     QVector<DataSignal> integrVecObj = integrate(obj1, 1, -1);
@@ -87,4 +87,7 @@ void testNumericalFunctions(){
     // Линейная интерполяция
     DataSignal linInterpObj = interpolateLinear(obj1, 400);
     Q_ASSERT(!linInterpObj.writeDataFile(testPath, "interpLinObj.txt"));
+    // Сплайн-интерполяция
+    DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000);
+    Q_ASSERT(!splineInterpObj.writeDataFile(testPath, "interpSplineObj.txt"));
 }

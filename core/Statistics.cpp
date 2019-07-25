@@ -256,7 +256,7 @@ void Statistics::checkEstimationBoundaries(){
 }
 
 // Нахождение минимального размера сигнала из группы
-int Statistics::calcMinSizeSignals(){
+int Statistics::calcMinSizeSignals() const {
     if (pVecDataSignal->isEmpty()) return 0; // Проверка на пустоту
     QVector<DataSignal>::const_iterator iter = pVecDataSignal->begin();
     int tempMinSize = iter->size(); ++iter;

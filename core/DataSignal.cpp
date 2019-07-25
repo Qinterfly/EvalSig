@@ -36,7 +36,7 @@ DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), da
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
-    if (*this != other){
+    if (this != &other){
         property = other.property;
         data_ = other.data_;
     }

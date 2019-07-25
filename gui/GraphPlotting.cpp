@@ -32,7 +32,7 @@ void MainWindow::removeGraph(int deleteInd){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     ui->comparePlot->removeGraph(SECONDARY_PLOT_IND + deleteInd); // Удаление графика
     bool isExistSpectrum = false; // Флаг наличия графиков спектров
-    for (auto dataSignal : vecDataSignal_) // Проверка существования спектров в наборе графиков
+    for (auto const& dataSignal : vecDataSignal_) // Проверка существования спектров в наборе графиков
         if ( dataSignal.isSpectrum() ) { isExistSpectrum = true; break; }
     if (!isExistSpectrum) // В случае, если спектров не осталось, скрываем частоты
         ui->comparePlot->xAxis2->setVisible(false);
