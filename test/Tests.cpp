@@ -1,6 +1,7 @@
 #include <QDebug>
 #include "Tests.h"
 #include "core/NumericalFunctions.h"
+#include "core/DivisionDataSignal.h"
 
 // Проверка временных сигналов
 void testDataSignal(){
@@ -90,4 +91,12 @@ void testNumericalFunctions(){
     // Сплайн-интерполяция
     DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000);
     Q_ASSERT(!splineInterpObj.writeDataFile(testPath, "interpSplineObj.txt"));
+}
+
+// Проверка разбиения сигнала на уровни
+void testDivisionDataSignal(){
+    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
+    DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
+    DivisionDataSignal divSignal(obj1, 0.5, 0, 1e-4, 1, -1);
+    Q_ASSERT(!divSignal.writeDisplacement(testPath, "dispShort2.txt"));
 }

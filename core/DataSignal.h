@@ -53,12 +53,12 @@ private:
 // Вспомогательные функции
 
 // Поиск минимума-максимума в векторе
-double minMaxVec(QVector<double> const& vecD, std::function<bool(double, double)> && orderFun);
+QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
 // Вычисление среднего для вектора
-double meanVec(QVector<double> const& vecD);
+double meanVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
 // Нормализация вектора
-void normalizeVec(QVector<double> & vecD);
+void normalizeVec(QVector<double> & vec, int leftInd = 0, int rightInd = -1);
 
 #endif // DATASIGNAL_H

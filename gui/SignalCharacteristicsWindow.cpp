@@ -100,8 +100,8 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         QString const& weightWindowType = ui->comboBoxWeightWindowType->currentText();  // Тип окна
         int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
         double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
-        int lengthSpectrum =  ui->spinBoxChoosedSignalInterpolation->value(); // Число точек для интерполяции
-        int windowSmoothWidth = 3; // TODO: интерфейс (если ноль, то без сглаживания)
+        int lengthSpectrum =  ui->spinBoxSpectrumInterpolation->value(); // Число точек для интерполяции
+        int windowSmoothWidth = ui->spinBoxSmoothWidth->value(); // Число точек для сглаживания
         DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth); // Вычисление спектра сигнала
         powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
     }
@@ -112,12 +112,6 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
             double correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value(); // Коэффициент коррекции
             DataSignal corrDataSignal = correct(resDataSignal, correctionFactor); // Скорректированный временной сигнала
             saveStatus += corrDataSignal.writeDataFile(lastPath_, signalName + "-Скоррект" + ".txt"); // Сохранение скорректированного временного сигнала
-        }
-        // Проверка необходимости интерполяции
-        if (ui->checkBoxChoosedSignalInterpolation->isChecked()){
-            int nPoint = ui->spinBoxChoosedSignalInterpolation->value(); // Число точек интерполяции
-            DataSignal interpDataSignal = interpolateLinear(resDataSignal, nPoint); // Интерполяция сигнала
-            saveStatus += interpDataSignal.writeDataFile(lastPath_, signalName + "-Интерп" + ".txt"); // Сохранение интерполированного временного сигнала
         }
         // Проверка необходимости фильтрации
         if (ui->checkBoxChoosedSignalFiltration->isChecked()){

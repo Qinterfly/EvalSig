@@ -141,28 +141,27 @@ void DataSignal::setPhysicalFactor(double physicalFactor){
 // ---- Вспомогательные функции --------------------------------------------------------------------------------
 
 // Поиск минимума-максимума в векторе
-double minMaxVec(QVector<double> const& vecD, std::function<bool(double, double)> && orderFun){
-    double minMaxVal = vecD[0];
-    for (double const & val : vecD)
-        if (orderFun(qAbs(val), minMaxVal))
-            minMaxVal = qAbs(val);
-    return minMaxVal;
+QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd, int rightInd){
+    if (rightInd == -1) rightInd = vec.size() - 1; // Обработка обратной индексации
+    auto res = std::minmax_element(vec.begin() + leftInd, vec.begin() + rightInd + 1);
+    return {*res.first, *res.second};
 }
 
 // Вычисление среднего для вектора
-double meanVec(QVector<double> const& vecD){
-    if (vecD.isEmpty()) return 0; // Обработка пустого вектора
+double meanVec(QVector<double> const& vec, int leftInd, int rightInd){
+    if (rightInd == -1) rightInd = vec.size() - 1; // Обработка обратной индексации
     double sum = 0;
-    for (double const& val : vecD)
-        sum += val;
-    return (sum / vecD.size());
+    for (int i = leftInd; i <= rightInd; ++i)
+        sum += vec[i];
+    return ( sum / (rightInd - leftInd + 1) );
 }
 
 // Нормализация вектора
-void normalizeVec(QVector<double> & vecD){
-    double meanVal = meanVec(vecD);
-    for (double & val : vecD)
-        val -= meanVal;
+void normalizeVec(QVector<double> & vec, int leftInd, int rightInd){
+    if (rightInd == -1) rightInd = vec.size() - 1; // Обработка обратной индексации
+    double meanVal = meanVec(vec, leftInd, rightInd);
+    for (int i = leftInd; i <= rightInd; ++i)
+        vec[i] -= meanVal;
 }
 
 // -------------------------------------------------------------------------------------------------------------
