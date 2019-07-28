@@ -7,6 +7,7 @@
 struct DivisionDataSignal{
     DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothFactor,
                        int lEstimationBoundary = 1, int rEstimationBoundary = -1);
+    ~DivisionDataSignal() = default; // Деструктор
     void setCalculationInd(int lEstimationBoundary, int rEstimationBoundary); // Задание расчетных границ
     // Файловые методы
     int writeDisplacement(QString const& path, QString const& fileName); // Сохранение перемещений
