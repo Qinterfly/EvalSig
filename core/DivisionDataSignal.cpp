@@ -9,6 +9,9 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double leve
 {
     overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1; // Обработка коэффициента перекрытия
     setCalculationInd(leftEstimationBound, rightEstimationBound); // Задание расчетных границ
+    // Инициализация векторов, определяющих уровни
+    lowBoundLevels_ = {0}; upperBoundLevels_ = {0};
+    indLevels_ = {0};
     // Нахождение перемещений по сигналу ускорения
     displacement_ = integrate(dataSignal, 2, smoothFactor_)[1];
     createLevels(); // Создание расчетных уровней
@@ -22,11 +25,6 @@ void DivisionDataSignal::createLevels(){
     nLevels = 1; // Один уровень гарантирован
     // Обработка единственного уровня
     if (max <= mean + levelStep_ / 2 && min >= mean - levelStep_ / 2){
-        // Задание размеров вектора
-        lowBoundLevels_.resize(1); // Нижняя граница
-        upperBoundLevels_.resize(1); // Верхняя граница
-        indLevels_.resize(1); // Индекс
-        // Заполнение
         lowBoundLevels_[0] = mean - levelStep_ / 2;
         upperBoundLevels_[0] = mean + levelStep_ / 2;
         indLevels_[0] = 0;
@@ -61,11 +59,13 @@ void DivisionDataSignal::createLevels(){
 
 // Задание индексов расчетных границ
 void DivisionDataSignal::setCalculationInd(int lBound, int rBound){
+    bool isChanged = false; // Флаг изменения границ
     if (rBound == -1) rBound = ptrAccel_->size(); // Правая граница по умолчанию
-    if (lBound > rBound) lBound = 1; // Проверка корректности границ
-    calculationInd_ = {lBound - 1, rBound - 1};
-    // Если уровни до этого уже были созданы
-    if (nLevels != 0){
+    --lBound; --rBound; // Сдвиг границ к индексам
+    if (lBound != calculationInd_.first || rBound != calculationInd_.second) isChanged = true; // Если хотя бы одна граница изменилась
+    calculationInd_ = {lBound, rBound};
+    // Если уровни до этого уже были созданы и границы сменились
+    if ( nLevels != 0 && isChanged ){
         createLevels();
     }
 }
