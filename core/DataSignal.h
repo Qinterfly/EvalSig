@@ -57,6 +57,9 @@ private:
 // Поиск минимума-максимума в векторе
 QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
+// Поиск максимума в векторе
+double maxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
+
 // Вычисление среднего для вектора
 double meanVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 

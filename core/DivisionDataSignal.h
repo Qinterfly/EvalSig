@@ -9,7 +9,7 @@ using partsInt = QVector< QVector<int> >;
 
 struct DivisionDataSignal{
     DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
-                       double smoothApproxFactor, int lEstimationBound= 1, int rEstimationBound = -1);
+                       double smoothApproxFactor, double truncatePercent, int lEstimationBound= 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     void setCalculationInd(int lEstimationBoundary, int rEstimationBoundary); // Задание расчетных границ
     int numberOfLevels() const { return nLevels_; } // Получить число уровней
@@ -20,13 +20,16 @@ struct DivisionDataSignal{
     int writeApproxDisplacement(QString const& path, QString const& fileName); // Сохранение аппроксимированных перемещений
 private:
     void createLevels(); // Создание расчетных уровней
-    void multiAssignLevels(); // Назначить уровни в многопоточном режиме
     void assignLevels(int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни
+    void truncateLevels(int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов
+    void derivativeLevels(int firstLevelInd = 0, int lastLevelInd = -1); // Вычисление производных
+    void callMultiThread(void (DivisionDataSignal::*method)(int, int)); // Вызов метода в многопоточном режиме
 private:
     double levelStep_; // Величина смещения уровней
     double overlapFactor_; // Величина перекрытия уровней
     double smoothIntegFactor_; // Величина сглаживания при интегрировании
     double smoothApproxFactor_; // Величина сглаживания перемещений
+    double truncatePercent_; // Процент усечения коротких фрагментов
     DataSignal accel_; // Указатель на полный временной сигнал ускорений
     DataSignal displacement_; // Перемещение
     DataSignal approxDisplacement_; // Аппроксимированные перемещения
@@ -39,6 +42,8 @@ private:
     partsDouble parAccel_; // Ускорения
     partsInt parFlags_; // Флаги концов фрагментов
     partsInt parInd_; // Индексы концов фрагментов
+    QVector<int> lengthLevels_; // Длины уровней
+    QVector<int> nFragmentLevels_; // Число фрагментов на уровнях
 };
 
 #endif // DIVISIONDATASIGNAL_H

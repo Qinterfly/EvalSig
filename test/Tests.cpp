@@ -97,7 +97,7 @@ void testNumericalFunctions(){
 void testDivisionDataSignal(){
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
-    DivisionDataSignal divSignal(obj1, 0.01, 0.5, 0.1, 0.1, 1, -1);
+    DivisionDataSignal divSignal(obj1, 0.02, 0.5, 0.1, 0.1, 0.2, 1, -1);
 //    Q_ASSERT(!divSignal.writeDisplacement(testPath, "dispShort2.txt"));
 //    Q_ASSERT(!divSignal.writeApproxDisplacement(testPath, "approxDispShort2.txt"));
 

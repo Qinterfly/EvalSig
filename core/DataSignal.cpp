@@ -145,6 +145,11 @@ QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd, int rig
     return {*res.first, *res.second};
 }
 
+// Поиск максимума в векторе
+double maxVec(QVector<double> const& vec, int leftInd, int rightInd){
+    return *std::max(vec.begin() + leftInd, vec.begin() + rightInd + 1);;
+}
+
 // Вычисление среднего для вектора
 double meanVec(QVector<double> const& vec, int leftInd, int rightInd){
     if (rightInd == -1) rightInd = vec.size() - 1; // Обработка обратной индексации
