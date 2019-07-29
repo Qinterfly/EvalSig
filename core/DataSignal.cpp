@@ -55,10 +55,8 @@ bool DataSignal::operator!=(DataSignal const& other) const { return !(*this == o
 double DataSignal::mean() const { return meanVec(data_); }
 
 // Нормализация сигнала
-void DataSignal::normalize(QString const& option) {
-    // При усреднении к среднему значению
-    if (option == "mean")
-        normalizeVec(data_);
+void DataSignal::normalize(NormalizeOption option) {
+    normalizeVec(data_, option);
 }
 
 // Чтение текстового файла с временным сигналом
@@ -157,11 +155,19 @@ double meanVec(QVector<double> const& vec, int leftInd, int rightInd){
 }
 
 // Нормализация вектора
-void normalizeVec(QVector<double> & vec, int leftInd, int rightInd){
+void normalizeVec(QVector<double> & vec, NormalizeOption option, int leftInd, int rightInd){
     if (rightInd == -1) rightInd = vec.size() - 1; // Обработка обратной индексации
-    double meanVal = meanVec(vec, leftInd, rightInd);
+    double zeroLineVal = 0;
+    switch (option){
+    case FIRST: // По первому значению
+        zeroLineVal = vec[0];
+        break;
+    case MEAN: // По среднему значению
+        zeroLineVal = meanVec(vec, leftInd, rightInd);
+        break;
+    }
     for (int i = leftInd; i <= rightInd; ++i)
-        vec[i] -= meanVal;
+        vec[i] -= zeroLineVal;
 }
 
 // -------------------------------------------------------------------------------------------------------------

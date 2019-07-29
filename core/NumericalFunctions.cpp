@@ -12,7 +12,7 @@
 DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint)
 {
     // Число точек аппроксимации nPoint:
-    // == 0 -- аппроксимация по длине сигнала nDataSignal
+    // <= 0 -- аппроксимация по длине сигнала nDataSignal
     // != 0 -- равномерное разбиение по длине сигнала с сохранением граничных значений
     int nDataSignal = dataSignal.size(); // Длина временного сигнала
     if (nPoint <= 0) nPoint = nDataSignal; // По всей длине сигнала
@@ -227,7 +227,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
-    normalizeVec(inputData); // (!) Нормализация исходных данных
+    normalizeVec(inputData, MEAN); // (!) Нормализация исходных данных
     QVector<double> power; // Плотность спектральной мощности
     // Объекты, необходимые для выполнения преобразования
     double * currentData; // Значения сигнала для текущего окна
@@ -311,7 +311,7 @@ DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindo
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
-    normalizeVec(inputData); // (!) Нормализация исходных данных
+    normalizeVec(inputData, MEAN); // (!) Нормализация исходных данных
     QVector<double> resultData; // Результирующие отфильтрованные данные
     // Объекты, необходимые для выполнения преобразования
     double * currentData; // Значения сигнала для текущего окна

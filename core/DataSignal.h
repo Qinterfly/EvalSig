@@ -7,6 +7,8 @@
 #include "FileOperate.h"
 #include "PropertyDataSignal.h"
 
+enum NormalizeOption{ FIRST, MEAN }; // Опции нормировки
+
 struct DataSignal {
     // Конструкторы и деструктор
     DataSignal() = default;
@@ -25,7 +27,7 @@ struct DataSignal {
     bool isEmpty() const { return !size(); } // Проверка на пустоту сигнала
     bool isSpectrum() const { return property.isSpectrum; } // Проверка является ли сигнал спектром
     double mean() const; // Получение среднего значения сигнала
-    void normalize(QString const& option); // Нормализация сигнала
+    void normalize(NormalizeOption option); // Нормализация сигнала
     QVector<double> const& getData() const { return data_; } // Получение сигнала без свойств
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
@@ -59,6 +61,6 @@ QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd = 0, int
 double meanVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
 // Нормализация вектора
-void normalizeVec(QVector<double> & vec, int leftInd = 0, int rightInd = -1);
+void normalizeVec(QVector<double> & vec, NormalizeOption option, int leftInd = 0, int rightInd = -1);
 
 #endif // DATASIGNAL_H
