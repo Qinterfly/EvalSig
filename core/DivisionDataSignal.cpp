@@ -33,7 +33,7 @@ void DivisionDataSignal::calculate(){
     // Расчет частей ускорений
     callMultiThread(partsAccel, &DivisionDataSignal::assignLevels);          // Назначить уровни в многопоточном режиме
     callMultiThread(partsAccel, &DivisionDataSignal::truncateLevels);        // Усечь уровни
-    derivativeLevels(partsAccel);                                            // Вычисление производных
+    derivativeLevels(partsAccel);                                            // Вычислить производные
     // Расчет частей перемещений
     callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels);   // Назначить уровни в многопоточном режиме
     callMultiThread(partsDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни

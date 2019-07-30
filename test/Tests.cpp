@@ -102,7 +102,7 @@ void testDivisionDataSignal(){
 //    Q_ASSERT(!divSignal.writeApproxDisplacement(testPath, "approxDispShort2.txt"));
 
 //    DataSignal obj2(testPath, "ОП 182 1с ку.txt"); // Длина == 30061
-//    DivisionDataSignal divSignal(obj2, 20, 0.5, 1e-7, 1e-7, 0.2, 1, -1);
+//    DivisionDataSignal divSignal(obj2, 15, 0.5, 1e-7, 1e-7, 0.2, 1, -1);
 //    Q_ASSERT(!divSignal.writeDisplacement(testPath, "dispOp182.txt"));
 //    Q_ASSERT(!divSignal.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
 }
