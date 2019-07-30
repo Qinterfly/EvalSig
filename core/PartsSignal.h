@@ -23,7 +23,7 @@ struct PartsSignal
     partsInt ind_;                  // Индексы концов фрагментов
     QVector<int> lengthLevels_;     // Длины уровней
     QVector<int> nFragmentLevels_;  // Число фрагментов на уровнях
-    DataSignal const& signal_;  // Ссылка на исходный сигнал
+    DataSignal const& signal_;      // Ссылка на исходный сигнал
 };
 
 #endif // PARTSSIGNAL_H

@@ -5,7 +5,7 @@
 #include "PartsSignal.h"
 
 struct DivisionDataSignal;
-using PartsMethod = void (DivisionDataSignal::*)(PartsSignal &, int, int);
+ using PartsMethod = void (DivisionDataSignal::*)(PartsSignal &, int, int);
 
 struct DivisionDataSignal{
     DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
@@ -24,7 +24,8 @@ private:
     void assignLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни
     void truncateLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов
     void derivativeLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Вычисление производных
-    void callMultiThread(PartsSignal & partsSignal, PartsMethod method); // Вызов метода в многопоточном режиме
+    template <typename T>
+    void callMultiThread(T & partsSignal, void (DivisionDataSignal::*method)(T &, int, int)); // Вызов метода в многопоточном режиме
 private:
     double levelStep_; // Величина смещения уровней
     double overlapFactor_; // Величина перекрытия уровней

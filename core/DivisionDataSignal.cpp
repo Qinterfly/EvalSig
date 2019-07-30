@@ -28,9 +28,9 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double leve
 void DivisionDataSignal::calculate(){
     createLevels(); // Создание расчетных уровней
     // Ускорения
-    callMultiThread(partsAccel, &DivisionDataSignal::assignLevels);   // Назначить уровни в многопоточном режиме
-    callMultiThread(partsAccel, &DivisionDataSignal::truncateLevels); // Усечь уровни
-    derivativeLevels(partsAccel);                                     // Вычисление производных
+    callMultiThread(partsAccel, &DivisionDataSignal::assignLevels);          // Назначить уровни в многопоточном режиме
+    callMultiThread(partsAccel, &DivisionDataSignal::truncateLevels);        // Усечь уровни
+//    derivativeLevels(partsAccel);                                          // Вычисление производных
     // Перемещения
     callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels);   // Назначить уровни в многопоточном режиме
     callMultiThread(partsDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни
@@ -179,7 +179,8 @@ void DivisionDataSignal::derivativeLevels(PartsSignal & partsSignal, int firstLe
 }
 
 // Вызов метода в многопоточном режиме
-void DivisionDataSignal::callMultiThread(PartsSignal & partsSignal, PartsMethod method){
+template <typename T>
+void DivisionDataSignal::callMultiThread(T & partsSignal, void (DivisionDataSignal::*method)(T &, int, int)){
     int nLevelPerThread = nLevels_ / MAX_THREAD_NUM ; // Число уровней на поток
     int residue = nLevels_ % MAX_THREAD_NUM; // Остаток
     int nThread = MAX_THREAD_NUM; // Реальное число потоков
