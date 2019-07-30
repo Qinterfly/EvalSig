@@ -21,6 +21,7 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
         core/DataSignal.cpp \
     core/DivisionDataSignal.cpp \
+    core/PartsSignal.cpp \
         core/Statistics.cpp \
         gui/MainWindow.cpp \
         gui/SignalProcessing.cpp \
@@ -44,6 +45,7 @@ SOURCES += \
 HEADERS += \
         core/DataSignal.h \
     core/DivisionDataSignal.h \
+    core/PartsSignal.h \
         core/Statistics.h \
         core/Macroses.h \
         gui/MainWindow.h \
