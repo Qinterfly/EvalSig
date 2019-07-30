@@ -27,11 +27,14 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double leve
 // Управляющий расчетный метод
 void DivisionDataSignal::calculate(){
     createLevels(); // Создание расчетных уровней
-    // Ускорения
+    // Выделение памяти для частей по уровням
+    partsAccel.resizeAll(nLevels_); // Ускорения
+    partsDisplacement.resizeAll(nLevels_); // Перемещения
+    // Расчет частей ускорений
     callMultiThread(partsAccel, &DivisionDataSignal::assignLevels);          // Назначить уровни в многопоточном режиме
     callMultiThread(partsAccel, &DivisionDataSignal::truncateLevels);        // Усечь уровни
-//    derivativeLevels(partsAccel);                                          // Вычисление производных
-    // Перемещения
+    derivativeLevels(partsAccel);                                            // Вычисление производных
+    // Расчет частей перемещений
     callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels);   // Назначить уровни в многопоточном режиме
     callMultiThread(partsDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни
 }
@@ -79,8 +82,6 @@ void DivisionDataSignal::createLevels(){
 void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelInd, int lastLevelInd){
     QVector<double> const& data = approxDisplacement_.getData(); // Данные перемещений
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
-    // Выделение памяти для частей
-    partsSignal.resizeAll(nLevels_);
     for (int i = firstLevelInd; i <= lastLevelInd; ++i) { // По группе уровней
         // Оценка размеров
         int lenLevel = 0; // Длина сигнала на заданном уровне
