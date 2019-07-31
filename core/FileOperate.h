@@ -4,6 +4,6 @@
 #include <QString>
 
 // Проверка файла на существование и на режим записи / чтения
-bool checkFile(QString const& fileFullPath, QString const& mode);
+int checkFile(QString const& fileFullPath, QString const& mode);
 
 #endif // FILEOPERATE_H

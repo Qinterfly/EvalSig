@@ -6,6 +6,8 @@
 
 using Spline1d = Eigen::Spline<double, 1>;
 
+enum WindowFunction{ HAMMING, HANN, BLACKMAN }; // Типы весовых окон для преобразования Фурье
+
 // Функции обработки временных сигналов
     // Аппроксимация
 DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint = -1); // Аппроксимация сплайнами
@@ -16,10 +18,10 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
 DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint); // Линейная интерполяция сигнала
 DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nResPoints); // Интерполяция сплайном
     // Вычисление плотности спектральной мощности
-DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int widthWindow, double overlapFactor,
+DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunction windowFun, int widthWindow, double overlapFactor,
                                        int lengthSpectrum, int windowSmoothWidth); // Вычисление спектральной мощности сигнала
     // Фильтрация
-DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindow, int widthWindow, double overlapFactor, QPair<double, double> const& freqSegment); // Фильтрация сигнала по частотам
+DataSignal bandpassFilter(DataSignal const& dataSignal, WindowFunction windowFun, int widthWindow, double overlapFactor, QPair<double, double> const& freqSegment); // Фильтрация сигнала по частотам
 DataSignal movingAverageFilter(DataSignal const& dataSignal, int windowLength); // Фильтрация сигнала скользящим средним
     // Корректировка
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала

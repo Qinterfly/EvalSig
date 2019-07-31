@@ -97,12 +97,12 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
     }
     // Спектральное разложение
     if (isPowerSpectralDensity){
-        QString const& weightWindowType = ui->comboBoxWeightWindowType->currentText();  // Тип окна
+        WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
         int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
         double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
         int lengthSpectrum =  ui->spinBoxSpectrumInterpolation->value(); // Число точек для интерполяции
         int windowSmoothWidth = ui->spinBoxSmoothWidth->value(); // Число точек для сглаживания
-        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth); // Вычисление спектра сигнала
+        DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, windowFun, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth); // Вычисление спектра сигнала
         powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
     }
     // Сохранение выбранного сигнала
@@ -115,12 +115,12 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         }
         // Проверка необходимости фильтрации
         if (ui->checkBoxChoosedSignalFiltration->isChecked()){
-            QString const& weightWindowType = ui->comboBoxWeightWindowType->currentText();  // Тип окна
+            WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
             int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
             double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
             double lowerFreq = ui->spinBoxChoosedSignalLowerFrequency->value(); // Нижняя частота
             double upperFreq = ui->spinBoxChoosedSignalUpperFrequency->value(); // Верхняя частота
-            DataSignal filterDataSignal = bandpassFilter(resDataSignal, weightWindowType, weightWindowWidth, overlapFactor, {lowerFreq, upperFreq});
+            DataSignal filterDataSignal = bandpassFilter(resDataSignal, windowFun, weightWindowWidth, overlapFactor, {lowerFreq, upperFreq});
             saveStatus += filterDataSignal.writeDataFile(lastPath_, signalName + "-Фильтр" + ".txt"); // Сохранение фильтрованного временного сигнала
         }
         saveStatus += resDataSignal.writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала

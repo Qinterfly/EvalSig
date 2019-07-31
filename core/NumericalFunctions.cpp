@@ -186,27 +186,25 @@ DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double>
 }
 
 // Нахождение оконных весовых коэффициентов
-QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
+QVector<double> computeWeightWindow(WindowFunction windowFun, int weightWindowWidth){
     bool isChoosed = false; // Индикатор выбора окна
     QVector<double> window; // Весовые коэффициенты
     // Проверка размера окна
     if (weightWindowWidth < 0)
         qDebug() << "Неверный размер весового окна";
     window.resize(weightWindowWidth);
-    // Окно Хэмминга
-    if (type == "Хэмминга"){
+    switch (windowFun){
+    case HAMMING: // Окно Хэмминга
         for (int i = 0; i != weightWindowWidth; ++i)
             window[i] = 0.53836 - ( 0.46164 * qCos(2 * M_PI * i / (weightWindowWidth - 1)) );
         isChoosed = true;
-    }
-    // Окно Ханна
-    else if (type == "Ханна"){
+        break;
+    case HANN: // Окно Ханна
         for (int i = 0; i != weightWindowWidth; ++i)
             window[i] = 0.5 * ( 1 - qCos(2 * M_PI * i / (weightWindowWidth - 1)) );
         isChoosed = true;
-    }
-    // Окно Блэкмана
-    else if (type == "Блэкмана"){
+        break;
+    case BLACKMAN: // Окно Блэкмана
         double alpha = 0.16;
         double a0 = (1.0 - alpha ) / 2.0;
         double a1 = 0.5;
@@ -214,6 +212,7 @@ QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
         for (int i = 0; i != weightWindowWidth; ++i)
             window[i] = a0 - a1 * qCos(2 * M_PI * i / (weightWindowWidth - 1)) + a2 * qCos(4 * M_PI * i / (weightWindowWidth - 1));
         isChoosed = true;
+        break;
     }
     // Проверка корректности переданного типа окна
     if (!isChoosed)
@@ -222,7 +221,7 @@ QVector<double> computeWeightWindow(QString const& type, int weightWindowWidth){
 }
 
 // Вычисление спектральной мощности сигнала
-DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor,
+DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunction windowFun, int weightWindowWidth, double overlapFactor,
                                        int lengthSpectrum, int windowSmoothWidth){
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
@@ -239,7 +238,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, QString con
     // Создание оценочного плана расчета
     plan = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_MEASURE);
     // Настройка весового окна
-    QVector<double> weightWindow = computeWeightWindow(typeWindow, weightWindowWidth);
+    QVector<double> weightWindow = computeWeightWindow(windowFun, weightWindowWidth);
     int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
     int leftBound = 0, rightBound; // Границы окна
     // Вычислить плотность спектральной мощности по всем окнам
@@ -307,7 +306,7 @@ DataSignal correct(DataSignal const& dataSignal, double smoothFactor){
 }
 
 // Фильтрация сигнала по частотам
-DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindow, int weightWindowWidth, double overlapFactor, QPair<double, double> const& freqSegment){
+DataSignal bandpassFilter(DataSignal const& dataSignal, WindowFunction windowFun, int weightWindowWidth, double overlapFactor, QPair<double, double> const& freqSegment){
     int nInputData = dataSignal.size(); // Длина временных данных
     // Входные-выходные данные
     QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
@@ -324,7 +323,7 @@ DataSignal bandpassFilter(DataSignal const& dataSignal, QString const& typeWindo
     planForward = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_MEASURE); // Прямое преобразование
     planInverse = fftw_plan_dft_c2r_1d(weightWindowWidth, currentFFTResult, currentData, FFTW_MEASURE); // Обратное преобразования
     // Настройка весового окна
-    QVector<double> weightWindow = computeWeightWindow(typeWindow, weightWindowWidth);
+    QVector<double> weightWindow = computeWeightWindow(windowFun, weightWindowWidth);
     int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
     int leftBound = 0, rightBound; // Границы окна
     // FFT-IFFT

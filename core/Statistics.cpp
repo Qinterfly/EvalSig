@@ -28,7 +28,7 @@ Statistics::Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow,
 
 // Интерфейс пользователя
     // Добавление сигнала
-bool Statistics::addSignal(DataSignal const& dataSignal){
+int Statistics::addSignal(DataSignal const& dataSignal){
     int sizeSignal = dataSignal.size(); // Длина сигнала
     pVecDataSignal->push_back(dataSignal);   // Добавление объекта в вектор сигналов
     // Оценка необходимости полного пересчета матрицы
@@ -50,7 +50,7 @@ bool Statistics::addSignal(DataSignal const& dataSignal){
     return 0;
 }
     // Удаление сигнала
-bool Statistics::removeSignal(int deleteInd){
+int Statistics::removeSignal(int deleteInd){
     if (isEmpty()) { qDebug() << "Объект статистик пуст"; return 1; } // Проверка на пустоту
     if (deleteInd < 0 || deleteInd > nSize_ - 1){ // Проверка на возможность удаления
         qDebug() << "Попытка удаления несуществующего элемента";
@@ -258,9 +258,9 @@ void Statistics::checkEstimationBoundaries(){
 // Нахождение минимального размера сигнала из группы
 int Statistics::calcMinSizeSignals() const {
     if (pVecDataSignal->isEmpty()) return 0; // Проверка на пустоту
-    QVector<DataSignal>::const_iterator iter = pVecDataSignal->begin();
+    QVector<DataSignal>::const_iterator iter = pVecDataSignal->constBegin();
     int tempMinSize = iter->size(); ++iter;
-    for ( ; iter != pVecDataSignal->end(); ++iter)
+    for ( ; iter != pVecDataSignal->constEnd(); ++iter)
         if (iter->size() < tempMinSize) tempMinSize = iter->size();
     return tempMinSize;
 }

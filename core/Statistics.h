@@ -30,8 +30,8 @@ struct Statistics{
     double getMinSegment(int ind) const { return minMaxSegment_[ind].first; }       // Минимум на отрезке
     double getMaxSegment(int ind) const { return minMaxSegment_[ind].second; }      // Максимум на отрезке
     double getLocalDeviationSegment(int ind) const { return localDeviationSegment_[ind]; } // Локальное отклонение
-    bool addSignal(DataSignal const& dataSignal); // Добавление сигнала
-    bool removeSignal(int deleteInd); // Удаление сигнала
+    int addSignal(DataSignal const& dataSignal); // Добавление сигнала
+    int removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
     void setEstimationBoundaries(int leftBound, int rightBound); // Выставление расчетных границ
     int writeAllStatistics(QString const& dirName) const; // Сохранение всех статистик

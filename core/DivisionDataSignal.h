@@ -4,14 +4,11 @@
 #include "core/DataSignal.h"
 #include "PartsSignal.h"
 
-struct DivisionDataSignal;
- using PartsMethod = void (DivisionDataSignal::*)(PartsSignal &, int, int);
-
 struct DivisionDataSignal{
     DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
                        double smoothApproxFactor, double truncatePercent, int lEstimationBound= 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
-    void setCalculationInd(int lEstimationBoundary, int rEstimationBoundary); // Задание расчетных границ
+    void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
     int numberOfLevels() const { return nLevels_; } // Получить число уровней
     DataSignal getDisplacement() const { return displacement_; } // Получить перемещения
     DataSignal getApproxDisplacement() const { return approxDisplacement_; } // Получить аппроксимированные перемещения

@@ -85,14 +85,14 @@ void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelI
     for (int i = firstLevelInd; i <= lastLevelInd; ++i) { // По группе уровней
         // Оценка размеров
         int lenLevel = 0; // Длина сигнала на заданном уровне
-        bool isFragment = 0; // Флаг окончания фрагмента
+        bool isFragment = false; // Флаг окончания фрагмента
         int iFragment = 0; // Счетчик фрагментов
         for (int j = calculationInd_.first; j <= calculationInd_.second; ++j){
             if ( data[j] >= lowBoundLevels_[i] && data[j] <= upperBoundLevels_[i] ){
-                isFragment = 1;
+                isFragment = true;
                 ++lenLevel;
             } else if (isFragment){
-                isFragment = 0;
+                isFragment = false;
                 ++iFragment;
             }
         }
@@ -103,17 +103,17 @@ void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelI
         partsSignal.resizeMain(i, lenLevel); // Время, сигнал и флаги
         partsSignal.resizeInd(i); // Индексы концов
         // Заполнение векторов
-        lenLevel = 0; iFragment = 0; isFragment = 0;
+        lenLevel = 0; iFragment = 0; isFragment = false;
         for (int j = calculationInd_.first; j <= calculationInd_.second; ++j){
             if ( data[j] >= lowBoundLevels_[i] && data[j] <= upperBoundLevels_[i] ){
                 partsSignal.time_[i][lenLevel] = j + 1; // Время
                 partsSignal.data_[i][lenLevel] = partsSignal.signal_[j]; // Ускорение
-                isFragment = 1;
+                isFragment = true;
                 ++lenLevel;
             } else if (isFragment){
                 partsSignal.flags_[i][lenLevel - 1] = 1; // Флаг конца
                 partsSignal.ind_[i][iFragment] = lenLevel - 1; // Индекс конца
-                isFragment = 0;
+                isFragment = false;
                 ++iFragment;
             }
         }
@@ -207,12 +207,12 @@ void DivisionDataSignal::callMultiThread(T & partsSignal, void (DivisionDataSign
 }
 
 // Задание индексов расчетных границ
-void DivisionDataSignal::setCalculationInd(int lBound, int rBound){
+void DivisionDataSignal::setCalculationInd(int lEstimationBound, int rEstimationBound){
     bool isChanged = false; // Флаг изменения границ
-    if (rBound == -1) rBound = accel_.size(); // Правая граница по умолчанию
-    --lBound; --rBound; // Сдвиг границ к индексам
-    if (lBound != calculationInd_.first || rBound != calculationInd_.second) isChanged = true; // Если хотя бы одна граница изменилась
-    calculationInd_ = {lBound, rBound};
+    if (rEstimationBound == -1) rEstimationBound = accel_.size(); // Правая граница по умолчанию
+    --lEstimationBound; --rEstimationBound; // Сдвиг границ к индексам
+    if (lEstimationBound != calculationInd_.first || rEstimationBound != calculationInd_.second) isChanged = true; // Если хотя бы одна граница изменилась
+    calculationInd_ = {lEstimationBound, rEstimationBound};
     // Если уровни до этого уже были созданы и границы сменились
     if ( nLevels_ != 0 && isChanged )
         calculate(); // Вызов расчетного метода

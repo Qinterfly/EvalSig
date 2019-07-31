@@ -1,5 +1,5 @@
-//#include <QApplication>
-//#include "MainWindow.h"
+#include <QApplication>
+#include "MainWindow.h"
 
 #include "test/Tests.h"
 

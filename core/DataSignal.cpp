@@ -32,7 +32,7 @@ DataSignal::DataSignal(DataSignal const& other, int leftInd, int rightInd) : pro
         data_[i - leftInd] = other.data_[i];
 }
 // Перемещающий конструктор для всего сигнала
-DataSignal::DataSignal(DataSignal && tmpOther) : property(tmpOther.property), data_(tmpOther.data_) { }
+DataSignal::DataSignal(DataSignal && tmpOther) noexcept : property(std::move(tmpOther.property)), data_(std::move(tmpOther.data_)) { }
 
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
