@@ -197,7 +197,7 @@ void DivisionDataSignal::derivativeLevels(PartsObject & partsObject, int firstLe
             if (lenFragment != 1){ // Если фрагмент не одиночный
                 for (int k = lastIndex; k != endFragmentIndex; ++k)
                     partsObject.derivative_[i][k] = partsObject.data_[i][k + 1] - partsObject.data_[i][k]; // Правая конечная разность
-                partsObject.derivative_[i][endFragmentIndex] = partsObject.data_[i][endFragmentIndex] - partsObject.data_[i][endFragmentIndex - 1]; // Левая конечная разность
+                partsObject.derivative_[i][endFragmentIndex] = partsObject.derivative_[i][endFragmentIndex - 1]; // Копия
             } else
                 partsObject.derivative_[i][lastIndex] = 0.0;
             lastIndex = endFragmentIndex + 1;
