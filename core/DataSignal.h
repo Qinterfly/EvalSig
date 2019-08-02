@@ -9,7 +9,8 @@
 
 enum NormalizeOption{ FIRST, MEAN }; // Опции нормировки
 
-struct DataSignal {
+class DataSignal {
+public:
     // Конструкторы и деструктор
     DataSignal() = default;
     DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла

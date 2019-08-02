@@ -6,7 +6,8 @@
 #include "TimeWindowProperty.h"
 
 // Класс статистических характеристик
-struct Statistics{
+class Statistics{
+public:
     Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary);
     ~Statistics() = default; // Деструктор
     Statistics(Statistics const&) = delete; // Запрет на копирование

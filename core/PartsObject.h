@@ -8,10 +8,10 @@ using partsDouble = QVector< QVector<double> >;
 using partsInt = QVector< QVector<int> >;
 
 // Закрытое поле класса DivisionDataSignal
-struct PartsSignal
-{
-    PartsSignal(DataSignal const& signal);
-    ~PartsSignal() = default;
+
+struct PartsObject {
+    PartsObject() = default;
+    ~PartsObject() = default;
     // Изменение размеров
     void resizeAll(int nLevels);                 // Все поля по числу уровней
     void resizeMain(int levelInd, int lenLevel); // Время + данные + флаги для заданного уровня
@@ -19,11 +19,25 @@ struct PartsSignal
 
     partsInt time_;                 // Время
     partsDouble data_;              // Данные
+    partsDouble derivative_;        // Производные
     partsInt flags_;                // Флаги концов фрагментов
     partsInt ind_;                  // Индексы концов фрагментов
     QVector<int> lengthLevels_;     // Длины уровней
     QVector<int> nFragmentLevels_;  // Число фрагментов на уровнях
+};
+
+struct PartsSignal : public PartsObject {
+    PartsSignal(DataSignal const& signal);
+    ~PartsSignal() = default;
+
     DataSignal const& signal_;      // Ссылка на исходный сигнал
+};
+
+struct PartsMonotone : public PartsObject {
+    PartsMonotone(PartsSignal const& baseParts);
+    ~PartsMonotone() = default;
+
+    PartsSignal const& baseParts_;   // Ссылка на базовые части
 };
 
 #endif // PARTSSIGNAL_H

@@ -10,7 +10,9 @@ static const int MAX_THREAD_NUM = 8; // Максимальное число по
 DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
                        double smoothApproxFactor, double truncatePercent, int lEstimationBound, int rEstimationBound)
     : levelStep_(levelStep), smoothIntegFactor_(smoothIntegFactor), smoothApproxFactor_(smoothApproxFactor),
-    truncatePercent_(truncatePercent), accel_(dataSignal), partsAccel(accel_), partsDisplacement(displacement_)
+    truncatePercent_(truncatePercent), accel_(dataSignal),
+    partsAccel(accel_), partsDisplacement(approxDisplacement_), partsAccelGlued(accel_), // Части ускорений и перемещений
+    partsAccelIncrease(partsAccel), partsAccelNeutral(partsAccel), partsAccelDecrease(partsAccel) // Монотонные части
 {
     overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1; // Обработка коэффициента перекрытия
     setCalculationInd(lEstimationBound, rEstimationBound); // Задание расчетных границ
@@ -30,13 +32,20 @@ void DivisionDataSignal::calculate(){
     // Выделение памяти для частей по уровням
     partsAccel.resizeAll(nLevels_); // Ускорения
     partsDisplacement.resizeAll(nLevels_); // Перемещения
+    partsAccelIncrease.resizeAll(nLevels_); // Возрастающие части ускорений
+    partsAccelNeutral.resizeAll(nLevels_); // Нейтральные части ускорений
+    partsAccelDecrease.resizeAll(nLevels_); // Убывающие части ускорений
     // Расчет частей ускорений
-    callMultiThread(partsAccel, &DivisionDataSignal::assignLevels);          // Назначить уровни в многопоточном режиме
-    callMultiThread(partsAccel, &DivisionDataSignal::truncateLevels);        // Усечь уровни
-    derivativeLevels(partsAccel);                                            // Вычислить производные
+    PartsObject & partsBaseAccel = partsAccel;
+    callMultiThread(partsAccel, &DivisionDataSignal::assignLevels); // Назначить уровни в многопоточном режиме
+    callMultiThread(partsBaseAccel, &DivisionDataSignal::truncateLevels); // Усечь уровни
+    callMultiThread(partsBaseAccel, &DivisionDataSignal::derivativeLevels); // Вычислить производные
+    glueLevels(partsBaseAccel); // Вычислить склейки (TODO)
     // Расчет частей перемещений
-    callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels);   // Назначить уровни в многопоточном режиме
-    callMultiThread(partsDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни
+    PartsObject & partsBaseDisplacement = partsDisplacement;
+    callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels); // Назначить уровни в многопоточном режиме
+    callMultiThread(partsBaseDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни
+    // Расчет монотонных частей (TODO)
 }
 
 // Создание расчетных уровней
@@ -126,62 +135,91 @@ void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelI
 }
 
 // Усечение коротких фрагментов
-void DivisionDataSignal::truncateLevels(PartsSignal & partsSignal, int firstLevelInd, int lastLevelInd){
+void DivisionDataSignal::truncateLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
     for (int i = firstLevelInd; i <= lastLevelInd; ++i){
-        int nFragment = partsSignal.nFragmentLevels_[i]; // Число фрагментов на уровне
+        int nFragment = partsObject.nFragmentLevels_[i]; // Число фрагментов на уровне
         int lastIndex = 0; // Индекс конца фрагмента
         int lenFragment = 0; // Длина фрагмента
         int maxLenFragment = 0; // Максимальная длина фрагмента
         // Нахождение максимальной длины фрагмента
         for (int j = 0; j != nFragment; ++j){
-            lenFragment = partsSignal.ind_[i][j] - lastIndex + 1;
+            lenFragment = partsObject.ind_[i][j] - lastIndex + 1;
             if (lenFragment > maxLenFragment) maxLenFragment = lenFragment; // Запись максимальной длины
-            lastIndex = partsSignal.ind_[i][j] + 1; // Запоминаем индекс конца фрагмента
+            lastIndex = partsObject.ind_[i][j] + 1; // Запоминаем индекс конца фрагмента
         }
         int limTruncate = qCeil(maxLenFragment * truncatePercent_); // Длина среза
         // Срез фрагментов
         lastIndex = 0;
         int endFixDataIndex = 0; // Индекс конца отфильтрованных данных
         int endFixFragmentIndex = 0; // Индекс конца усеченного фрагмента
-        int endFragmentInd = 0; // Индекс конца фрагмента
+        int endFragmentIndex = 0; // Индекс конца фрагмента
         double meanFragment = 0; // Среднее значение фрагмента
         for (int j = 0; j != nFragment; ++j){
-            endFragmentInd = partsSignal.ind_[i][j];
-            lenFragment = endFragmentInd - lastIndex + 1;
+            endFragmentIndex = partsObject.ind_[i][j];
+            lenFragment = endFragmentIndex - lastIndex + 1;
             if (lenFragment > limTruncate){ // Если длина фрагмента достаточна
-                meanFragment = meanVec(partsSignal.data_[i], lastIndex, endFragmentInd); // Среднее на фрагменте
+                meanFragment = meanVec(partsObject.data_[i], lastIndex, endFragmentIndex); // Среднее на фрагменте
                 // Пределы
-                auto [minFragment, maxFragment] = minMaxVec(partsSignal.data_[i], lastIndex, endFragmentInd); // Получение минимума и максимума
+                auto [minFragment, maxFragment] = minMaxVec(partsObject.data_[i], lastIndex, endFragmentIndex); // Получение минимума и максимума
                 minFragment = qAbs(minFragment - meanFragment); // Модуль минимума со сдвигом
                 maxFragment = qAbs(maxFragment - meanFragment); // Модуль максимума со сдвигом
                 if ( minFragment > maxFragment ) maxFragment = minFragment; // Сравнение по модулю
                 if ( maxFragment == 0.0 ) maxFragment = 1.0; // Для нулевых фрагментов
                 // Перезапись данных
-                for (int k = lastIndex; k <= endFragmentInd; ++k){
-                    partsSignal.time_[i][endFixDataIndex] = partsSignal.time_[i][k];
-                    partsSignal.data_[i][endFixDataIndex] = (partsSignal.data_[i][k] - meanFragment) / maxFragment;
-                    partsSignal.flags_[i][endFixDataIndex] = partsSignal.flags_[i][k];
+                for (int k = lastIndex; k <= endFragmentIndex; ++k){
+                    partsObject.time_[i][endFixDataIndex] = partsObject.time_[i][k];
+                    partsObject.data_[i][endFixDataIndex] = (partsObject.data_[i][k] - meanFragment) / maxFragment;
+                    partsObject.flags_[i][endFixDataIndex] = partsObject.flags_[i][k];
                     ++endFixDataIndex;
                 }
-                partsSignal.ind_[i][endFixFragmentIndex] = endFixDataIndex - 1; // Записываем индекс конца усеченного фрагмента
+                partsObject.ind_[i][endFixFragmentIndex] = endFixDataIndex - 1; // Записываем индекс конца усеченного фрагмента
                 ++endFixFragmentIndex;
             }
-            lastIndex = endFragmentInd + 1; // Запоминаем индекс конца фрагмента
+            lastIndex = endFragmentIndex + 1; // Запоминаем индекс конца фрагмента
         }
-        partsSignal.lengthLevels_[i] = endFixDataIndex; // Длина уровня после усечения
-        partsSignal.nFragmentLevels_[i] = endFixFragmentIndex; // Число фрагментов после усечения
+        partsObject.lengthLevels_[i] = endFixDataIndex; // Длина уровня после усечения
+        partsObject.nFragmentLevels_[i] = endFixFragmentIndex; // Число фрагментов после усечения
     }
 }
 
 // Вычисление производных
-void DivisionDataSignal::derivativeLevels(PartsSignal & partsSignal, int firstLevelInd, int lastLevelInd){
-    /* Правая конечная разность */
+void DivisionDataSignal::derivativeLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
+    if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
+    for (int i = firstLevelInd; i <= lastLevelInd; ++i){ // Цикл по всем уровням
+        int nFragment = partsObject.nFragmentLevels_[i]; // Число фрагментов на уровне
+        int lenFragment = 0; // Длина текущего фрагмента
+        int lastIndex = 0; // Индекс конца фрагмента
+        int endFragmentIndex = 0; // Индекс конца фрагмента
+        for (int j = 0; j != nFragment; ++j){ // Цикл по всем фрагментам
+            endFragmentIndex = partsObject.ind_[i][j];
+            lenFragment = endFragmentIndex - lastIndex + 1;
+            if (lenFragment != 1){ // Если фрагмент не одиночный
+                for (int k = lastIndex; k != endFragmentIndex; ++k)
+                    partsObject.derivative_[i][k] = partsObject.data_[i][k + 1] - partsObject.data_[i][k]; // Правая конечная разность
+                partsObject.derivative_[i][endFragmentIndex] = partsObject.data_[i][endFragmentIndex] - partsObject.data_[i][endFragmentIndex - 1]; // Левая конечная разность
+            } else
+                partsObject.derivative_[i][lastIndex] = 0.0;
+            lastIndex = endFragmentIndex + 1;
+        }
+    }
+}
+
+// Склейка по уровням
+void DivisionDataSignal::glueLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
+    if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
+    // .. //
+}
+
+// Выделение монотонных уровней
+void DivisionDataSignal::constructMonotoneLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
+    if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
+    // .. //
 }
 
 // Вызов метода в многопоточном режиме
 template <typename T>
-void DivisionDataSignal::callMultiThread(T & partsSignal, void (DivisionDataSignal::*method)(T &, int, int)){
+void DivisionDataSignal::callMultiThread(T & someObject, void (DivisionDataSignal::*method)(T &, int, int)){
     int nLevelPerThread = nLevels_ / MAX_THREAD_NUM ; // Число уровней на поток
     int residue = nLevels_ % MAX_THREAD_NUM; // Остаток
     int nThread = MAX_THREAD_NUM; // Реальное число потоков
@@ -198,7 +236,7 @@ void DivisionDataSignal::callMultiThread(T & partsSignal, void (DivisionDataSign
             --residue;
         } else
             lastLevel = firstLevel + nLevelPerThread;
-        thread[i] = std::thread(method, this, std::ref(partsSignal), firstLevel, lastLevel - 1);
+        thread[i] = std::thread(method, this, std::ref(someObject), firstLevel, lastLevel - 1);
         firstLevel = lastLevel;
     }
     // Блокируем основной поток до выполнения вызванных

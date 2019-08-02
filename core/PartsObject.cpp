@@ -1,12 +1,11 @@
-#include "PartsSignal.h"
+#include "PartsObject.h"
 
-// Конструктор
-PartsSignal::PartsSignal(DataSignal const& signal) : signal_(signal) { }
-
+// -- BaseParts --
 // Изменение размеров всех полей по числу уровней
-void PartsSignal::resizeAll(int nLevels){
+void PartsObject::resizeAll(int nLevels){
     time_.resize(nLevels);             // Время
     data_.resize(nLevels);             // Данные
+    derivative_.resize(nLevels);       // Производные
     flags_.resize(nLevels);            // Флаги концов фрагментов
     ind_.resize(nLevels);              // Индексы концов фрагментов
     lengthLevels_.resize(nLevels);     // Длины уровней
@@ -14,13 +13,21 @@ void PartsSignal::resizeAll(int nLevels){
 }
 
 // Изменение размеров время, сигнала и флагов для заданного уровня
-void PartsSignal::resizeMain(int levelInd, int lenLevel){
-    time_[levelInd].resize(lenLevel);    // Время
-    data_[levelInd].resize(lenLevel);    // Данные
-    flags_[levelInd].resize(lenLevel);   // Флаги концов фрагментов
+void PartsObject::resizeMain(int levelInd, int lenLevel){
+    time_[levelInd].resize(lenLevel);       // Время
+    data_[levelInd].resize(lenLevel);       // Данные
+    flags_[levelInd].resize(lenLevel);      // Флаги концов фрагментов
+    derivative_[levelInd].resize(lenLevel); // Производные
 }
 
 // Изменение размера индексов по числу фрагментов
-void PartsSignal::resizeInd(int levelInd){
+void PartsObject::resizeInd(int levelInd){
     ind_[levelInd].resize(nFragmentLevels_[levelInd]);
 }
+
+// -- PartsSignal --
+PartsSignal::PartsSignal(DataSignal const& signal) : signal_(signal) { }
+
+// -- PartsMonotone --
+PartsMonotone::PartsMonotone(PartsSignal const& baseParts) : baseParts_(baseParts) { }
+
