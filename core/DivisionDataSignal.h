@@ -23,7 +23,7 @@ private:
     void truncateLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов
     void derivativeLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Вычисление производных
     void glueLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Склейка по уровням
-    void constructMonotoneLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Выделение монотонных уровней
+    void constructMonotoneLevels(QVector<PartsMonotone*> & vecPartsMonotone, int firstLevelInd = 0, int lastLevelInd = -1); // Выделение монотонных уровней
     template <typename T>
     void callMultiThread(T & someObject, void (DivisionDataSignal::*method)(T &, int, int)); // Вызов метода в многопоточном режиме
 private:
@@ -50,6 +50,7 @@ private:
     PartsMonotone partsAccelIncrease; // Возрастающие ускорения
     PartsMonotone partsAccelNeutral;  // Нейтральные ускорения
     PartsMonotone partsAccelDecrease; // Убывающие ускорения
+    QVector<PartsMonotone*> vecPartsAccelMonotone; // Контейнер для частей
 };
 
 #endif // DIVISIONDATASIGNAL_H

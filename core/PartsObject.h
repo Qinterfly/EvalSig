@@ -24,11 +24,13 @@ struct PartsObject {
     partsInt ind_;                  // Индексы концов фрагментов
     QVector<int> lengthLevels_;     // Длины уровней
     QVector<int> nFragmentLevels_;  // Число фрагментов на уровнях
+    int nLevels_ = 0;               // Число уровней
 };
 
 struct PartsSignal : public PartsObject {
     PartsSignal(DataSignal const& signal);
     ~PartsSignal() = default;
+    void constructByImage(PartsSignal const& other); // Создание частей сигнала по образу
 
     DataSignal const& signal_;      // Ссылка на исходный сигнал
 };

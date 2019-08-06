@@ -11,7 +11,7 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double leve
                        double smoothApproxFactor, double truncatePercent, int lEstimationBound, int rEstimationBound)
     : levelStep_(levelStep), smoothIntegFactor_(smoothIntegFactor), smoothApproxFactor_(smoothApproxFactor),
     truncatePercent_(truncatePercent), accel_(dataSignal),
-    partsAccel(accel_), partsDisplacement(approxDisplacement_), partsAccelGlued(accel_), // Части ускорений и перемещений
+    partsAccel(accel_), partsDisplacement(displacement_), partsAccelGlued(accel_), // Части ускорений и перемещений
     partsAccelIncrease(partsAccel), partsAccelNeutral(partsAccel), partsAccelDecrease(partsAccel) // Монотонные части
 {
     overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1; // Обработка коэффициента перекрытия
@@ -22,7 +22,9 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double leve
     indLevels_ = {0};
     // Нахождение перемещений по сигналу ускорения
     displacement_ = integrate(dataSignal, 2, smoothIntegFactor_)[1];
+    displacement_.normalize(FIRST); // Приводим перемещения к нулю
     approxDisplacement_ = approximateSmoothSpline(displacement_, smoothApproxFactor_); // Аппроксимация перемещений
+    vecPartsAccelMonotone = {&partsAccelIncrease, &partsAccelNeutral, &partsAccelDecrease}; // Запись адресов монотонных частей
     calculate(); // Расчет уровней
 }
 
@@ -35,17 +37,21 @@ void DivisionDataSignal::calculate(){
     partsAccelIncrease.resizeAll(nLevels_); // Возрастающие части ускорений
     partsAccelNeutral.resizeAll(nLevels_); // Нейтральные части ускорений
     partsAccelDecrease.resizeAll(nLevels_); // Убывающие части ускорений
-    // Расчет частей ускорений
-    PartsObject & partsBaseAccel = partsAccel;
-    callMultiThread(partsAccel, &DivisionDataSignal::assignLevels); // Назначить уровни в многопоточном режиме
-    callMultiThread(partsBaseAccel, &DivisionDataSignal::truncateLevels); // Усечь уровни
-    callMultiThread(partsBaseAccel, &DivisionDataSignal::derivativeLevels); // Вычислить производные
-    glueLevels(partsBaseAccel); // Вычислить склейки (TODO)
-    // Расчет частей перемещений
-    PartsObject & partsBaseDisplacement = partsDisplacement;
-    callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels); // Назначить уровни в многопоточном режиме
-    callMultiThread(partsBaseDisplacement, &DivisionDataSignal::truncateLevels); // Усечь уровни
+    // Получение ссылок на базовые классы
+    PartsObject & partsBaseDisplacement = partsDisplacement; // Перемещения
+    PartsObject & partsBaseAccel = partsAccel;               // Ускорения
+    // Выделение частей
+    callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels); // Перемещений
+    partsAccel.constructByImage(partsDisplacement);                        // Ускорений по образу
+    // Усечение уровней
+    callMultiThread(partsBaseDisplacement, &DivisionDataSignal::truncateLevels); // Перемещений
+    callMultiThread(partsBaseAccel, &DivisionDataSignal::truncateLevels);        // Ускорений
+    // Вычисление производных
+    callMultiThread(partsBaseAccel, &DivisionDataSignal::derivativeLevels); // Ускорений
+    // Вычисление склеек (TODO)
+//    glueLevels(partsBaseAccel);
     // Расчет монотонных частей (TODO)
+
 }
 
 // Создание расчетных уровней
@@ -89,7 +95,6 @@ void DivisionDataSignal::createLevels(){
 
 // Назначить уровни
 void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelInd, int lastLevelInd){
-    QVector<double> const& data = approxDisplacement_.getData(); // Данные перемещений
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
     for (int i = firstLevelInd; i <= lastLevelInd; ++i) { // По группе уровней
         // Оценка размеров
@@ -97,7 +102,7 @@ void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelI
         bool isFragment = false; // Флаг окончания фрагмента
         int iFragment = 0; // Счетчик фрагментов
         for (int j = calculationInd_.first; j <= calculationInd_.second; ++j){
-            if ( data[j] >= lowBoundLevels_[i] && data[j] <= upperBoundLevels_[i] ){
+            if ( partsSignal.signal_[j] >= lowBoundLevels_[i] && partsSignal.signal_[j] <= upperBoundLevels_[i] ){
                 isFragment = true;
                 ++lenLevel;
             } else if (isFragment){
@@ -114,7 +119,7 @@ void DivisionDataSignal::assignLevels(PartsSignal & partsSignal, int firstLevelI
         // Заполнение векторов
         lenLevel = 0; iFragment = 0; isFragment = false;
         for (int j = calculationInd_.first; j <= calculationInd_.second; ++j){
-            if ( data[j] >= lowBoundLevels_[i] && data[j] <= upperBoundLevels_[i] ){
+            if ( partsSignal.signal_[j] >= lowBoundLevels_[i] && partsSignal.signal_[j] <= upperBoundLevels_[i] ){
                 partsSignal.time_[i][lenLevel] = j + 1; // Время
                 partsSignal.data_[i][lenLevel] = partsSignal.signal_[j]; // Ускорение
                 isFragment = true;
@@ -212,7 +217,7 @@ void DivisionDataSignal::glueLevels(PartsObject & partsObject, int firstLevelInd
 }
 
 // Выделение монотонных уровней
-void DivisionDataSignal::constructMonotoneLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
+void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecPartsMonotone, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
     // .. //
 }
