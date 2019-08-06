@@ -32,8 +32,6 @@ PartsSignal::PartsSignal(DataSignal const& signal) : signal_(signal) { }
 // Создание частей сигнала по образу
 void PartsSignal::constructByImage(PartsSignal const& other){
     if (this == &other) return; // Проверка идентичности объекта
-    nLevels_ = other.nLevels_; // Число уровней
-    resizeAll(nLevels_); // Выделение памяти для всех полей
     int lenLevel = 0; // Длина текущего уровня
     int nFragments = 0; // Число фрагментов на уровне
     for (int i = 0; i != nLevels_; ++i){

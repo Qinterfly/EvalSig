@@ -98,8 +98,8 @@ void testDivisionDataSignal(){
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
     DivisionDataSignal divSignal(obj1, 0.02, 0.5, 0.5, 0.5, 0.2, 1, -1);
-    Q_ASSERT(!divSignal.writeDisplacement(testPath, "dispShort2.txt"));
-    Q_ASSERT(!divSignal.writeApproxDisplacement(testPath, "approxDispShort2.txt"));
+//    Q_ASSERT(!divSignal.writeDisplacement(testPath, "dispShort2.txt"));
+//    Q_ASSERT(!divSignal.writeApproxDisplacement(testPath, "approxDispShort2.txt"));
 
 //    DataSignal obj2(testPath, "ОП 182 1с ку.txt"); // Длина == 30061
 //    DivisionDataSignal divSignal(obj2, 15, 0.5, 1e-7, 1e-7, 0.2, 1, -1);

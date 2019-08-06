@@ -51,7 +51,7 @@ void DivisionDataSignal::calculate(){
     // Вычисление склеек (TODO)
 //    glueLevels(partsBaseAccel);
     // Расчет монотонных частей (TODO)
-
+    constructMonotoneLevels(vecPartsAccelMonotone);
 }
 
 // Создание расчетных уровней

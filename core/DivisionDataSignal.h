@@ -42,15 +42,13 @@ private:
     // Части сигналов
     PartsSignal partsAccel;        // Ускорения
     PartsSignal partsDisplacement; // Перемещения
-
-    // <TODO>
     // Скленные
     PartsSignal partsAccelGlued;   // Ускорения
     // Монотонные
     PartsMonotone partsAccelIncrease; // Возрастающие ускорения
     PartsMonotone partsAccelNeutral;  // Нейтральные ускорения
     PartsMonotone partsAccelDecrease; // Убывающие ускорения
-    QVector<PartsMonotone*> vecPartsAccelMonotone; // Контейнер для частей
+    QVector<PartsMonotone*> vecPartsAccelMonotone; // Контейнер для частей монотонных ускорений
 };
 
 #endif // DIVISIONDATASIGNAL_H
