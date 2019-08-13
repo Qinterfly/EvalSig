@@ -54,5 +54,8 @@ void PartsSignal::constructByImage(PartsSignal const& other){
 }
 
 // -- PartsMonotone --
-PartsMonotone::PartsMonotone(PartsSignal const& baseParts) : baseParts_(baseParts) { }
+PartsMonotone::PartsMonotone(PartsSignal const& basePartsAccel, PartsSignal const& basePartsDisplacement)
+    : basePartsAccel_(basePartsAccel), basePartsDisplacement_(basePartsDisplacement) {
+    nLevels_ = basePartsAccel.nLevels_;
+}
 
