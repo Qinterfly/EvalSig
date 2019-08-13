@@ -7,7 +7,7 @@
 class DivisionDataSignal{
 public:
     DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
-                       double smoothApproxFactor, double truncatePercent, int lEstimationBound= 1, int rEstimationBound = -1);
+        double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound = 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
     int numberOfLevels() const { return nLevels_; } // Получить число уровней
@@ -22,7 +22,7 @@ private:
     void assignLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни
     void truncateLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов
     void derivativeLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Вычисление производных
-    void glueLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Склейка по уровням
+    void glueLevels(QPair<PartsObject const&, partsDouble &> const& linkageObjects, int firstLevelInd = 0, int lastLevelInd = -1); // Склейка по уровням
     void constructMonotoneLevels(QVector<PartsMonotone*> & vecPartsMonotone, int firstLevelInd = 0, int lastLevelInd = -1); // Выделение монотонных уровней
     template <typename T>
     void callMultiThread(T & someObject, void (DivisionDataSignal::*method)(T &, int, int)); // Вызов метода в многопоточном режиме
@@ -32,6 +32,7 @@ private:
     double smoothIntegFactor_; // Величина сглаживания при интегрировании
     double smoothApproxFactor_; // Величина сглаживания перемещений
     double truncatePercent_; // Процент усечения коротких фрагментов
+    double depthGluing_; // Проценты глубины склейки для двух границ
     DataSignal accel_; // Указатель на полный временной сигнал ускорений
     DataSignal displacement_; // Перемещение
     DataSignal approxDisplacement_; // Аппроксимированные перемещения
@@ -43,7 +44,10 @@ private:
     PartsSignal partsAccel;        // Ускорения
     PartsSignal partsDisplacement; // Перемещения
     // Скленные
-    PartsSignal partsAccelGlued;   // Ускорения
+    partsDouble gluedAccel_;         // Ускорения
+    partsDouble gluedAccelIncrease_; // Возрастающие ускорения
+    partsDouble gluedAccelNeutral_;  // Нейтральные ускорения
+    partsDouble gluedAccelDecrease_; // Убывающие ускорения
     // Монотонные
     PartsMonotone partsAccelIncrease; // Возрастающие ускорения
     PartsMonotone partsAccelNeutral;  // Нейтральные ускорения

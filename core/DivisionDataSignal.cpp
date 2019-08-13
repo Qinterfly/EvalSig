@@ -8,10 +8,10 @@ static const int MAX_THREAD_NUM = 8; // Максимальное число по
 
 // Конструктор
 DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
-                       double smoothApproxFactor, double truncatePercent, int lEstimationBound, int rEstimationBound)
+           double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound, int rEstimationBound)
     : levelStep_(levelStep), smoothIntegFactor_(smoothIntegFactor), smoothApproxFactor_(smoothApproxFactor),
-    truncatePercent_(truncatePercent), accel_(dataSignal),
-    partsAccel(accel_), partsDisplacement(displacement_), partsAccelGlued(accel_), // Части ускорений и перемещений
+    truncatePercent_(truncatePercent), depthGluing_(depthGluing), accel_(dataSignal),
+    partsAccel(accel_), partsDisplacement(displacement_), // Части ускорений и перемещений
     // Монотонные части
     partsAccelIncrease(partsAccel, partsDisplacement), partsAccelNeutral(partsAccel, partsDisplacement),
     partsAccelDecrease(partsAccel, partsDisplacement)
@@ -39,6 +39,10 @@ void DivisionDataSignal::calculate(){
     partsAccelIncrease.resizeAll(nLevels_); // Возрастающие части ускорений
     partsAccelNeutral.resizeAll(nLevels_); // Нейтральные части ускорений
     partsAccelDecrease.resizeAll(nLevels_); // Убывающие части ускорений
+    gluedAccel_.resize(nLevels_); // Склееные ускорения
+    gluedAccelIncrease_.resize(nLevels_); // Склееные возрастающие ускорения
+    gluedAccelDecrease_.resize(nLevels_); // Склееные убывающие ускорения
+    gluedAccelNeutral_.resize(nLevels_);  // Склееные нейтральные ускорения
     // Получение ссылок на базовые классы
     PartsObject & partsBaseDisplacement = partsDisplacement;    // Перемещения
     PartsObject & partsBaseAccel = partsAccel;                  // Ускорения
@@ -58,8 +62,11 @@ void DivisionDataSignal::calculate(){
     callMultiThread(partsBaseAccelIncrease, &DivisionDataSignal::derivativeLevels); // Возрастающих ускорений
     callMultiThread(partsBaseAccelDecrease, &DivisionDataSignal::derivativeLevels); // Убывающих ускорений
     callMultiThread(partsBaseAccelNeutral, &DivisionDataSignal::derivativeLevels);  // Нейтральных ускорений
-    // Вычисление склеек (TODO)
-    //    glueLevels(partsBaseAccel);
+    // Вычисление склеек
+    callMultiThread({partsBaseAccel, gluedAccel_}, &DivisionDataSignal::glueLevels);                 // Ускорений
+    callMultiThread({partsBaseAccelIncrease, gluedAccelIncrease_}, &DivisionDataSignal::glueLevels); // Возрастающих ускорений
+    callMultiThread({partsBaseAccelDecrease, gluedAccelDecrease_}, &DivisionDataSignal::glueLevels); // Убывающих ускорений
+    callMultiThread({partsBaseAccelNeutral, gluedAccelNeutral_}, &DivisionDataSignal::glueLevels);   // Нейтральных ускорений
 }
 
 // Создание расчетных уровней
@@ -219,33 +226,104 @@ void DivisionDataSignal::derivativeLevels(PartsObject & partsObject, int firstLe
 }
 
 // Склейка по уровням
-void DivisionDataSignal::glueLevels(PartsObject & partsObject, int firstLevelInd, int lastLevelInd){
+void DivisionDataSignal::glueLevels(QPair<PartsObject const&, partsDouble &> const& linkageObjects, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
-    // .. //
+    static double MAX_DIFF = 128; // Максимальная разница для критерия
+    PartsObject const& partsObject = linkageObjects.first; // Базовые части
+    for (int i = firstLevelInd; i <= lastLevelInd; ++i){ // По всем уровням
+        int nFragment = partsObject.nFragmentLevels_[i]; // Число фрагментов на уровне
+        if (nFragment < 2) continue; // Пропуск уровня: нечего склеивать
+        // Результирующий вектор
+        QVector<double> & gluedObject = linkageObjects.second[i]; // Контейнер для склееного сигнала по уровню
+        gluedObject.resize(partsObject.lengthLevels_[i]); // Выделяем память по длине уровня (с запасом)
+        QVector<double> derivativeGluedObject(gluedObject.size()); // Вспомогательный вектор производных
+        int lengthGlued = 0; // Длина склееного сигнала
+        // Информация для индексации
+        int lastIndex = 0; // Индекс начала фрагмента
+        int endFragmentIndex = partsObject.ind_[i][0]; // Индекс конца фрагмента
+        int lenFragment = endFragmentIndex - lastIndex+ 1; // Длина фрагмента
+        QPair<int, int> shiftInd = {0, qCeil(depthGluing_ * lenFragment)}; // Сдвиги границ
+        // Вставка левой части
+        for (int k = lastIndex; k <= endFragmentIndex; ++k, ++lengthGlued){
+            gluedObject[lengthGlued] = partsObject.data_[i][k];
+            derivativeGluedObject[lengthGlued] = partsObject.derivative_[i][k];
+        }
+        // Склейка
+        for (int j = 1; j != nFragment; ++j){
+            // Запоминаем информацию для следующей итерации
+            lastIndex = endFragmentIndex + 1;
+            endFragmentIndex = partsObject.ind_[i][j];
+            lenFragment = endFragmentIndex - lastIndex + 1;
+            shiftInd = {0, qCeil(depthGluing_ * lenFragment)};
+            // Выставление левой границы
+            if ( lengthGlued > shiftInd.second )
+                shiftInd.first = shiftInd.second;
+            // Пропуск фрагментов единичной длины
+            if ( lenFragment == 1 )
+                continue;
+            // Подготовка к поиску вариации
+            double lSignal = 0; // Значение сигнала на левом конце
+            double lDerivative = 0; // Значение производной на левом конце
+            double rDerivative = 0; // Значение производной на правом конце
+            double diffSignal = 0; // Разница значений сигнала на концах
+            double diffDerivative = 0; // Разница производных на концах
+            double diffMean = 0; // Среднее между разницами
+            double diffFinal = MAX_DIFF; // Финальный критерий различия
+            QPair<int, int> bestIndFit = {lengthGlued - 1, lastIndex}; // Индексы лучшей вариации
+            // Поиск лучшей вариации
+            for (int lInd = lengthGlued - 1; lInd >= lengthGlued - 1 - shiftInd.first; --lInd){ // Уже склеенный сигнал
+                lSignal = gluedObject[lInd];
+                lDerivative = derivativeGluedObject[lInd];
+                for (int rInd = lastIndex; rInd != lastIndex + shiftInd.second; ++rInd){ // Новый фрагмент
+                    rDerivative = partsObject.derivative_[i][rInd];
+                    if (lDerivative * rDerivative >= 0) {
+                        diffSignal = qAbs(lSignal - partsObject.data_[i][rInd]);
+                        diffDerivative = qAbs(lDerivative - rDerivative);
+                        diffMean = (diffSignal + diffDerivative) / 2.0;
+                        if (diffMean < diffFinal){
+                            diffFinal = diffMean;
+                            bestIndFit = {lInd, rInd};
+                        }
+                    }
+                }
+            }
+            // Оценка качества поиска
+            if ( bestIndFit.second == endFragmentIndex || diffFinal - MAX_DIFF == 0.0)
+                continue;
+            // Вставка правой части с следующего за подходящим элементов
+            lengthGlued = bestIndFit.first + 1;
+            for (int k = bestIndFit.second + 1; k <= endFragmentIndex; ++k){
+                gluedObject[lengthGlued] = partsObject.data_[i][k];
+                derivativeGluedObject[lengthGlued] = partsObject.derivative_[i][k];
+                ++lengthGlued;
+            }
+        }
+        gluedObject.resize(lengthGlued); // Реальный размер вектора (всегда меньше выделенного)
+    }
 }
 
 // Выделение монотонных уровней
 void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecPartsMonotone, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
     static double MAX_SEPARATION = 0.05; // Максимальное расхождение границ
-    static PartsObject const& baseAccel = vecPartsMonotone[0]->basePartsAccel_; // Базовые части ускорений
-    static QVector<QVector<double>> const& baseDisplacementData = vecPartsMonotone[0]->basePartsDisplacement_.data_; // Данные частей перемещений
+    static PartsObject const& baseObject = vecPartsMonotone[0]->baseObjectParts_; // Базовые части ускорений
+    static QVector<QVector<double>> const& baseSeparation = vecPartsMonotone[0]->baseSeparationParts_.data_; // Данные для деления
     for (int i = firstLevelInd; i <= lastLevelInd; ++i){ // По всем уровням
         // Выделяем память с запасом по длине базового уровня
         for (int m = 0; m != 3; ++m)
-            vecPartsMonotone[m]->resizeMain(i, baseAccel.lengthLevels_[i]);
+            vecPartsMonotone[m]->resizeMain(i, baseObject.lengthLevels_[i]);
         double thresholdSeparate = qAbs(upperBoundLevels_[i] - lowBoundLevels_[i]) * MAX_SEPARATION;
         int lenFragment = 0; // Длина текущего фрагмента
         int lastIndex = 0; // Индекс конца фрагмента
         int endFragmentIndex = 0; // Индекс конца фрагмента
-        int nFragment = baseAccel.nFragmentLevels_[i]; // Число фрагментов на уровне
+        int nFragment = baseObject.nFragmentLevels_[i]; // Число фрагментов на уровне
         double difference = 0; // Разница между концами фрагмента
         int indMonotone = 0; // Индекс подходящей монотонной части
         QVector<int> vecLenMonotone = {0, 0, 0}; // Длины частей
         for (int j = 0; j != nFragment; ++j){ // Цикл по всем фрагментам
-            endFragmentIndex = baseAccel.ind_[i][j];
+            endFragmentIndex = baseObject.ind_[i][j];
             lenFragment = endFragmentIndex - lastIndex + 1;
-            difference = baseDisplacementData[i][endFragmentIndex] - baseDisplacementData[i][lastIndex];
+            difference = baseSeparation[i][endFragmentIndex] - baseSeparation[i][lastIndex];
             // Оценка монотонности
             if (qAbs(difference) > thresholdSeparate){
                 if (difference > 0)      // Возрастающий
@@ -258,9 +336,9 @@ void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecP
             int & iLenMonotone = vecLenMonotone[indMonotone]; // Длина текущей монотонной части
             PartsMonotone & partMonotone = *vecPartsMonotone[indMonotone];  // Одна из монотонных частей
             for (int k = lastIndex; k <= endFragmentIndex; ++k){
-                partMonotone.time_[i][iLenMonotone] = baseAccel.time_[i][k];
-                partMonotone.data_[i][iLenMonotone] = baseAccel.data_[i][k];
-                partMonotone.flags_[i][iLenMonotone] = baseAccel.flags_[i][k];
+                partMonotone.time_[i][iLenMonotone] = baseObject.time_[i][k];
+                partMonotone.data_[i][iLenMonotone] = baseObject.data_[i][k];
+                partMonotone.flags_[i][iLenMonotone] = baseObject.flags_[i][k];
                 ++iLenMonotone;
             }
             ++partMonotone.nFragmentLevels_[i]; // Увеличиваем число фрагментов для уровня

@@ -36,11 +36,11 @@ struct PartsSignal : public PartsObject {
 };
 
 struct PartsMonotone : public PartsObject {
-    PartsMonotone(PartsSignal const& basePartsAccel, PartsSignal const& basePartsDisplacement);
+    PartsMonotone(PartsSignal const& baseObjectParts, PartsSignal const& baseSeparationParts);
     ~PartsMonotone() = default;
 
-    PartsSignal const& basePartsAccel_;          // Ссылка на базовые части ускорений
-    PartsSignal const& basePartsDisplacement_;   // Ссылка на базовые части перемещений
+    PartsSignal const& baseObjectParts_;       // Ссылка на базовые части с сигналом
+    PartsSignal const& baseSeparationParts_;   // Ссылка на базовые части для деления по уровням
 };
 
 #endif // PARTSSIGNAL_H
