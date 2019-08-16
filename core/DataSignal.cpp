@@ -33,7 +33,16 @@ DataSignal::DataSignal(DataSignal const& other, int leftInd, int rightInd) : pro
 }
 // Перемещающий конструктор для всего сигнала
 DataSignal::DataSignal(DataSignal && tmpOther) noexcept : property(std::move(tmpOther.property)), data_(std::move(tmpOther.data_)) { }
-
+// Перемещающий конструктор для данных сигнала
+DataSignal::DataSignal(QVector<double> && someData, PropertyDataSignal && someProperty) noexcept:
+    property(std::move(someProperty)), data_(std::move(someData))
+{
+    if (data_.size() != property.nCount_) // Проверка на согласованность данных
+        property.nCount_ = data_.size();
+    // Сброс параметров чтения
+    property.fileName_ = "";
+    property.path_ = "";
+}
 // Оператор присваивания
 DataSignal& DataSignal::operator=(DataSignal const& other){
     if (this != &other){

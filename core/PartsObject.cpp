@@ -1,6 +1,9 @@
 #include "PartsObject.h"
 
-// -- BaseParts --
+// -- PartsObject --
+
+PartsObject::PartsObject(DataSignal const& signal) : signal_(signal) {}
+
 // Изменение размеров всех полей по числу уровней
 void PartsObject::resizeAll(int nLevels){
     time_.resize(nLevels);             // Время
@@ -27,7 +30,7 @@ void PartsObject::resizeInd(int levelInd){
 }
 
 // -- PartsSignal --
-PartsSignal::PartsSignal(DataSignal const& signal) : signal_(signal) { }
+PartsSignal::PartsSignal(DataSignal const& signal) : PartsObject(signal) { }
 
 // Создание частей сигнала по образу
 void PartsSignal::constructByImage(PartsSignal const& other){
@@ -55,6 +58,6 @@ void PartsSignal::constructByImage(PartsSignal const& other){
 
 // -- PartsMonotone --
 PartsMonotone::PartsMonotone(PartsSignal const& baseObjectParts, PartsSignal const& baseSeparationParts)
-    : baseObjectParts_(baseObjectParts), baseSeparationParts_(baseSeparationParts) {
+    : PartsObject(baseObjectParts.signal_), baseObjectParts_(baseObjectParts), baseSeparationParts_(baseSeparationParts) {
     nLevels_ = baseObjectParts.nLevels_;
 }

@@ -10,7 +10,7 @@ using partsInt = QVector< QVector<int> >;
 // Закрытое поле класса DivisionDataSignal
 
 struct PartsObject {
-    PartsObject() = default;
+    PartsObject(DataSignal const& signal);
     ~PartsObject() = default;
     // Изменение размеров
     void resizeAll(int nLevels);                 // Все поля по числу уровней
@@ -25,14 +25,14 @@ struct PartsObject {
     QVector<int> lengthLevels_;     // Длины уровней
     QVector<int> nFragmentLevels_;  // Число фрагментов на уровнях
     int nLevels_ = 0;               // Число уровней
+
+    DataSignal const& signal_;      // Ссылка на исходный сигнал
 };
 
 struct PartsSignal : public PartsObject {
     PartsSignal(DataSignal const& signal);
     ~PartsSignal() = default;
     void constructByImage(PartsSignal const& other); // Создание частей сигнала по образу
-
-    DataSignal const& signal_;      // Ссылка на исходный сигнал
 };
 
 struct PartsMonotone : public PartsObject {

@@ -17,6 +17,7 @@ public:
     DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty);
     DataSignal(DataSignal const& other, int leftInd = 0, int rightInd = -1); // Копирующий конструктор по заданной области
     DataSignal(DataSignal &&) noexcept; // Перемещающий конструктор для всего сигнала
+    DataSignal(QVector<double> && someData, PropertyDataSignal && someProperty) noexcept; // Перемещающий конструктор для данных сигнала
     ~DataSignal() = default; // Деструктор
     // Операторы
     DataSignal& operator=(DataSignal const&);

@@ -46,6 +46,7 @@ private:
     Spline1d spline_; // Сплайн
 };
 
-
+// Вспомогательные
+int previousPow2(int number); // Ближайшая предыдущая степень двойки
 
 #endif // SIGNALPROCESSING_H
