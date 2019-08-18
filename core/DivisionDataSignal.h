@@ -7,7 +7,7 @@
 
 class DivisionDataSignal{
 public:
-    DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
+    DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, double levelStep, double overlapFactor,
         double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound = 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     // Расчетные методы
@@ -16,7 +16,6 @@ public:
     void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
     void setLevelStep(double levelStep);                                // Задание величины смещения уровней
     void setOverlapFactor(double overlapFactor);                        // Задание величины перекрытия уровней
-    void setSmoothIntegFactor(double smoothIntegFactor);                // Задание величины сглаживания при интегрировании
     void setSmoothApproxFactor(double smoothApproxFactor);              // Задание величины сглаживания перемещений
     void setTruncatePercent (double truncatePercent);                   // Задание процента усечения коротких фрагментов
     void setDepthGluing(double depthGluing);                            // Задание процента глубины склейки правой границы
@@ -44,7 +43,6 @@ private:
 private:
     double levelStep_; // Величина смещения уровней
     double overlapFactor_; // Величина перекрытия уровней
-    double smoothIntegFactor_; // Величина сглаживания при интегрировании
     double smoothApproxFactor_; // Величина сглаживания перемещений
     double truncatePercent_; // Процент усечения коротких фрагментов
     double depthGluing_; // Процент глубины склейки правой границы

@@ -8,23 +8,21 @@
 static const int MAX_THREAD_NUM = 8; // Максимальное число потоков
 
 // Конструктор
-DivisionDataSignal::DivisionDataSignal(DataSignal const& dataSignal, double levelStep, double overlapFactor, double smoothIntegFactor,
+DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, double levelStep, double overlapFactor,
            double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound, int rEstimationBound)
-    : levelStep_(levelStep), smoothIntegFactor_(smoothIntegFactor), smoothApproxFactor_(smoothApproxFactor),
-    truncatePercent_(truncatePercent), depthGluing_(depthGluing), accel_(dataSignal),
+    : levelStep_(levelStep), smoothApproxFactor_(smoothApproxFactor),
+    truncatePercent_(truncatePercent), depthGluing_(depthGluing), accel_(accel), displacement_(displacement),
     partsAccel(accel_), partsDisplacement(displacement_), // Части ускорений и перемещений
     // Монотонные части
     partsAccelIncrease(partsAccel, partsDisplacement), partsAccelNeutral(partsAccel, partsDisplacement),
     partsAccelDecrease(partsAccel, partsDisplacement)
 {
-    overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1; // Обработка коэффициента перекрытия
+    setOverlapFactor(overlapFactor); // Коэффициент перекрытия
     setCalculationInd(lEstimationBound, rEstimationBound); // Задание расчетных границ
     accel_.normalize(FIRST); // Приводим ускорения к нулю
     // Инициализация векторов, определяющих уровни
     lowBoundLevels_ = {0}; upperBoundLevels_ = {0};
     indLevels_ = {0};
-    // Нахождение перемещений по сигналу ускорения
-    displacement_ = integrate(dataSignal, 2, smoothIntegFactor_)[1];
     displacement_.normalize(FIRST); // Приводим перемещения к нулю
     approxDisplacement_ = approximateSmoothSpline(displacement_, smoothApproxFactor_); // Аппроксимация перемещений
     vecPartsAccelMonotone = {&partsAccelIncrease, &partsAccelNeutral, &partsAccelDecrease}; // Запись адресов монотонных частей
@@ -454,9 +452,9 @@ void DivisionDataSignal::setCalculationInd(int lEstimationBound, int rEstimation
 // Задание величины смещения уровней
 void DivisionDataSignal::setLevelStep(double levelStep){ levelStep_ = levelStep; }
 // Задание величины перекрытия уровней
-void DivisionDataSignal::setOverlapFactor(double overlapFactor){ overlapFactor_ = overlapFactor; }
-// Задание величины сглаживания при интегрировании
-void DivisionDataSignal::setSmoothIntegFactor(double smoothIntegFactor){ smoothIntegFactor_ = smoothIntegFactor; }
+void DivisionDataSignal::setOverlapFactor(double overlapFactor){
+    overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1;
+}
 // Задание величины сглаживания перемещений
 void DivisionDataSignal::setSmoothApproxFactor(double smoothApproxFactor){ smoothApproxFactor_ = smoothApproxFactor; }
 // Задание процента усечения коротких фрагментов

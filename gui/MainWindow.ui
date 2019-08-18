@@ -245,6 +245,7 @@
      <string>&amp;Расчет</string>
     </property>
     <addaction name="actionSaveCalculation"/>
+    <addaction name="actionSaveLevels"/>
    </widget>
    <widget class="QMenu" name="help">
     <property name="title">
@@ -969,6 +970,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSaveCalculation"/>
+   <addaction name="actionSaveLevels"/>
   </widget>
   <action name="actionAddSignal">
    <property name="checkable">
@@ -1069,10 +1071,10 @@
      <normaloff>:/images/icons/excel.png</normaloff>:/images/icons/excel.png</iconset>
    </property>
    <property name="text">
-    <string>Сохранить характеристики</string>
+    <string>Сохранить статистики</string>
    </property>
    <property name="toolTip">
-    <string>Сохранить расчетные характеристики</string>
+    <string>Сохранить статистические коэффициенты</string>
    </property>
    <property name="statusTip">
     <string>Сохранить результаты расчета</string>
@@ -1126,6 +1128,21 @@
    </property>
    <property name="statusTip">
     <string>Отображения свойств программы</string>
+   </property>
+  </action>
+  <action name="actionSaveLevels">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/saveLevels.png</normaloff>:/images/icons/saveLevels.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить уровни</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить разбиения по уровням</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
    </property>
   </action>
  </widget>

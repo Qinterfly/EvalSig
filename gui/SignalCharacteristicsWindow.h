@@ -2,7 +2,6 @@
 #define SIGNALCHARACTERISTICSWINDOW_H
 
 #include <QDialog>
-#include <QSharedPointer>
 #include "core/DataSignal.h"
 
 namespace Ui {

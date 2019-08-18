@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this); // Инициализация графического интерфейса
     signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
+    levelsWindow_ = new LevelsWindow(this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
@@ -20,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionRemoveSignal, SIGNAL(triggered()), this, SLOT(removeSignal())); // Удалить сигнал
     connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignalCharacteristics())); // Сохранить сигнал
     connect(ui->actionSaveCalculation, SIGNAL(triggered()), this, SLOT(saveCalcualtion())); // Сохранить результаты расчета
+    connect(ui->actionSaveLevels, SIGNAL(triggered()), this, SLOT(saveLevels())); // Сохранить разбиения по уровням
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(setSignalProperty()), Qt::QueuedConnection); // Установка свойств сигнала
     connect(ui->actionNewProject, SIGNAL(triggered()), this, SLOT(clearProject())); // Новый проект
     connect(ui->tableFileProperty, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(setColor(int, int))); // Установка цвета сигнала

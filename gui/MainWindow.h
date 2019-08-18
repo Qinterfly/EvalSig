@@ -5,6 +5,7 @@
 #include "core/Statistics.h"
 #include "gui/QCustomPlotZoom.h"
 #include "gui/SignalCharacteristicsWindow.h"
+#include "gui/LevelsWindow.h"
 
 namespace Ui {
     class MainWindow;
@@ -24,6 +25,7 @@ public slots:
     void removeSignal(); // Удалить сигнал
     void saveSignalCharacteristics(); // Сохранить характеристики сигнала
     void saveCalcualtion(); // Сохранение результатов расчета
+    void saveLevels(); // Сохранить разбиения по уровням
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
@@ -71,6 +73,7 @@ private:
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
     // Дополнительные окна
     SignalCharacteristicsWindow * signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
+    LevelsWindow * levelsWindow_; // Окно сохранение разбиения по уровням
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
