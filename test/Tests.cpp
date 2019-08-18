@@ -105,6 +105,7 @@ void testDivisionDataSignal(){
     DataSignal obj2(testPath, "ОП 182 1с ку.txt"); // Длина == 30061
     DivisionDataSignal divSignal2(obj2, 15, 0.5, 1e-7, 1e-7, 0.2, 0.1, 1, -1);
     divSignal2.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3);
+    Q_ASSERT(!divSignal2.writeAll(testPath + "saveLevels/"));
 //    Q_ASSERT(!divSignal2.writeDisplacement(testPath, "dispOp182.txt"));
 //    Q_ASSERT(!divSignal2.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
 }

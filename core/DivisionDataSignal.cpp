@@ -1,8 +1,9 @@
+#include <QtMath>
 #include <QDebug>
+#include <QDir>
 #include <thread>
 #include "DivisionDataSignal.h"
 #include "core/NumericalFunctions.h"
-#include "QtMath"
 
 static const int MAX_THREAD_NUM = 8; // Максимальное число потоков
 
@@ -81,6 +82,7 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     // Контейнеры
     QVector<QVector<DataSignal> *> const vecSpectrumMonotone = {&spectrumAccelIncrease_, &spectrumAccelDecrease_, &spectrumAccelNeutral_};
     QVector<QVector<DataSignal> const *> const vecMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
+    int nMonotone = vecMonotone.size(); // Число монотонных частей
     // Поиск ширины окна по всем типам частей (минимальная степень двойки)
         // Склейки ускорений
     int minAccelPow = MAX_POW;
@@ -92,7 +94,7 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     }
         // Монотонные склейки
     int minMonotonePow = MAX_POW;
-    for (int i = 0; i != 2; ++i){
+    for (int i = 0; i != nMonotone; ++i){
         QVector<DataSignal> const& elemMonotone = *vecMonotone[i];
         for (int j = 0; j != nLevels_; ++j){
             tPow = previousPow2(elemMonotone[j].size());
@@ -109,7 +111,7 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     }
         // Склеек монотонных частей
     int windowWidthMonotone = qCeil(qPow(2.0, minMonotonePow));
-    for (int i = 0; i != 2; ++i){
+    for (int i = 0; i != nMonotone ; ++i){
         QVector<DataSignal> const& elemMonotone = *vecMonotone[i];
         QVector<DataSignal> & elemSpectrumMonotone = *vecSpectrumMonotone[i];
         for (int j = 0; j != nLevels_; ++j){
@@ -356,7 +358,7 @@ void DivisionDataSignal::glueLevels(QPair<PartsObject const&, QVector<DataSignal
 // Выделение монотонных уровней
 void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecPartsMonotone, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
-    static double MAX_SEPARATION = 0.05; // Максимальное расхождение границ
+    static const double MAX_SEPARATION = 0.05; // Максимальное расхождение границ
     static PartsObject const& baseObject = vecPartsMonotone[0]->baseObjectParts_; // Базовые части ускорений
     static QVector<QVector<double>> const& baseSeparation = vecPartsMonotone[0]->baseSeparationParts_.data_; // Данные для деления
     for (int i = firstLevelInd; i <= lastLevelInd; ++i){ // По всем уровням
@@ -444,18 +446,26 @@ void DivisionDataSignal::callMultiThread(T & someObject, void (DivisionDataSigna
 
 // Задание индексов расчетных границ
 void DivisionDataSignal::setCalculationInd(int lEstimationBound, int rEstimationBound){
-    bool isChanged = false; // Флаг изменения границ
     if (rEstimationBound == -1) rEstimationBound = accel_.size(); // Правая граница по умолчанию
     --lEstimationBound; --rEstimationBound; // Сдвиг границ к индексам
-    if (lEstimationBound != calculationInd_.first || rEstimationBound != calculationInd_.second) isChanged = true; // Если хотя бы одна граница изменилась
     calculationInd_ = {lEstimationBound, rEstimationBound};
-    // Если уровни до этого уже были созданы и границы сменились
-    if ( nLevels_ != 0 && isChanged )
-        calculateLevels(); // Вызов расчетного метода
 }
 
+// Задание величины смещения уровней
+void DivisionDataSignal::setLevelStep(double levelStep){ levelStep_ = levelStep; }
+// Задание величины перекрытия уровней
+void DivisionDataSignal::setOverlapFactor(double overlapFactor){ overlapFactor_ = overlapFactor; }
+// Задание величины сглаживания при интегрировании
+void DivisionDataSignal::setSmoothIntegFactor(double smoothIntegFactor){ smoothIntegFactor_ = smoothIntegFactor; }
+// Задание величины сглаживания перемещений
+void DivisionDataSignal::setSmoothApproxFactor(double smoothApproxFactor){ smoothApproxFactor_ = smoothApproxFactor; }
+// Задание процента усечения коротких фрагментов
+void DivisionDataSignal::setTruncatePercent (double truncatePercent){ truncatePercent_ = truncatePercent; }
+// Задание процента глубины склейки правой границы
+void DivisionDataSignal::setDepthGluing(double depthGluing){ depthGluing_ = depthGluing; }
+
 // Файловые методы
-     // Сохранение перемещений
+// Сохранение перемещений
 int DivisionDataSignal::writeDisplacement(QString const& path, QString const& fileName) const {
     return displacement_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
 }
@@ -465,4 +475,77 @@ int DivisionDataSignal::writeApproxDisplacement(QString const& path, QString con
     return approxDisplacement_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
 }
 
+// Сохранение всех данных
+int DivisionDataSignal::writeAll(QString const& dirName) const{
+    int exitStatus = 0; // Код возврата
+    exitStatus += writeDisplacement(dirName, "Перемещения.txt");              // Сохранение перемещений
+    exitStatus += writeApproxDisplacement(dirName, "Аппр. перемещения.txt");  // Сохранение аппроксимированных перемещений
+    exitStatus += writeSpectrum(dirName);                                     // Сохранение спектров склеек
+    exitStatus += writeGluedParts(dirName);                                   // Сохранение склееных частей
+    return exitStatus;
+}
+
+// Сохранение спектров склеек
+int DivisionDataSignal::writeSpectrum(QString const& dirName) const {
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    QVector<QString> vecSpectrumName = {"Спектры ускорений", "Спектры возрастающих ускорений", "Спектры убывающих ускорений",
+                                        "Спектры нейтральных ускорений"}; // Директории с именами спектров
+    // Создание директорий
+    for (QString & spectrumName : vecSpectrumName){
+        dir.mkdir(spectrumName);
+        spectrumName = dirName + spectrumName + QDir::separator();
+    }
+    int exitStatus = 0; // Код возврата
+    // Ускорения
+    for (int i = 0; i != nLevels_; ++i){
+        if (spectrumAccel_[i].isEmpty()) continue;
+        exitStatus += spectrumAccel_[i].writeDataFile(vecSpectrumName[0], QString::number(i + 1) + ".txt");
+    }
+    QVector<QVector<DataSignal> const *> const vecSpectrumMonotone = {&spectrumAccelIncrease_, &spectrumAccelDecrease_, &spectrumAccelNeutral_};
+    int nMonotone = vecSpectrumMonotone.size(); // Число монотонных частей
+    // Монотонные части
+    for (int k = 0; k != nMonotone; ++k){
+        QVector<DataSignal> const& elemSpectrumMonotone = *vecSpectrumMonotone[k];
+        QString const& tSpectrumName = vecSpectrumName[k + 1];
+        for (int i = 0; i != nLevels_; ++i){
+            if (elemSpectrumMonotone[i].isEmpty()) continue;
+            exitStatus += elemSpectrumMonotone[i].writeDataFile(tSpectrumName, QString::number(i + 1) + ".txt");
+        }
+    }
+    return exitStatus;
+}
+
+// Сохранение склееных частей
+int DivisionDataSignal::writeGluedParts(QString const& dirName) const {
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    QVector<QString> vecGluedName = {"Склееные ускорения", "Склееные возрастающие ускорения", "Склееные убывающие ускорения",
+                                     "Склееные нейтральных ускорения"}; // Директории с именами склееных частей
+    // Создание директорий
+    for (QString & gluedName : vecGluedName){
+        dir.mkdir(gluedName);
+        gluedName = dirName + gluedName + QDir::separator();
+    }
+    int exitStatus = 0; // Код возврата
+    // Ускорения
+    for (int i = 0; i != nLevels_; ++i){
+        if (gluedAccel_[i].isEmpty()) continue;
+        exitStatus += spectrumAccel_[i].writeDataFile(vecGluedName[0], QString::number(i + 1) + ".txt");
+    }
+    QVector<QVector<DataSignal> const *> const vecGluedMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
+    int nMonotone = vecGluedMonotone.size(); // Число монотонных частей
+    // Монотонные части
+    for (int k = 0; k != nMonotone; ++k){
+        QVector<DataSignal> const& elemGluedMonotone = *vecGluedMonotone[k];
+        QString const& tGluedName = vecGluedName[k + 1];
+        for (int i = 0; i != nLevels_; ++i){
+            if (elemGluedMonotone[i].isEmpty()) continue;
+            exitStatus += elemGluedMonotone[i].writeDataFile(tGluedName, QString::number(i + 1) + ".txt");
+        }
+    }
+    return exitStatus;
+}
 

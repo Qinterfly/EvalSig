@@ -1069,10 +1069,10 @@
      <normaloff>:/images/icons/excel.png</normaloff>:/images/icons/excel.png</iconset>
    </property>
    <property name="text">
-    <string>Сохранить расчет</string>
+    <string>Сохранить характеристики</string>
    </property>
    <property name="toolTip">
-    <string>Сохранить результаты расчета</string>
+    <string>Сохранить расчетные характеристики</string>
    </property>
    <property name="statusTip">
     <string>Сохранить результаты расчета</string>

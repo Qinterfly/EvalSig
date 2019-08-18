@@ -14,7 +14,7 @@ public:
     void calculatePowerSpectralDensity(WindowFunction windowFun, double overlapFactorWindow, int lengthSpectrum, int windowSmoothWidth); // Расчет плотности спектральной мощности
     // Установочные методы
     void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
-    void setLevelStep(int levelStep);                                   // Задание величины смещения уровней
+    void setLevelStep(double levelStep);                                // Задание величины смещения уровней
     void setOverlapFactor(double overlapFactor);                        // Задание величины перекрытия уровней
     void setSmoothIntegFactor(double smoothIntegFactor);                // Задание величины сглаживания при интегрировании
     void setSmoothApproxFactor(double smoothApproxFactor);              // Задание величины сглаживания перемещений

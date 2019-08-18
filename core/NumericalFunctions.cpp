@@ -279,6 +279,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunct
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1.0 / nWindows; // Безразмерные величины
     tProperty.isSpectrum = 1; // Спектр
+    tProperty.characteristic_ += " Спектр";
     DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), lengthSpectrum); // Линейная интерполяция
     if (windowSmoothWidth != 0) // Пропуск сглаживания при нулевой ширине окна
         powerSignal = movingAverageFilter(powerSignal, windowSmoothWidth); // Сглаживание скользящим средним

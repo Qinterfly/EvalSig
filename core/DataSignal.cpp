@@ -90,7 +90,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
     property.scanPeriod_ = inputStream.readLine().toInt();     // Период опроса датчика
     property.characteristic_ = inputStream.readLine();             // Характеристика
     property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
-    property.isSpectrum = property.fileName_.contains("Спектр");  // Является ли сигнал спектром
+    property.isSpectrum = property.fileName_.contains("Спектр") || property.characteristic_.contains("Спектр");  // Является ли сигнал спектром
     // Чтение временного сигнала
     data_.clear(); // Очистка сигнала (remove, size -> 0, capacity /-> 0)
     data_.resize(property.nCount_); // size() == nCount_
