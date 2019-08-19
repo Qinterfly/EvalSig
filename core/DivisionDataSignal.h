@@ -11,6 +11,7 @@ public:
         double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound = 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     // Расчетные методы
+    void calculateLevels(); // Управляющий расчетный метод
     void calculatePowerSpectralDensity(WindowFunction windowFun, double overlapFactorWindow, int lengthSpectrum, int windowSmoothWidth); // Расчет плотности спектральной мощности
     // Установочные методы
     void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
@@ -31,7 +32,6 @@ public:
     int writeSpectrum(QString const& dirName) const;                                 // Сохранение спектров склеек
     int writeGluedParts(QString const& dirName) const;                               // Сохранение склееных частей
 private:
-    void calculateLevels(); // Управляющий расчетный метод
     void createLevels(); // Создание расчетных уровней
     void assignLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни
     void truncateLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов

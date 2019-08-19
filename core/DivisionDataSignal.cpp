@@ -26,7 +26,6 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const
     displacement_.normalize(FIRST); // Приводим перемещения к нулю
     approxDisplacement_ = approximateSmoothSpline(displacement_, smoothApproxFactor_); // Аппроксимация перемещений
     vecPartsAccelMonotone = {&partsAccelIncrease, &partsAccelNeutral, &partsAccelDecrease}; // Запись адресов монотонных частей
-    calculateLevels(); // Расчет уровней
 }
 
 // Управляющий расчетный метод
@@ -531,7 +530,7 @@ int DivisionDataSignal::writeGluedParts(QString const& dirName) const {
     // Ускорения
     for (int i = 0; i != nLevels_; ++i){
         if (gluedAccel_[i].isEmpty()) continue;
-        exitStatus += spectrumAccel_[i].writeDataFile(vecGluedName[0], QString::number(i + 1) + ".txt");
+        exitStatus += gluedAccel_[i].writeDataFile(vecGluedName[0], QString::number(i + 1) + ".txt");
     }
     QVector<QVector<DataSignal> const *> const vecGluedMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
     int nMonotone = vecGluedMonotone.size(); // Число монотонных частей

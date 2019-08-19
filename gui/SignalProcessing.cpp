@@ -75,6 +75,8 @@ void MainWindow::saveCalcualtion(){
 // Сохранить разбиения по уровням
 void MainWindow::saveLevels(){
     if (ui->listFile->count() == 0) return; // Проверка на пустоту списка
+    levelsWindow_->setSignalsName(*ui->listFile);
+    levelsWindow_->setEstimationBoundaries(statSignal_.getEstimationBoundaries());
     levelsWindow_->show(); // Отображение диалогового окна
 }
 

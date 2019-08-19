@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this); // Инициализация графического интерфейса
     signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
-    levelsWindow_ = new LevelsWindow(this);
+    levelsWindow_ = new LevelsWindow(vecDataSignal_, this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
