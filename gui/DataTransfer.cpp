@@ -9,4 +9,10 @@ void MainWindow::saveSignalCharacteristicsFinished(){
     lastPath_ = signalCharacteristicsWindow_->lastPath(); // Запись последнего пути
 }
 
+// Завершение сохранения поуровневого разбиения
+void MainWindow::saveLevelsFinished(){
+    ui->statusBar->showMessage("Сохранение разбиения по уровням завершилось успешно"); // Вывод информационного сообщения
+    lastPath_ = levelsWindow_->lastPath(); // Запись последнего пути
+}
+
 // --------------------------------------------------------------------------------------------------------------

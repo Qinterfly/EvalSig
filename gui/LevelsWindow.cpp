@@ -76,11 +76,12 @@ void LevelsWindow::save(){
     divSignal.calculateLevels(); // Расчет уровней
     // Сохранение результатов
     bool isPowerSpectralDensity = ui->groupBoxPowerSpectralDensity->isChecked(); // Спектрального разложения
+    int saveStatus = 0;
         // Склейки
-    divSignal.writeGluedParts(lastPath_);
+    saveStatus += divSignal.writeGluedParts(lastPath_);
         // Перемещения
-    divSignal.writeDisplacement(lastPath_, "Перемещения.txt");
-    divSignal.writeApproxDisplacement(lastPath_, "Аппр. перемещения.txt");
+    saveStatus += divSignal.writeDisplacement(lastPath_, "Перемещения.txt");
+    saveStatus += divSignal.writeApproxDisplacement(lastPath_, "Аппрокс перемещения.txt");
         // Спектры
     if (isPowerSpectralDensity){
         WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
@@ -88,8 +89,13 @@ void LevelsWindow::save(){
         int lengthSpectrum =  ui->spinBoxSpectrumInterpolation->value(); // Число точек для интерполяции
         int windowSmoothWidth = ui->spinBoxSmoothWidth->value(); // Число точек для сглаживания
         divSignal.calculatePowerSpectralDensity(windowFun, spectrumOverlapFactor, lengthSpectrum, windowSmoothWidth); // Вычисление спектров
-        divSignal.writeSpectrum(lastPath_); // Сохранение спектров
+        saveStatus += divSignal.writeSpectrum(lastPath_); // Сохранение спектров
     }
+        // Информация об уровнях
+    saveStatus += divSignal.writeInfo(lastPath_, "Информация об уровнях.txt");
+    if (saveStatus == 0) // В случае успешного сохранения
+        emit this->accepted();
+    this->hide(); // Скрытие окна
 }
 
 // Установка расчетных границ

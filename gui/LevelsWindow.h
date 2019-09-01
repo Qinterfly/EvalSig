@@ -18,6 +18,7 @@ public:
     ~LevelsWindow();
     void setSignalsName(QListWidget const& listSignals); // Определение имен сигналов для выбора
     void setEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка расчетных границ
+    QString const& lastPath() { return lastPath_; } // Получение пути по умолчанию
 private slots:
     void setSaveState(int); // Проверка возможности сохранения
     void save(); // Сохранение и расчет

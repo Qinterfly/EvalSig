@@ -31,6 +31,7 @@ public:
     int writeApproxDisplacement(QString const& path, QString const& fileName) const; // Сохранение аппроксимированных перемещений
     int writeSpectrum(QString const& dirName) const;                                 // Сохранение спектров склеек
     int writeGluedParts(QString const& dirName) const;                               // Сохранение склееных частей
+    int writeInfo(QString const& dirName, QString const& fileName) const;            // Сохранение информации об уровнях
 private:
     void createLevels(); // Создание расчетных уровней
     void assignLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни

@@ -103,7 +103,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         int lengthSpectrum =  ui->spinBoxSpectrumInterpolation->value(); // Число точек для интерполяции
         int windowSmoothWidth = ui->spinBoxSmoothWidth->value(); // Число точек для сглаживания
         DataSignal powerSpectralDensitySignal = computePowerSpectralDensity(resDataSignal, windowFun, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth); // Вычисление спектра сигнала
-        powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
+        saveStatus += powerSpectralDensitySignal.writeDataFile(lastPath_, signalName + "-Спектр" + ".txt"); // Сохранение результата спектрального разложения
     }
     // Сохранение выбранного сигнала
     if (isChoosedSignal){

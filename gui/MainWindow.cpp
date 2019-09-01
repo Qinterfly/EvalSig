@@ -39,7 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
     // Дополнительные окна
-    connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished()));
+    connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
+    connect(levelsWindow_, SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
+    // Справка
+    connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
 // Деструктор главного окна

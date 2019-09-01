@@ -476,9 +476,10 @@ int DivisionDataSignal::writeApproxDisplacement(QString const& path, QString con
 int DivisionDataSignal::writeAll(QString const& dirName) const{
     int exitStatus = 0; // Код возврата
     exitStatus += writeDisplacement(dirName, "Перемещения.txt");              // Сохранение перемещений
-    exitStatus += writeApproxDisplacement(dirName, "Аппр. перемещения.txt");  // Сохранение аппроксимированных перемещений
+    exitStatus += writeApproxDisplacement(dirName, "Аппрокс перемещения.txt");  // Сохранение аппроксимированных перемещений
     exitStatus += writeSpectrum(dirName);                                     // Сохранение спектров склеек
     exitStatus += writeGluedParts(dirName);                                   // Сохранение склееных частей
+    exitStatus += writeInfo(dirName, "Информация об уровнях.txt");            // Сохранение информации об уровнях
     return exitStatus;
 }
 
@@ -544,5 +545,37 @@ int DivisionDataSignal::writeGluedParts(QString const& dirName) const {
         }
     }
     return exitStatus;
+}
+
+// Сохранение информации об уровнях
+int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileName) const {
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    QString fileFullPath = dirName + fileName; // Полный путь к файлу
+    QFile file(fileFullPath); // Инициализация файла для записи
+    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
+    QTextStream outputStream(&file); // Создание потока для записи
+    outputStream.setCodec("cp1251"); // Кодировка CP1251
+    // Запись информиации об уровнях
+    outputStream << "Ускорения: " << accel_.getName() << endl;
+    outputStream << "Перемещения: " << displacement_.getName() << endl;
+    outputStream << "Расчетные границы: " << QString::number(calculationInd_.first + 1);
+    outputStream << " - " << QString::number(calculationInd_.second + 1) << endl;
+    outputStream << "Число уровней: " << QString::number(nLevels_) << endl;
+    outputStream << "------------ Управляющие параметры ------------------" << endl;
+    outputStream << "Величина смещения уровней: " << QString::number(levelStep_) << endl;
+    outputStream << "Величина перекрытия уровней: " << QString::number(overlapFactor_) << endl;
+    outputStream << "Величина сглаживания перемещений: " << QString::number(smoothApproxFactor_) << endl;
+    outputStream << "Процент усечения коротких фрагментов: " << QString::number(truncatePercent_) << endl;
+    outputStream << "Процент глубины склейки правой границы: " << QString::number(depthGluing_) << endl;
+    outputStream << "--------------- Границы уровней ---------------------" << endl;
+    for (int i = 0; i != nLevels_; ++i){
+        outputStream << QString::number(i) << ": " << QString::number(lowBoundLevels_[i]) << ", ";
+        outputStream << QString::number(upperBoundLevels_[i]) << endl;
+    }
+    file.close(); // Закрытие файла
+    return 0;
 }
 

@@ -42,6 +42,7 @@ public slots:
     void clearProject(); // Очистка проекта
     // Обмен данными между окнами
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
+    void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
