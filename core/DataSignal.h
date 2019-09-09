@@ -31,6 +31,7 @@ public:
     double mean() const; // Получение среднего значения сигнала
     void normalize(NormalizeOption option); // Нормализация сигнала
     QVector<double> const& getData() const { return data_; } // Получение сигнала без свойств
+    QVector<double> getData(int leftInd, int rightInd) const { return data_.mid(leftInd, rightInd - leftInd + 1); } // Получение среза сигнала
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
     double convertCountToTime(int count) const { return count * 1.0e-6 * property.scanPeriod_; } // Перевести номер отсчета в время

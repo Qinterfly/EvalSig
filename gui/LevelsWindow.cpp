@@ -12,6 +12,7 @@ LevelsWindow::LevelsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *pa
     // Создание соединений сигнал - слот
     connect(ui->comboBoxAccel, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения
     connect(ui->pushButtonSaveLevels, SIGNAL(clicked()), this, SLOT(save())); // Сохранение результатов
+    connect(ui->pushButtonShowLevels, SIGNAL(clicked()), this, SLOT(showLevels())); // Отображение уровней на графике
 }
 
 // Деструктор
@@ -40,12 +41,23 @@ void LevelsWindow::setSignalsName(QListWidget const& listSignals){
     ui->comboBoxDisplacement->setCurrentIndex(0);
 }
 
+// Установка расчетных границ
+void LevelsWindow::setEstimationBoundaries(QPair<int, int> const& estimationBoundaries){
+    estimationBoundaries_ = estimationBoundaries;
+    calculationInd_ = {estimationBoundaries_.first - 1, estimationBoundaries_.second - 1}; // Расчетные индексы
+}
+
 // Установка возможности сохранения
 void LevelsWindow::setSaveState(int){
-    if (!ui->comboBoxAccel->currentText().isEmpty())
+    if (!ui->comboBoxAccel->currentText().isEmpty()){
         ui->pushButtonSaveLevels->setEnabled(true);
-    else
+        ui->pushButtonShowLevels->setEnabled(true);
+    }
+    else {
         ui->pushButtonSaveLevels->setEnabled(false);
+        ui->pushButtonShowLevels->setEnabled(false);
+        clearAllPlot();
+    }
 }
 
 // Сохранение и расчет
@@ -56,7 +68,7 @@ void LevelsWindow::save(){
     if (saveDir.isEmpty()) return;
     lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     // Сигналы
-    DataSignal const& accel = vecDataSignal_[ui->comboBoxAccel->currentIndex() - 1]; // Ускорения
+    DataSignal accel = vecDataSignal_[ui->comboBoxAccel->currentIndex() - 1]; // Ускорения
     DataSignal displacement; // Перемещения
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
@@ -70,8 +82,12 @@ void LevelsWindow::save(){
         displacement = integrate(accel, 2, smoothIntegrFactor)[1];
     else
         displacement = vecDataSignal_[ui->comboBoxDisplacement->currentIndex() - 1];
+    // Нормализация данных
+    accel.normalize(FIRST); // Ускорений
+    displacement.normalize(FIRST); // Перемещений
+    DataSignal approxDisplacement = approximateSmoothSpline(displacement, smoothApproxFactor); // Аппроксимация перемещений
     // Вызов расчетных методов
-    DivisionDataSignal divSignal(accel, displacement, levelStep, overlapFactor, smoothApproxFactor, truncatePercent, depthGluing,
+    DivisionDataSignal divSignal(accel, displacement, approxDisplacement, levelStep, overlapFactor, truncatePercent, depthGluing,
                                     estimationBoundaries_.first, estimationBoundaries_.second);
     divSignal.calculateLevels(); // Расчет уровней
     // Сохранение результатов
@@ -98,7 +114,84 @@ void LevelsWindow::save(){
     this->hide(); // Скрытие окна
 }
 
-// Установка расчетных границ
-void LevelsWindow::setEstimationBoundaries(QPair<int, int> const& estimationBoundaries){
-    estimationBoundaries_ = estimationBoundaries;
+// Отображение уровней на графике
+void LevelsWindow::showLevels(){
+    static const double SHIFT_XMAX = 0.05; // Смещение максимума по оси абсцисс
+    // Сигналы
+    DataSignal const& accel = vecDataSignal_[ui->comboBoxAccel->currentIndex() - 1]; // Ускорения
+    DataSignal displacement; // Перемещения
+    // Параметры
+    double levelStep = ui->spinBoxLevelStep->value();
+    double overlapFactor = ui->spinBoxOverlapFactor->value();
+    double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
+    double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
+    // Получение перемещения
+    if (ui->comboBoxDisplacement->currentText().isEmpty())
+        displacement = integrate(accel, 2, smoothIntegrFactor)[1];
+    else
+        displacement = vecDataSignal_[ui->comboBoxDisplacement->currentIndex() - 1];
+    displacement.normalize(FIRST); // Перемещений
+    DataSignal approxDisplacement = approximateSmoothSpline(displacement, smoothApproxFactor); // Аппроксимация перемещений
+    // Подготовка контейнеров результирующих значений
+    QVector<double> lowBoundLevels = {0}, upperBoundLevels = {0}; // Нижние и верхние границы уровней
+    QVector<int> indLevels = {0}; // Индексы уровней
+    int nLevels = 0; // Число уровней
+    DivisionDataSignal::createLevels(approxDisplacement, calculationInd_, overlapFactor, levelStep,
+                                     lowBoundLevels, upperBoundLevels, indLevels, nLevels); // Создание уровней
+    if (nLevels == 0) return;
+    clearAllPlot(); // Очистка всех графиков
+    // Формирование вектора отсчетов
+    int nSignal = calculationInd_.second + 1;
+    QVector<double> XData(nSignal);
+    for (int i = 0; i != nSignal; ++i)
+        XData[i] = i + 1;
+    // Построение сигналов
+    QPen penPlot;
+    penPlot.setStyle(Qt::SolidLine); // Стиль линии
+    penPlot.setWidthF(1.0);
+    // Перемещения
+    penPlot.setColor(Qt::blue);
+    plot(XData, displacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    // Аппроксимированные перемещения
+    penPlot.setColor(Qt::red);
+    plot(XData, approxDisplacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    // Построение уровней
+    penPlot.setStyle(Qt::DashLine);
+    QVector<double> XBound = {XData[0], XData[nSignal - 1]}; // Граничные значения
+    double XPosLabel = (1.0 + SHIFT_XMAX / 2.0) * XBound[1];
+    for (int i = 0; i != nLevels; ++i){
+        QColor plotColor = i % 2 == 0 ? Qt::black : Qt::darkGreen;
+        penPlot.setColor(plotColor);
+        // Нижняя граница
+        QVector<double> YLine = {lowBoundLevels[i], lowBoundLevels[i]};
+        plot(XBound, YLine, penPlot);
+        // Верхняя граница
+        YLine = {upperBoundLevels[i], upperBoundLevels[i]};
+        plot(XBound, YLine, penPlot);
+        // Подпись уровня
+        QCPItemText * label = new QCPItemText(ui->showLevelsPlot);
+        double YPosLabel = (lowBoundLevels[i] + upperBoundLevels[i]) / 2.0;
+        label->setText(QString::number(indLevels[i]));
+        label->setColor(plotColor);
+        label->position->setCoords(XPosLabel, YPosLabel);
+    }
+    ui->showLevelsPlot->xAxis->setRange(XBound[0], (1.0 + SHIFT_XMAX) * XBound[1]);
+    ui->showLevelsPlot->replot(); // Обновление окна построения
+}
+
+// Построение графика
+void LevelsWindow::plot(QVector<double> const& X, QVector<double> const& Y, QPen penPlot){
+    ui->showLevelsPlot->addGraph(); // Добавление графика в конец
+    ui->showLevelsPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
+    ui->showLevelsPlot->graph()->setPen(penPlot); // Выставление цвета графика
+    ui->showLevelsPlot->graph()->setData(X, Y, true); // Передача отсортированных данных
+    ui->showLevelsPlot->rescaleAxes(false); // Масштабирование осей
+    ui->showLevelsPlot->replot(); // Обновление окна построения
+}
+
+// Очистка графика
+void LevelsWindow::clearAllPlot(){
+    ui->showLevelsPlot->clearItems(); // Удаление надписей
+    ui->showLevelsPlot->clearGraphs(); // Удаление графиков
+    ui->showLevelsPlot->replot(); // Обновление окна построения
 }

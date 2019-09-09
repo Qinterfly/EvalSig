@@ -7,17 +7,19 @@
 
 class DivisionDataSignal{
 public:
-    DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, double levelStep, double overlapFactor,
-        double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound = 1, int rEstimationBound = -1);
+    DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, DataSignal const& approxDisplacement,
+                       double levelStep, double overlapFactor, double truncatePercent, double depthGluing,
+                       int lEstimationBound = 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     // Расчетные методы
+    static void createLevels(DataSignal const& approxDisplacement, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
+                             QVector<double> & lowBoundLevels, QVector<double> & upperBoundLevels, QVector<int> & indLevels, int & nLevels); // Создание расчетных уровней
     void calculateLevels(); // Управляющий расчетный метод
     void calculatePowerSpectralDensity(WindowFunction windowFun, double overlapFactorWindow, int lengthSpectrum, int windowSmoothWidth); // Расчет плотности спектральной мощности
     // Установочные методы
     void setCalculationInd(int lEstimationBound, int rEstimationBound); // Задание расчетных границ
     void setLevelStep(double levelStep);                                // Задание величины смещения уровней
     void setOverlapFactor(double overlapFactor);                        // Задание величины перекрытия уровней
-    void setSmoothApproxFactor(double smoothApproxFactor);              // Задание величины сглаживания перемещений
     void setTruncatePercent (double truncatePercent);                   // Задание процента усечения коротких фрагментов
     void setDepthGluing(double depthGluing);                            // Задание процента глубины склейки правой границы
     // Справочные методы
@@ -33,7 +35,6 @@ public:
     int writeGluedParts(QString const& dirName) const;                               // Сохранение склееных частей
     int writeInfo(QString const& dirName, QString const& fileName) const;            // Сохранение информации об уровнях
 private:
-    void createLevels(); // Создание расчетных уровней
     void assignLevels(PartsSignal & partsSignal, int firstLevelInd = 0, int lastLevelInd = -1); // Назначить уровни
     void truncateLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Усечение коротких фрагментов
     void derivativeLevels(PartsObject & partsObject, int firstLevelInd = 0, int lastLevelInd = -1); // Вычисление производных
@@ -44,7 +45,6 @@ private:
 private:
     double levelStep_; // Величина смещения уровней
     double overlapFactor_; // Величина перекрытия уровней
-    double smoothApproxFactor_; // Величина сглаживания перемещений
     double truncatePercent_; // Процент усечения коротких фрагментов
     double depthGluing_; // Процент глубины склейки правой границы
     DataSignal accel_; // Указатель на полный временной сигнал ускорений

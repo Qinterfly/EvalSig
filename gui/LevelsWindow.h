@@ -22,11 +22,16 @@ public:
 private slots:
     void setSaveState(int); // Проверка возможности сохранения
     void save(); // Сохранение и расчет
+    void showLevels(); // Отображение уровней на графике
+private:
+    void plot(QVector<double> const& X, QVector<double> const& Y, QPen penPlot); // Построение графика
+    void clearAllPlot(); // Очистка всех графиков
 private:
     Ui::LevelsWindow *ui;
     QVector<DataSignal> const& vecDataSignal_; // Вектор с исходными сигналами
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
     QPair<int, int> estimationBoundaries_; // Расчетные границы
+    QPair<int, int> calculationInd_;       // Индексы границ
 };
 
 #endif // LEVELSWINDOW_H

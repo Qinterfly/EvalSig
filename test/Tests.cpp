@@ -95,19 +95,32 @@ void testNumericalFunctions(){
 
 // Проверка разбиения сигнала на уровни
 void testDivisionDataSignal(){
+    // #1
     QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
-//    DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
-//    DivisionDataSignal divSignal1(obj1, 0.02, 0.5, 0.5, 0.5, 0.2, 0.1, 1, -1);
-//    divSignal1.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3);
-//    Q_ASSERT(!divSignal1.writeDisplacement(testPath, "dispShort2.txt"));
-//    Q_ASSERT(!divSignal1.writeApproxDisplacement(testPath, "approxDispShort2.txt"));
-
+    DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
+    DataSignal dispObj1 = integrate(obj1, 2, 0.5)[1]; // Нахождение перемещений по сигналу ускорения
+    // Нормализация данных
+    obj1.normalize(FIRST);
+    dispObj1.normalize(FIRST);
+    DataSignal approxDispObj1 = approximateSmoothSpline(dispObj1, 0.5); // Аппроксимация перемещений
+    DivisionDataSignal divSignal1(obj1, dispObj1, approxDispObj1, 0.02, 0.5, 0.2, 0.1, 1, -1);
+    divSignal1.calculateLevels(); // Расчет
+    divSignal1.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3); // Нахождение плотности спектральной мощности
+    // Сохранение результатов
+    Q_ASSERT(!divSignal1.writeAll(testPath + "saveLevels/"));
+    Q_ASSERT(!divSignal1.writeDisplacement(testPath, "dispOp182.txt"));
+    Q_ASSERT(!divSignal1.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
+    // #2
     DataSignal obj2(testPath, "ОП 182 1с ку.txt"); // Длина == 30061
     DataSignal dispObj2 = integrate(obj2, 2, 1e-7)[1]; // Нахождение перемещений по сигналу ускорения
-    DivisionDataSignal divSignal2(obj2, dispObj2, 15, 0.5, 1e-7, 0.2, 0.1, 1, -1);
+    // Нормализация данных
+    obj2.normalize(FIRST);
+    dispObj2.normalize(FIRST);
+    DataSignal approxDispObj2 = approximateSmoothSpline(dispObj2, 1e-7); // Аппроксимация перемещений
+    DivisionDataSignal divSignal2(obj2, dispObj2, approxDispObj2, 15, 0.5, 0.2, 0.1, 1, -1);
     divSignal2.calculateLevels();
     divSignal2.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3);
     Q_ASSERT(!divSignal2.writeAll(testPath + "saveLevels/"));
-//    Q_ASSERT(!divSignal2.writeDisplacement(testPath, "dispOp182.txt"));
-//    Q_ASSERT(!divSignal2.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
+    Q_ASSERT(!divSignal2.writeDisplacement(testPath, "dispOp182.txt"));
+    Q_ASSERT(!divSignal2.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
 }

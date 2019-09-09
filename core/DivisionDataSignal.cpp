@@ -5,13 +5,15 @@
 #include "DivisionDataSignal.h"
 #include "core/NumericalFunctions.h"
 
+#include <QTextCodec>
+
 static const int MAX_THREAD_NUM = 8; // Максимальное число потоков
 
 // Конструктор
-DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, double levelStep, double overlapFactor,
-           double smoothApproxFactor, double truncatePercent, double depthGluing, int lEstimationBound, int rEstimationBound)
-    : levelStep_(levelStep), smoothApproxFactor_(smoothApproxFactor),
-    truncatePercent_(truncatePercent), depthGluing_(depthGluing), accel_(accel), displacement_(displacement),
+DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, DataSignal const& approxDisplacement,
+           double levelStep, double overlapFactor, double truncatePercent, double depthGluing, int lEstimationBound, int rEstimationBound)
+    : levelStep_(levelStep), truncatePercent_(truncatePercent), depthGluing_(depthGluing),
+    accel_(accel), displacement_(displacement), approxDisplacement_(approxDisplacement),
     partsAccel(accel_), partsDisplacement(displacement_), // Части ускорений и перемещений
     // Монотонные части
     partsAccelIncrease(partsAccel, partsDisplacement), partsAccelNeutral(partsAccel, partsDisplacement),
@@ -19,18 +21,15 @@ DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const
 {
     setOverlapFactor(overlapFactor); // Коэффициент перекрытия
     setCalculationInd(lEstimationBound, rEstimationBound); // Задание расчетных границ
-    accel_.normalize(FIRST); // Приводим ускорения к нулю
     // Инициализация векторов, определяющих уровни
     lowBoundLevels_ = {0}; upperBoundLevels_ = {0};
     indLevels_ = {0};
-    displacement_.normalize(FIRST); // Приводим перемещения к нулю
-    approxDisplacement_ = approximateSmoothSpline(displacement_, smoothApproxFactor_); // Аппроксимация перемещений
     vecPartsAccelMonotone = {&partsAccelIncrease, &partsAccelNeutral, &partsAccelDecrease}; // Запись адресов монотонных частей
 }
 
 // Управляющий расчетный метод
 void DivisionDataSignal::calculateLevels(){
-    createLevels(); // Создание расчетных уровней
+    createLevels(approxDisplacement_, calculationInd_, overlapFactor_, levelStep_, lowBoundLevels_, upperBoundLevels_, indLevels_, nLevels_); // Создание расчетных уровней
     // Выделение памяти для частей по уровням
     partsAccel.resizeAll(nLevels_);         // Ускорения
     partsDisplacement.resizeAll(nLevels_);  // Перемещения
@@ -119,42 +118,43 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
 }
 
 // Создание расчетных уровней
-void DivisionDataSignal::createLevels(){
-    QVector<double> const& data = approxDisplacement_.getData(); // Данные перемещений
-    auto [min, max] = minMaxVec(data, calculationInd_.first, calculationInd_.second);
-    double mean = meanVec(data, calculationInd_.first, calculationInd_.second);
-    nLevels_ = 1; // Один уровень гарантирован
+void DivisionDataSignal::createLevels(DataSignal const& approxDisplacement, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
+                                      QVector<double> & lowBoundLevels, QVector<double> & upperBoundLevels, QVector<int> & indLevels, int & nLevels){
+    QVector<double> const& data = approxDisplacement.getData(); // Данные перемещений
+    auto [min, max] = minMaxVec(data, calculationInd.first, calculationInd.second);
+    double mean = meanVec(data, calculationInd.first, calculationInd.second);
+    nLevels = 1; // Один уровень гарантирован
     // Обработка единственного уровня
-    if (max <= mean + levelStep_ / 2 && min >= mean - levelStep_ / 2){
-        lowBoundLevels_[0] = mean - levelStep_ / 2;
-        upperBoundLevels_[0] = mean + levelStep_ / 2;
-        indLevels_[0] = 0;
+    if (max <= mean + levelStep / 2 && min >= mean - levelStep / 2){
+        lowBoundLevels[0] = mean - levelStep / 2;
+        upperBoundLevels[0] = mean + levelStep / 2;
+        indLevels[0] = 0;
         return;
     }
     // Разбивка по уровням от минимума сигнала
     // Оценка числа уровней
-    double lastUpperBound = min + levelStep_;
+    double lastUpperBound = min + levelStep;
     while (lastUpperBound <= max){
-        lastUpperBound += overlapFactor_ * levelStep_; // Сдвиг верхней границы
-        ++nLevels_;
+        lastUpperBound += overlapFactor * levelStep; // Сдвиг верхней границы
+        ++nLevels;
     }
     // Запись границ уровней
-    lowBoundLevels_.resize(nLevels_);   // Выделяем память для нижних границ
-    upperBoundLevels_.resize(nLevels_); // Выделяем память для верхних границ
-    indLevels_.resize(nLevels_);        // Выделяем память для индексов уровней
-    for (int i = 0; i != nLevels_; ++i){
-        lowBoundLevels_[i] = min + i * overlapFactor_ * levelStep_; // Нижние границы
-        upperBoundLevels_[i] = lowBoundLevels_[i] + levelStep_; // Нижние границы
+    lowBoundLevels.resize(nLevels);   // Выделяем память для нижних границ
+    upperBoundLevels.resize(nLevels); // Выделяем память для верхних границ
+    indLevels.resize(nLevels);        // Выделяем память для индексов уровней
+    for (int i = 0; i != nLevels; ++i){
+        lowBoundLevels[i] = min + i * overlapFactor * levelStep; // Нижние границы
+        upperBoundLevels[i] = lowBoundLevels[i] + levelStep; // Нижние границы
     }
     // Нумерация уровней
-    int indZeroLevel = qFloor(nLevels_ / 2.0); // Индекс нулевого уровня
-    indLevels_[indZeroLevel] = 0;
+    int indZeroLevel = qFloor(nLevels / 2.0); // Индекс нулевого уровня
+    indLevels[indZeroLevel] = 0;
         // Нижние уровни
     for (int i = indZeroLevel - 1; i >= 0; --i)
-        indLevels_[i] = i - indZeroLevel;
+        indLevels[i] = i - indZeroLevel;
         // Верхние уровни
-    for (int i = indZeroLevel + 1; i != nLevels_; ++i)
-        indLevels_[i] = i - indZeroLevel;
+    for (int i = indZeroLevel + 1; i != nLevels; ++i)
+        indLevels[i] = i - indZeroLevel;
 }
 
 // Назначить уровни
@@ -356,8 +356,8 @@ void DivisionDataSignal::glueLevels(QPair<PartsObject const&, QVector<DataSignal
 void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecPartsMonotone, int firstLevelInd, int lastLevelInd){
     if (lastLevelInd == -1) lastLevelInd = nLevels_ - 1; // Обработка обратной индексации
     static const double MAX_SEPARATION = 0.05; // Максимальное расхождение границ
-    static PartsObject const& baseObject = vecPartsMonotone[0]->baseObjectParts_; // Базовые части ускорений
-    static QVector<QVector<double>> const& baseSeparation = vecPartsMonotone[0]->baseSeparationParts_.data_; // Данные для деления
+    PartsObject const& baseObject = vecPartsMonotone[0]->baseObjectParts_; // Базовые части ускорений
+    QVector<QVector<double>> const& baseSeparation = vecPartsMonotone[0]->baseSeparationParts_.data_; // Данные для деления
     for (int i = firstLevelInd; i <= lastLevelInd; ++i){ // По всем уровням
         // Выделяем память с запасом по длине базового уровня
         for (int m = 0; m != 3; ++m)
@@ -454,8 +454,6 @@ void DivisionDataSignal::setLevelStep(double levelStep){ levelStep_ = levelStep;
 void DivisionDataSignal::setOverlapFactor(double overlapFactor){
     overlapFactor_ = overlapFactor != 0.0 ? overlapFactor : 1;
 }
-// Задание величины сглаживания перемещений
-void DivisionDataSignal::setSmoothApproxFactor(double smoothApproxFactor){ smoothApproxFactor_ = smoothApproxFactor; }
 // Задание процента усечения коротких фрагментов
 void DivisionDataSignal::setTruncatePercent (double truncatePercent){ truncatePercent_ = truncatePercent; }
 // Задание процента глубины склейки правой границы
@@ -557,7 +555,7 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
-    outputStream.setCodec("cp1251"); // Кодировка CP1251
+    outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
     // Запись информиации об уровнях
     outputStream << "Ускорения: " << accel_.getName() << endl;
     outputStream << "Перемещения: " << displacement_.getName() << endl;
@@ -567,7 +565,6 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     outputStream << "------------ Управляющие параметры ------------------" << endl;
     outputStream << "Величина смещения уровней: " << QString::number(levelStep_) << endl;
     outputStream << "Величина перекрытия уровней: " << QString::number(overlapFactor_) << endl;
-    outputStream << "Величина сглаживания перемещений: " << QString::number(smoothApproxFactor_) << endl;
     outputStream << "Процент усечения коротких фрагментов: " << QString::number(truncatePercent_) << endl;
     outputStream << "Процент глубины склейки правой границы: " << QString::number(depthGluing_) << endl;
     outputStream << "--------------- Границы уровней ---------------------" << endl;
