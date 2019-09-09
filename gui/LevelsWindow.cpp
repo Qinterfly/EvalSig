@@ -195,3 +195,9 @@ void LevelsWindow::clearAllPlot(){
     ui->showLevelsPlot->clearGraphs(); // Удаление графиков
     ui->showLevelsPlot->replot(); // Обновление окна построения
 }
+
+// Установка размеров виджетов
+void LevelsWindow::setWidgetSizes(){
+//    static const float RELATIVE_GROUPBOX_FACTOR =
+//    ui->
+}

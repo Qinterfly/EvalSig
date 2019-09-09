@@ -26,6 +26,7 @@ private slots:
 private:
     void plot(QVector<double> const& X, QVector<double> const& Y, QPen penPlot); // Построение графика
     void clearAllPlot(); // Очистка всех графиков
+    void setWidgetSizes(); // Установка размеров виджетов
 private:
     Ui::LevelsWindow *ui;
     QVector<DataSignal> const& vecDataSignal_; // Вектор с исходными сигналами

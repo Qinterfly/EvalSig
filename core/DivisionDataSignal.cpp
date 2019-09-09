@@ -64,6 +64,13 @@ void DivisionDataSignal::calculateLevels(){
     callMultiThread({partsBaseAccelIncrease, gluedAccelIncrease_}, &DivisionDataSignal::glueLevels); // Возрастающих ускорений
     callMultiThread({partsBaseAccelDecrease, gluedAccelDecrease_}, &DivisionDataSignal::glueLevels); // Убывающих ускорений
     callMultiThread({partsBaseAccelNeutral, gluedAccelNeutral_}, &DivisionDataSignal::glueLevels);   // Нейтральных ускорений
+    // Запись имен
+    for (int i = 0; i != nLevels_; ++i){
+        gluedAccel_[i].setMeasurePoint("Склееные ускорения");
+        gluedAccelIncrease_[i].setMeasurePoint("Склееные возрастающие ускорения");
+        gluedAccelDecrease_[i].setMeasurePoint("Склееные убывающие ускорения");
+        gluedAccelNeutral_[i].setMeasurePoint("Склееные нейтральные ускорения");
+    }
 }
 
 // Расчет плотности спектральной мощности
@@ -76,6 +83,7 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     spectrumAccelDecrease_.resize(nLevels_);
     spectrumAccelNeutral_.resize(nLevels_);
     // Контейнеры
+    QVector<QString> const vecSpectrumName = {"Спектры склеенных ускорений", "Спектры возрастающих ускорений", "Спектры убывающих ускорений", "Спектры нейтральных ускорений"};
     QVector<QVector<DataSignal> *> const vecSpectrumMonotone = {&spectrumAccelIncrease_, &spectrumAccelDecrease_, &spectrumAccelNeutral_};
     QVector<QVector<DataSignal> const *> const vecMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
     int nMonotone = vecMonotone.size(); // Число монотонных частей
@@ -104,15 +112,18 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     for (int i = 0; i != nLevels_; ++i){
         if (gluedAccel_[i].isEmpty()) continue; // Пропуск пустых склеек
         spectrumAccel_[i] = computePowerSpectralDensity(gluedAccel_[i], windowFun, windowWidthAccel, overlapFactorWindow, lengthSpectrum, windowSmoothWidth);
+        spectrumAccel_[i].setMeasurePoint(vecSpectrumName[0]);
     }
         // Склеек монотонных частей
     int windowWidthMonotone = qCeil(qPow(2.0, minMonotonePow));
     for (int i = 0; i != nMonotone ; ++i){
         QVector<DataSignal> const& elemMonotone = *vecMonotone[i];
         QVector<DataSignal> & elemSpectrumMonotone = *vecSpectrumMonotone[i];
+        QString const& tSpectrumName = vecSpectrumName[i + 1];
         for (int j = 0; j != nLevels_; ++j){
             if (elemMonotone[j].isEmpty()) continue; // Пропуск пустых склеек
             elemSpectrumMonotone[j] = computePowerSpectralDensity(elemMonotone[j], windowFun, windowWidthMonotone, overlapFactorWindow, lengthSpectrum, windowSmoothWidth);
+            elemSpectrumMonotone[j].setMeasurePoint(tSpectrumName);
         }
     }
 }
@@ -363,7 +374,6 @@ void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecP
         for (int m = 0; m != 3; ++m)
             vecPartsMonotone[m]->resizeMain(i, baseObject.lengthLevels_[i]);
         double thresholdSeparate = qAbs(upperBoundLevels_[i] - lowBoundLevels_[i]) * MAX_SEPARATION;
-        int lenFragment = 0; // Длина текущего фрагмента
         int lastIndex = 0; // Индекс конца фрагмента
         int endFragmentIndex = 0; // Индекс конца фрагмента
         int nFragment = baseObject.nFragmentLevels_[i]; // Число фрагментов на уровне
@@ -372,7 +382,6 @@ void DivisionDataSignal::constructMonotoneLevels(QVector<PartsMonotone *> & vecP
         QVector<int> vecLenMonotone = {0, 0, 0}; // Длины частей
         for (int j = 0; j != nFragment; ++j){ // Цикл по всем фрагментам
             endFragmentIndex = baseObject.ind_[i][j];
-            lenFragment = endFragmentIndex - lastIndex + 1;
             difference = baseSeparation[i][endFragmentIndex] - baseSeparation[i][lastIndex];
             // Оценка монотонности
             if (qAbs(difference) > thresholdSeparate){
