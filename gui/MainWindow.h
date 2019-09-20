@@ -7,6 +7,8 @@
 #include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
 
+enum ColorMapType { STATS, SPECTRUM }; // Тип цветовой карты
+
 namespace Ui {
     class MainWindow;
 }
@@ -66,8 +68,11 @@ private:
     // Работа с цветовыми картами
     void plotAllColorMap(); // Построение цветовые карты
     void setColorMapData(int plotInd, int nGrid); // Выставление данных для цветовой карты по индексу
+    void setTextTickerForStats(int plotInd, int nGrid); // Выставление подписей поверхности статистик
+    void setTextTickerForSpectrum(int plotInd, int nGrid, QVector<bool> mask); // Выставление подписей поверхности спектров
     void assignDataForColorMap(ArrayRegressionParams const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayRegressionParams
     void assignDataForColorMap(ArrayStatCharacters const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayStatCharacters
+    void assignDataForSpectrumSurface(int plotInd, int nGrid); // Назначение данных для поверхности спектров
     void clearAllColorMap(); // Очистка цветовых карт
 private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner
@@ -88,6 +93,7 @@ private:
     // Контейнеры для построения цветовых карт
     QVector<QCustomPlotZoom *> vecTablePlot_; // Вектор указателей на графические объекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
+    QVector<int> vecColorMapType_; // Типы цветовых карт
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
 };
 

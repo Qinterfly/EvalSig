@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -202,6 +202,26 @@
           </property>
           <item>
            <widget class="QCustomPlotZoom" name="noisePlot" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabSpectrumPlot">
+         <attribute name="title">
+          <string>Спектры</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QCustomPlotZoom" name="spectrumPlot" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabRegression">
+         <attribute name="title">
+          <string>Регрессии</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
+          <item>
+           <widget class="QCustomPlotZoom" name="regressionPlot" native="true"/>
           </item>
          </layout>
         </widget>
