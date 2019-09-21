@@ -61,6 +61,8 @@ void MainWindow::initializeAllPlot(){
         ui->comparePlot->graph(plotInd)->setPen(Qt::NoPen);
         ui->comparePlot->graph(plotInd)->setBrush(brushCompare);
     }
+    // -- regressionPlot --
+    ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
     // -- AllColorMap --
     initializeAllColorMap(); // Инициализация всех цветовых карт
 }

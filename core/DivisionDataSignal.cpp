@@ -566,19 +566,19 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
     // Запись информиации об уровнях
-    outputStream << "Ускорения: " << accel_.getName() << endl;
-    outputStream << "Перемещения: " << displacement_.getName() << endl;
-    outputStream << "Расчетные границы: " << QString::number(calculationInd_.first + 1);
+    outputStream << "Accel: " << accel_.getName() << endl;
+    outputStream << "Displacement: " << displacement_.getName() << endl;
+    outputStream << "Calculation boundaries: " << QString::number(calculationInd_.first + 1);
     outputStream << " - " << QString::number(calculationInd_.second + 1) << endl;
-    outputStream << "Число уровней: " << QString::number(nLevels_) << endl;
-    outputStream << "------------ Управляющие параметры ------------------" << endl;
-    outputStream << "Величина смещения уровней: " << QString::number(levelStep_) << endl;
-    outputStream << "Величина перекрытия уровней: " << QString::number(overlapFactor_) << endl;
-    outputStream << "Процент усечения коротких фрагментов: " << QString::number(truncatePercent_) << endl;
-    outputStream << "Процент глубины склейки правой границы: " << QString::number(depthGluing_) << endl;
-    outputStream << "--------------- Границы уровней ---------------------" << endl;
-    for (int i = 0; i != nLevels_; ++i){
-        outputStream << QString::number(i) << ": " << QString::number(lowBoundLevels_[i]) << ", ";
+    outputStream << "Number of levels: " << QString::number(nLevels_) << endl;
+    outputStream << "--------------- Control parameters ----------------------" << endl;
+    outputStream << "Step: " << QString::number(levelStep_) << endl;
+    outputStream << "Overlap factor: " << QString::number(overlapFactor_) << endl;
+    outputStream << "Truncate percent: " << QString::number(truncatePercent_) << endl;
+    outputStream << "Depth gluing percent: " << QString::number(depthGluing_) << endl;
+    outputStream << "-------------- Boundaries of levels ---------------------" << endl;
+    for (int i = 0; i != nLevels_; ++i) {
+        outputStream << QString::number(indLevels_[i]) << ": " << QString::number(lowBoundLevels_[i]) << ", ";
         outputStream << QString::number(upperBoundLevels_[i]) << endl;
     }
     file.close(); // Закрытие файла

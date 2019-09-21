@@ -53,6 +53,11 @@ void MainWindow::plotRegression() {
     QVector<double> valRegression(2, 0);
     valRegression[0] = regressionParams.first * limBaseSignal[0] + regressionParams.second;
     valRegression[1] = regressionParams.first * limBaseSignal[1] + regressionParams.second;
+    // Настройка легенды
+    ui->regressionPlot->legend->setVisible(true);
+    char signCoeff = '+';
+    if (regressionParams.second < 0) signCoeff = '-';
+    QString regressionName = "y = " + QString::number(regressionParams.first) + " * x " + signCoeff + " " + QString::number(qAbs(regressionParams.second));
     // Построение облака точек
     QCPCurve * curve = new QCPCurve(ui->regressionPlot->xAxis, ui->regressionPlot->yAxis);
     curve->setLineStyle(QCPCurve::lsNone);
@@ -60,11 +65,16 @@ void MainWindow::plotRegression() {
     curve->setPen(QPen(Qt::red));
     curve->setData(baseSignal.getData(calculationInd.first, calculationInd.second),
                    compareSignal.getData(calculationInd.first, calculationInd.second));
+    curve->removeFromLegend(); // Исключение точек из легенды
     // Построение линейной регрессии
     ui->regressionPlot->addGraph();
     ui->regressionPlot->graph(0)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->regressionPlot->graph(0)->setPen(QPen(Qt::blue, 2)) ; // Выставление цвета графика
     ui->regressionPlot->graph(0)->setData(limBaseSignal, valRegression, true); // Передача отсортированных данных
+    ui->regressionPlot->graph(0)->setName(regressionName);
+    // Подпись осей
+    ui->regressionPlot->xAxis->setLabel(ui->listFile->item(indexBaseSignal)->text());
+    ui->regressionPlot->yAxis->setLabel(ui->listFile->item(indexCompareSignal)->text());
     // Обновление графического окна
     ui->regressionPlot->rescaleAxes(true); // Масштабирование осей
     ui->regressionPlot->replot(); // Обновление окна построения
@@ -72,7 +82,12 @@ void MainWindow::plotRegression() {
 
 // Очистка линейной регрессии
 void MainWindow::clearRegression(){
+    // Очистка текстовой информации
+    ui->regressionPlot->legend->setVisible(false);
+    ui->regressionPlot->xAxis->setLabel("");
+    ui->regressionPlot->yAxis->setLabel("");
     ui->regressionPlot->clearItems();
+    // Очистка данных
     ui->regressionPlot->clearGraphs();
     ui->regressionPlot->clearPlottables();
     ui->regressionPlot->replot();
