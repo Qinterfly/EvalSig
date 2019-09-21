@@ -40,6 +40,9 @@ public slots:
     void changeDataSignal(int row, int column); // Изменение параметров сигналов
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
+    void updateRegressionState(); // Проверка возможности построения линейной регрессии
+    void plotRegression(); // Построение линейной регрессии
+    void clearRegression(); // Очистка линейной регрессии
     // Методы очистки
     void clearProject(); // Очистка проекта
     // Обмен данными между окнами

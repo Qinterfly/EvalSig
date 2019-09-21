@@ -23,6 +23,7 @@ void MainWindow::addSignal(){
             int randColorInd = QRandomGenerator::global()->bounded(colorList_.size()); // Случайный цвет из контейнера цветов
             item->setData(Qt::DecorationRole, colorList_[randColorInd]); // Задание цвета для сигнала
             ui->listFile->insertItem(ui->listFile->count(), item); // Запись элемента в список
+            ui->comboBoxRegression->insertItem(ui->listFile->count(), item->text()); // Запись элемента в список регрессии
             setStatEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Правка расчетных границ
             setBoundariesShowParams(); // Выставление границ
             addGraph(); // Добавления сигнала для отрисовки
@@ -43,6 +44,7 @@ void MainWindow::removeSignal(){
     if (statSignal_.removeSignal(deleteInd) == 0){ // Если удаление прошло успешно
         statusBar()->showMessage("Сигнал " + ui->listFile->item(deleteInd)->text() + " успешно удален"); // Вывод сообщения в statusBar
         ui->listFile->takeItem(deleteInd); // Удаляем элемент из списка
+        ui->comboBoxRegression->removeItem(deleteInd); // Удаляем элемент из списка регрессии
         setStatEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Правка расчетных границ
         setBoundariesShowParams(); // Выставление граничных значений параметров
         removeGraph(deleteInd); // Удаление графика

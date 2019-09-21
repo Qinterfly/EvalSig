@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxInterpolateColorMap, SIGNAL(clicked(bool)), this, SLOT(setShowParams())); // Переключение режима интерполяции цветовых карт
     connect(ui->spinBoxLeftEstimationBoundary, SIGNAL(editingFinished()), this, SLOT(setStatEstimationBoundaries())); // Установка границ расчета
     connect(ui->spinBoxRightEstimationBoundary, SIGNAL(editingFinished()), this, SLOT(setStatEstimationBoundaries())); // Установка границ расчета
+    connect(ui->comboBoxRegression, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRegressionState())); // Проверка возможности построения линейной регрессии
+    connect(ui->pushButtonShowRegression, SIGNAL(clicked()), this, SLOT(plotRegression()));
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
