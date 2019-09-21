@@ -36,7 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBoxLeftEstimationBoundary, SIGNAL(editingFinished()), this, SLOT(setStatEstimationBoundaries())); // Установка границ расчета
     connect(ui->spinBoxRightEstimationBoundary, SIGNAL(editingFinished()), this, SLOT(setStatEstimationBoundaries())); // Установка границ расчета
     connect(ui->comboBoxRegression, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRegressionState())); // Проверка возможности построения линейной регрессии
-    connect(ui->pushButtonShowRegression, SIGNAL(clicked()), this, SLOT(plotRegression()));
+    connect(ui->pushButtonShowRegression, SIGNAL(clicked()), this, SLOT(plotRegression())); // Отобразить рассеяние для пары сигналов
+    connect(ui->actionSaveScreenshot, SIGNAL(triggered()), this, SLOT(saveScreenshot())); // Сохранить скриншот программы
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

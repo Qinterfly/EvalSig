@@ -28,6 +28,7 @@ public slots:
     void saveSignalCharacteristics(); // Сохранить характеристики сигнала
     void saveCalcualtion(); // Сохранение результатов расчета
     void saveLevels(); // Сохранить разбиения по уровням
+    void saveScreenshot(); // Сохранить скриншот программы
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала

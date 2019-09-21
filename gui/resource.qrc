@@ -11,5 +11,6 @@
         <file>icons/app-icon.png</file>
         <file>icons/graph.png</file>
         <file>icons/saveLevels.png</file>
+        <file>icons/photo-camera.png</file>
     </qresource>
 </RCC>

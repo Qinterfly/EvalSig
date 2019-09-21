@@ -82,5 +82,37 @@ void MainWindow::saveLevels(){
     levelsWindow_->show(); // Отображение диалогового окна
 }
 
+// Сохранить скриншот программы
+void MainWindow::saveScreenshot(){
+    static QString const IMAGE_FORMAT = "png";
+    // Получение указателя на экран
+    QScreen * screen = QGuiApplication::primaryScreen();
+    if (const QWindow *window = windowHandle())
+        screen = window->screen();
+    if (!screen)
+        return;
+    QPixmap originalPixmap = screen->grabWindow(this->winId()); // Захват текущего окна программы
+    // Создание диалога сохранения
+    QString fileName = lastPath_ + ui->showModeWidget->tabText(ui->showModeWidget->currentIndex()) + "." + IMAGE_FORMAT;
+    QFileDialog fileDialog(this, tr("Сохранить скриншот как"), fileName);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    // Настройка типов изображений для отображения
+    QStringList mimeTypes;
+    const QList<QByteArray> baMimeTypes = QImageWriter::supportedMimeTypes();
+    for (const QByteArray &bf : baMimeTypes)
+        mimeTypes.append(QLatin1String(bf));
+    fileDialog.setMimeTypeFilters(mimeTypes);
+    fileDialog.selectMimeTypeFilter("image/" + IMAGE_FORMAT);
+    fileDialog.setDefaultSuffix(IMAGE_FORMAT);
+    if (fileDialog.exec() != QDialog::Accepted) // Обработка ошибки выбора
+        return;
+    // Сохранение скриншота
+    fileName = fileDialog.selectedFiles().first();
+    lastPath_ = fileDialog.directory().path() + QDir::separator(); // Запоминаем директорию для следующей операции
+    if (originalPixmap.save(fileName))
+        ui->statusBar->showMessage("Сохранение скриншота выполнено успешно");
+}
+
 
 // -----------------------------------------------------------------------------------------------------------------------

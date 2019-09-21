@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>900</width>
-    <height>633</height>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>7</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -348,6 +348,7 @@
     </property>
     <addaction name="actionSaveCalculation"/>
     <addaction name="actionSaveLevels"/>
+    <addaction name="actionSaveScreenshot"/>
    </widget>
    <widget class="QMenu" name="help">
     <property name="title">
@@ -1073,6 +1074,7 @@
    </attribute>
    <addaction name="actionSaveCalculation"/>
    <addaction name="actionSaveLevels"/>
+   <addaction name="actionSaveScreenshot"/>
   </widget>
   <action name="actionAddSignal">
    <property name="checkable">
@@ -1243,8 +1245,29 @@
    <property name="toolTip">
     <string>Сохранить разбиения по уровням</string>
    </property>
+   <property name="statusTip">
+    <string>Сохранить разбиения по уровням</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="actionSaveScreenshot">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/photo-camera.png</normaloff>:/images/icons/photo-camera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить скриншот</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить скриншот окна программы</string>
+   </property>
+   <property name="statusTip">
+    <string>Сохранить скриншот окна программы</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>
