@@ -4,7 +4,7 @@
 // ---- Работа с графиками ---------------------------------------------------------------------------------------
 
 // Добавить график
-void MainWindow::addGraph(){
+void MainWindow::addGraph(bool isReplot){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     int plotInd = ui->listFile->count() - 1; // Индекс графика для построения
     QVariant colorSignal = ui->listFile->item(plotInd)->data(Qt::DecorationRole); // Получения цвета графика
@@ -24,7 +24,7 @@ void MainWindow::addGraph(){
     }
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
-    ui->comparePlot->replot(); // Обновление окна построения
+    if ( isReplot ) ui->comparePlot->replot(); // Обновление окна построения
 }
 
 // Удалить график
@@ -38,7 +38,6 @@ void MainWindow::removeGraph(int deleteInd){
         ui->comparePlot->xAxis2->setVisible(false);
     ui->comparePlot->rescaleAxes(false); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
-    ui->comparePlot->replot(); // Обновление окна построения
 }
 
 // Обновление графика

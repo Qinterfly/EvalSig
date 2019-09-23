@@ -24,7 +24,7 @@ public:
 public slots:
     // Чтение, запись и удаление сигналов
     void addSignal(); // Добавить сигнал
-    void removeSignal(); // Удалить сигнал
+    void removeSignal(bool isReplot = true); // Удалить сигнал
     void saveSignalCharacteristics(); // Сохранить характеристики сигнала
     void saveCalcualtion(); // Сохранение результатов расчета
     void saveLevels(); // Сохранить разбиения по уровням
@@ -64,8 +64,8 @@ private:
     void clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     void clearStatusBar(); // Очистка информационной строки
     // Работа с графиками
-    void addGraph(); // Добавление графика
-    void removeGraph(int); // Удаление графика
+    void addGraph(bool isReplot = false); // Добавление графика
+    void removeGraph(int deleteInd); // Удаление графика
     void replotGraph(int); // Обновление графика
     void plotEstimationBoundaries(bool isReplot = false); // Построение расчетных границ
     void clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ

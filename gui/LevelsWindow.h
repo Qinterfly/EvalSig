@@ -24,9 +24,9 @@ private slots:
     void save(); // Сохранение и расчет
     void showLevels(); // Отображение уровней на графике
 private:
-    void plot(QVector<double> const& X, QVector<double> const& Y, QPen penPlot); // Построение графика
+    void plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение графика
+    void plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение кривой
     void clearAllPlot(); // Очистка всех графиков
-    void setWidgetSizes(); // Установка размеров виджетов
 private:
     Ui::LevelsWindow *ui;
     QVector<DataSignal> const& vecDataSignal_; // Вектор с исходными сигналами

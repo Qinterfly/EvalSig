@@ -151,10 +151,10 @@ void LevelsWindow::showLevels(){
     penPlot.setWidthF(1.0);
     // Перемещения
     penPlot.setColor(Qt::blue);
-    plot(XData, displacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    plotGraph(XData, displacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
     // Аппроксимированные перемещения
     penPlot.setColor(Qt::red);
-    plot(XData, approxDisplacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    plotGraph(XData, approxDisplacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
     // Построение уровней
     penPlot.setStyle(Qt::DashLine);
     QVector<double> XBound = {XData[0], XData[nSignal - 1]}; // Граничные значения
@@ -164,10 +164,10 @@ void LevelsWindow::showLevels(){
         penPlot.setColor(plotColor);
         // Нижняя граница
         QVector<double> YLine = {lowBoundLevels[i], lowBoundLevels[i]};
-        plot(XBound, YLine, penPlot);
+        plotGraph(XBound, YLine, penPlot);
         // Верхняя граница
         YLine = {upperBoundLevels[i], upperBoundLevels[i]};
-        plot(XBound, YLine, penPlot);
+        plotGraph(XBound, YLine, penPlot);
         // Подпись уровня
         QCPItemText * label = new QCPItemText(ui->showLevelsPlot);
         double YPosLabel = (lowBoundLevels[i] + upperBoundLevels[i]) / 2.0;
@@ -180,24 +180,36 @@ void LevelsWindow::showLevels(){
 }
 
 // Построение графика
-void LevelsWindow::plot(QVector<double> const& X, QVector<double> const& Y, QPen penPlot){
+void LevelsWindow::plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot){
     ui->showLevelsPlot->addGraph(); // Добавление графика в конец
     ui->showLevelsPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->showLevelsPlot->graph()->setPen(penPlot); // Выставление цвета графика
     ui->showLevelsPlot->graph()->setData(X, Y, true); // Передача отсортированных данных
     ui->showLevelsPlot->rescaleAxes(false); // Масштабирование осей
-    ui->showLevelsPlot->replot(); // Обновление окна построения
+    if ( isReplot ) ui->showLevelsPlot->replot(); // Обновление окна построения
+}
+
+// Построение кривой
+void LevelsWindow::plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot){
+    int nPoint = X.size(); // Число точек в графике
+    if (nPoint != Y.size()) return;
+    // Формирование вектора порядка
+    QVector<double> order(nPoint);
+    for (int i = 0; i != nPoint; ++i)
+        order[i] = i;
+    // Создание кривой
+    QCPCurve * someCurve = new QCPCurve(ui->showLevelsPlot->xAxis, ui->showLevelsPlot->yAxis);
+    someCurve->setPen(penPlot); // Выставление цвета графика
+    someCurve->setData(order, X, Y, true); // Передача отсортированных данных
+    ui->showLevelsPlot->rescaleAxes(false); // Масштабирование осей
+    if ( isReplot ) ui->showLevelsPlot->replot(); // Обновление окна построения
 }
 
 // Очистка графика
 void LevelsWindow::clearAllPlot(){
     ui->showLevelsPlot->clearItems(); // Удаление надписей
     ui->showLevelsPlot->clearGraphs(); // Удаление графиков
+    ui->showLevelsPlot->clearPlottables(); // Очистка кривых
     ui->showLevelsPlot->replot(); // Обновление окна построения
 }
 
-// Установка размеров виджетов
-void LevelsWindow::setWidgetSizes(){
-//    static const float RELATIVE_GROUPBOX_FACTOR =
-//    ui->
-}

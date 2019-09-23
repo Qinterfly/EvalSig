@@ -30,6 +30,7 @@ void MainWindow::addSignal(){
             statusBar()->showMessage("Сигнал " + fileName + " успешно прочитан"); // Вывод сообщения в statusBar
         }
     }
+    ui->comparePlot->replot(); // Обновление окна построения графиков для сравнения
     plotAllColorMap(); // Построение цветовых карт
     // Установка свойств по последнему сигналу
     int nItem = ui->listFile->count() - 1; // Число элементов в списке
@@ -37,7 +38,7 @@ void MainWindow::addSignal(){
 }
 
 // Удалить сигнал
-void MainWindow::removeSignal(){
+void MainWindow::removeSignal(bool isReplot){
     int deleteInd = ui->listFile->currentRow(); // Индекс элемента для удаления
     if (ui->listFile->count() == 0 || deleteInd == -1) // При отсутствии элементов в списке
         return;
@@ -50,6 +51,7 @@ void MainWindow::removeSignal(){
         removeGraph(deleteInd); // Удаление графика
         plotAllColorMap(); // Построение цветовой карты
     }
+    if ( isReplot ) ui->comparePlot->replot(); // Обновление окна построения графиков для сравнения
 }
 
 // Сохранить сигнал
