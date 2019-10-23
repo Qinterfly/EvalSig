@@ -59,7 +59,6 @@ void MainWindow::replotGraph(int plotInd){
         double minData = *std::min_element(YCompare.begin(), YCompare.end());
         double maxData = *std::max_element(YCompare.begin(), YCompare.end());
         ui->comparePlot->yAxis->setRange(minData, maxData);
-        ui->comparePlot->rescaleAxes(false); // Масштабирование осей
     }
     plotEstimationBoundaries(); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения

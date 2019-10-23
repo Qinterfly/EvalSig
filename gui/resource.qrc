@@ -12,5 +12,6 @@
         <file>icons/graph.png</file>
         <file>icons/saveLevels.png</file>
         <file>icons/photo-camera.png</file>
+        <file>icons/timeLine.png</file>
     </qresource>
 </RCC>
