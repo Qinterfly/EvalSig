@@ -52,14 +52,7 @@ void MainWindow::replotGraph(int plotInd){
         ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
     }
     // Выставление пределов
-    if (plotInd != 0) // В случае multiPlot, подстраиваем под предельные значения
-        ui->comparePlot->rescaleAxes(true); // Масштабирование осей
-    else {
-        // Экстремумы данных
-        double minData = *std::min_element(YCompare.begin(), YCompare.end());
-        double maxData = *std::max_element(YCompare.begin(), YCompare.end());
-        ui->comparePlot->yAxis->setRange(minData, maxData);
-    }
+    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->rescaleValueAxis(false);
     plotEstimationBoundaries(); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения
 }

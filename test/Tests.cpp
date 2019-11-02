@@ -108,8 +108,8 @@ void testDivisionDataSignal(){
     divSignal1.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3); // Нахождение плотности спектральной мощности
     // Сохранение результатов
     Q_ASSERT(!divSignal1.writeAll(testPath + "saveLevels/"));
-    Q_ASSERT(!divSignal1.writeDisplacement(testPath, "dispOp182.txt"));
-    Q_ASSERT(!divSignal1.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
+    Q_ASSERT(!divSignal1.writeSupport(testPath, "dispOp182.txt"));
+    Q_ASSERT(!divSignal1.writeApproxSupport(testPath, "approxDispOp182.txt"));
     // #2
     DataSignal obj2(testPath, "ОП 182 1с ку.txt"); // Длина == 30061
     DataSignal dispObj2 = integrate(obj2, 2, 1e-7)[1]; // Нахождение перемещений по сигналу ускорения
@@ -121,6 +121,6 @@ void testDivisionDataSignal(){
     divSignal2.calculateLevels();
     divSignal2.calculatePowerSpectralDensity(HAMMING, 0.5, 1024, 3);
     Q_ASSERT(!divSignal2.writeAll(testPath + "saveLevels/"));
-    Q_ASSERT(!divSignal2.writeDisplacement(testPath, "dispOp182.txt"));
-    Q_ASSERT(!divSignal2.writeApproxDisplacement(testPath, "approxDispOp182.txt"));
+    Q_ASSERT(!divSignal2.writeSupport(testPath, "dispOp182.txt"));
+    Q_ASSERT(!divSignal2.writeApproxSupport(testPath, "approxDispOp182.txt"));
 }

@@ -61,7 +61,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>333</width>
+         <width>360</width>
          <height>0</height>
         </size>
        </property>
@@ -76,14 +76,14 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QLabel" name="labelAccel">
+         <widget class="QLabel" name="labelBase">
           <property name="text">
-           <string>Ускорения:</string>
+           <string>Базовый:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="comboBoxAccel">
+         <widget class="QComboBox" name="comboBoxBase">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -96,14 +96,14 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="labelDisplacement">
+         <widget class="QLabel" name="labelSupport">
           <property name="text">
-           <string>Перемещения:</string>
+           <string>Опорный:</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QComboBox" name="comboBoxDisplacement">
+         <widget class="QComboBox" name="comboBoxSupport">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -128,7 +128,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>333</width>
+         <width>360</width>
          <height>0</height>
         </size>
        </property>
@@ -371,7 +371,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>333</width>
+         <width>360</width>
          <height>0</height>
         </size>
        </property>

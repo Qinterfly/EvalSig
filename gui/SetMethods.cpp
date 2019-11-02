@@ -22,7 +22,7 @@ void MainWindow::setSignalProperty(){
     ui->tableFileProperty->item(7, 1)->setText(QString::number(propSignal.physicalFactor_)); // Физический коэффициент
     ui->tableFileProperty->item(8, 1)->setText(propSignal.measureUnit_);                     // Единица измерения
     ui->tableFileProperty->item(9, 1)->setText(QString::number(propSignal.scanPeriod_));     // Период опроса датчика
-    ui->tableFileProperty->item(10, 1)->setText(propSignal.characteristic_);                  // Характеристика
+    ui->tableFileProperty->item(10, 1)->setText(propSignal.characteristic_);                 // Характеристика
     ui->tableFileProperty->item(11, 1)->setText(QString::number(propSignal.nCount_));        // Количество отсчетов
     // Цвет графика
     QListWidgetItem * listItem = ui->listFile->item(signalInd); // Получение элемента списка

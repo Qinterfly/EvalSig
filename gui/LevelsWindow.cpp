@@ -10,7 +10,7 @@ LevelsWindow::LevelsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *pa
 {
     ui->setupUi(this);
     // Создание соединений сигнал - слот
-    connect(ui->comboBoxAccel, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения
+    connect(ui->comboBoxBase, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения
     connect(ui->pushButtonSaveLevels, SIGNAL(clicked()), this, SLOT(save())); // Сохранение результатов
     connect(ui->pushButtonShowLevels, SIGNAL(clicked()), this, SLOT(showLevels())); // Отображение уровней на графике
 }
@@ -25,20 +25,20 @@ LevelsWindow::~LevelsWindow()
 void LevelsWindow::setSignalsName(QListWidget const& listSignals){
     int nItem = listSignals.count();
     // Очистка выпадающих списков
-    ui->comboBoxAccel->clear();
-    ui->comboBoxDisplacement->clear();
+    ui->comboBoxBase->clear();
+    ui->comboBoxSupport->clear();
     // Добавление пустых элементов
-    ui->comboBoxAccel->addItem("");
-    ui->comboBoxDisplacement->addItem("");
+    ui->comboBoxBase->addItem("");
+    ui->comboBoxSupport->addItem("");
     // Добавление имен сигналов в ускорения и перемещения
     for (int i = 0; i != nItem; ++i){
         QString const& tName = listSignals.item(i)->text();
-        ui->comboBoxAccel->addItem(tName);
-        ui->comboBoxDisplacement->addItem(tName);
+        ui->comboBoxBase->addItem(tName);
+        ui->comboBoxSupport->addItem(tName);
     }
     // Выбор пустых элементов
-    ui->comboBoxAccel->setCurrentIndex(0);
-    ui->comboBoxDisplacement->setCurrentIndex(0);
+    ui->comboBoxBase->setCurrentIndex(0);
+    ui->comboBoxSupport->setCurrentIndex(0);
 }
 
 // Установка расчетных границ
@@ -49,7 +49,7 @@ void LevelsWindow::setEstimationBoundaries(QPair<int, int> const& estimationBoun
 
 // Установка возможности сохранения
 void LevelsWindow::setSaveState(int){
-    if (!ui->comboBoxAccel->currentText().isEmpty()){
+    if (!ui->comboBoxBase->currentText().isEmpty()){
         ui->pushButtonSaveLevels->setEnabled(true);
         ui->pushButtonShowLevels->setEnabled(true);
     }
@@ -68,8 +68,8 @@ void LevelsWindow::save(){
     if (saveDir.isEmpty()) return;
     lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     // Сигналы
-    DataSignal accel = vecDataSignal_[ui->comboBoxAccel->currentIndex() - 1]; // Ускорения
-    DataSignal displacement; // Перемещения
+    DataSignal base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
+    DataSignal support; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
     double overlapFactor = ui->spinBoxOverlapFactor->value();
@@ -78,16 +78,16 @@ void LevelsWindow::save(){
     double truncatePercent = ui->spinBoxTruncatePercent->value();
     double depthGluing = ui->spinBoxDepthGluing->value();
     // Получение перемещения
-    if (ui->comboBoxDisplacement->currentText().isEmpty())
-        displacement = integrate(accel, 2, smoothIntegrFactor)[1];
+    if (ui->comboBoxSupport->currentText().isEmpty())
+        support = integrate(base, 2, smoothIntegrFactor)[1];
     else
-        displacement = vecDataSignal_[ui->comboBoxDisplacement->currentIndex() - 1];
+        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
     // Нормализация данных
-    accel.normalize(FIRST); // Ускорений
-    displacement.normalize(FIRST); // Перемещений
-    DataSignal approxDisplacement = approximateSmoothSpline(displacement, smoothApproxFactor); // Аппроксимация перемещений
+    base.normalize(FIRST); // Базового
+    support.normalize(FIRST); // Опорного
+    DataSignal approxSupport = approximateSmoothSpline(support, smoothApproxFactor); // Аппроксимация опорного
     // Вызов расчетных методов
-    DivisionDataSignal divSignal(accel, displacement, approxDisplacement, levelStep, overlapFactor, truncatePercent, depthGluing,
+    DivisionDataSignal divSignal(base, support, approxSupport, levelStep, overlapFactor, truncatePercent, depthGluing,
                                     estimationBoundaries_.first, estimationBoundaries_.second);
     divSignal.calculateLevels(); // Расчет уровней
     // Сохранение результатов
@@ -95,9 +95,9 @@ void LevelsWindow::save(){
     int saveStatus = 0;
         // Склейки
     saveStatus += divSignal.writeGluedParts(lastPath_);
-        // Перемещения
-    saveStatus += divSignal.writeDisplacement(lastPath_, "Перемещения.txt");
-    saveStatus += divSignal.writeApproxDisplacement(lastPath_, "Аппрокс перемещения.txt");
+        // Опорный
+    saveStatus += divSignal.writeSupport(lastPath_, "Опорный.txt");
+    saveStatus += divSignal.writeApproxSupport(lastPath_, "Аппроксимация опорного.txt");
         // Спектры
     if (isPowerSpectralDensity){
         WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
@@ -118,25 +118,25 @@ void LevelsWindow::save(){
 void LevelsWindow::showLevels(){
     static const double SHIFT_XMAX = 0.05; // Смещение максимума по оси абсцисс
     // Сигналы
-    DataSignal const& accel = vecDataSignal_[ui->comboBoxAccel->currentIndex() - 1]; // Ускорения
-    DataSignal displacement; // Перемещения
+    DataSignal const& base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
+    DataSignal support; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
     double overlapFactor = ui->spinBoxOverlapFactor->value();
     double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
-    // Получение перемещения
-    if (ui->comboBoxDisplacement->currentText().isEmpty())
-        displacement = integrate(accel, 2, smoothIntegrFactor)[1];
+    // Получение опорного
+    if (ui->comboBoxSupport->currentText().isEmpty())
+        support = integrate(base, 2, smoothIntegrFactor)[1];
     else
-        displacement = vecDataSignal_[ui->comboBoxDisplacement->currentIndex() - 1];
-    displacement.normalize(FIRST); // Перемещений
-    DataSignal approxDisplacement = approximateSmoothSpline(displacement, smoothApproxFactor); // Аппроксимация перемещений
+        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
+    support.normalize(FIRST); // Опорного
+    DataSignal approxSupport = approximateSmoothSpline(support, smoothApproxFactor); // Аппроксимация опорного
     // Подготовка контейнеров результирующих значений
     QVector<double> lowBoundLevels = {0}, upperBoundLevels = {0}; // Нижние и верхние границы уровней
     QVector<int> indLevels = {0}; // Индексы уровней
     int nLevels = 0; // Число уровней
-    DivisionDataSignal::createLevels(approxDisplacement, calculationInd_, overlapFactor, levelStep,
+    DivisionDataSignal::createLevels(approxSupport, calculationInd_, overlapFactor, levelStep,
                                      lowBoundLevels, upperBoundLevels, indLevels, nLevels); // Создание уровней
     if (nLevels == 0) return;
     clearAllPlot(); // Очистка всех графиков
@@ -149,12 +149,12 @@ void LevelsWindow::showLevels(){
     QPen penPlot;
     penPlot.setStyle(Qt::SolidLine); // Стиль линии
     penPlot.setWidthF(1.0);
-    // Перемещения
+    // Опорный
     penPlot.setColor(Qt::blue);
-    plotGraph(XData, displacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
-    // Аппроксимированные перемещения
+    plotGraph(XData, support.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    // Аппроксимированный опорный
     penPlot.setColor(Qt::red);
-    plotGraph(XData, approxDisplacement.getData(calculationInd_.first, calculationInd_.second), penPlot);
+    plotGraph(XData, approxSupport.getData(calculationInd_.first, calculationInd_.second), penPlot);
     // Построение уровней
     penPlot.setStyle(Qt::DashLine);
     QVector<double> XBound = {XData[0], XData[nSignal - 1]}; // Граничные значения

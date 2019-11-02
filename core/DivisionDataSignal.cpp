@@ -10,66 +10,66 @@
 static const int MAX_THREAD_NUM = 8; // Максимальное число потоков
 
 // Конструктор
-DivisionDataSignal::DivisionDataSignal(DataSignal const& accel, DataSignal const& displacement, DataSignal const& approxDisplacement,
+DivisionDataSignal::DivisionDataSignal(DataSignal const& base, DataSignal const& support, DataSignal const& approxSupport,
            double levelStep, double overlapFactor, double truncatePercent, double depthGluing, int lEstimationBound, int rEstimationBound)
     : levelStep_(levelStep), truncatePercent_(truncatePercent), depthGluing_(depthGluing),
-    accel_(accel), displacement_(displacement), approxDisplacement_(approxDisplacement),
-    partsAccel(accel_), partsDisplacement(displacement_), // Части ускорений и перемещений
+    base_(base), support_(support), approxSupport_(approxSupport),
+    partsBase(base_), partsSupport(support_), // Части базового и опорного
     // Монотонные части
-    partsAccelIncrease(partsAccel, partsDisplacement), partsAccelNeutral(partsAccel, partsDisplacement),
-    partsAccelDecrease(partsAccel, partsDisplacement)
+    partsBaseIncrease(partsBase, partsSupport), partsBaseNeutral(partsBase, partsSupport),
+    partsBaseDecrease(partsBase, partsSupport)
 {
     setOverlapFactor(overlapFactor); // Коэффициент перекрытия
     setCalculationInd(lEstimationBound, rEstimationBound); // Задание расчетных границ
     // Инициализация векторов, определяющих уровни
     lowBoundLevels_ = {0}; upperBoundLevels_ = {0};
     indLevels_ = {0};
-    vecPartsAccelMonotone = {&partsAccelIncrease, &partsAccelNeutral, &partsAccelDecrease}; // Запись адресов монотонных частей
+    vecPartsBaseMonotone = {&partsBaseIncrease, &partsBaseNeutral, &partsBaseDecrease}; // Запись адресов монотонных частей
 }
 
 // Управляющий расчетный метод
 void DivisionDataSignal::calculateLevels(){
-    createLevels(approxDisplacement_, calculationInd_, overlapFactor_, levelStep_, lowBoundLevels_, upperBoundLevels_, indLevels_, nLevels_); // Создание расчетных уровней
+    createLevels(approxSupport_, calculationInd_, overlapFactor_, levelStep_, lowBoundLevels_, upperBoundLevels_, indLevels_, nLevels_); // Создание расчетных уровней
     // Выделение памяти для частей по уровням
-    partsAccel.resizeAll(nLevels_);         // Ускорения
-    partsDisplacement.resizeAll(nLevels_);  // Перемещения
-    partsAccelIncrease.resizeAll(nLevels_); // Возрастающие части ускорений
-    partsAccelNeutral.resizeAll(nLevels_);  // Нейтральные части ускорений
-    partsAccelDecrease.resizeAll(nLevels_); // Убывающие части ускорений
-    gluedAccel_.resize(nLevels_);           // Склееные ускорения
-    gluedAccelIncrease_.resize(nLevels_);   // Склееные возрастающие ускорения
-    gluedAccelDecrease_.resize(nLevels_);   // Склееные убывающие ускорения
-    gluedAccelNeutral_.resize(nLevels_);    // Склееные нейтральные ускорения
+    partsBase.resizeAll(nLevels_);         // Базовые
+    partsSupport.resizeAll(nLevels_);      // Опорные
+    partsBaseIncrease.resizeAll(nLevels_); // Возрастающие части базовых
+    partsBaseNeutral.resizeAll(nLevels_);  // Нейтральные части базовых
+    partsBaseDecrease.resizeAll(nLevels_); // Убывающие части базовых
+    gluedBase_.resize(nLevels_);           // Склееные базовые
+    gluedBaseIncrease_.resize(nLevels_);   // Склееные возрастающие базовые
+    gluedBaseDecrease_.resize(nLevels_);   // Склееные убывающие базовые
+    gluedBaseNeutral_.resize(nLevels_);    // Склееные нейтральные базовые
     // Получение ссылок на базовые классы
-    PartsObject & partsBaseDisplacement = partsDisplacement;    // Перемещения
-    PartsObject & partsBaseAccel = partsAccel;                  // Ускорения
-    PartsObject & partsBaseAccelIncrease = partsAccelIncrease;  // Возрастающие ускорения
-    PartsObject & partsBaseAccelDecrease = partsAccelDecrease;  // Убывающие ускорения
-    PartsObject & partsBaseAccelNeutral = partsAccelNeutral;    // Нейтральные ускорения
+    PartsObject & partsObjectSupport = partsSupport;        // Опорные
+    PartsObject & partsObjectBase = partsBase;                  // Базовые
+    PartsObject & partsObjectBaseIncrease = partsBaseIncrease;  // Возрастающие базовые
+    PartsObject & partsObjectBaseDecrease = partsBaseDecrease;  // Убывающие базовые
+    PartsObject & partsObjectBaseNeutral = partsBaseNeutral;    // Нейтральные базовые
     // Выделение частей
-    callMultiThread(partsDisplacement, &DivisionDataSignal::assignLevels); // Перемещений
-    partsAccel.constructByImage(partsDisplacement);                        // Ускорений по образу
+    callMultiThread(partsSupport, &DivisionDataSignal::assignLevels); // Опорных
+    partsBase.constructByImage(partsSupport);                         // Базовые по образу
     // Усечение уровней
-    callMultiThread(partsBaseDisplacement, &DivisionDataSignal::truncateLevels); // Перемещений
-    callMultiThread(partsBaseAccel, &DivisionDataSignal::truncateLevels);        // Ускорений
+    callMultiThread(partsObjectSupport, &DivisionDataSignal::truncateLevels); // Опорных
+    callMultiThread(partsObjectBase, &DivisionDataSignal::truncateLevels);    // Базовых
     // Расчет монотонных частей
-    callMultiThread(vecPartsAccelMonotone, &DivisionDataSignal::constructMonotoneLevels);
+    callMultiThread(vecPartsBaseMonotone, &DivisionDataSignal::constructMonotoneLevels);
     // Вычисление производных
-    callMultiThread(partsBaseAccel, &DivisionDataSignal::derivativeLevels);         // Ускорений
-    callMultiThread(partsBaseAccelIncrease, &DivisionDataSignal::derivativeLevels); // Возрастающих ускорений
-    callMultiThread(partsBaseAccelDecrease, &DivisionDataSignal::derivativeLevels); // Убывающих ускорений
-    callMultiThread(partsBaseAccelNeutral, &DivisionDataSignal::derivativeLevels);  // Нейтральных ускорений
+    callMultiThread(partsObjectBase, &DivisionDataSignal::derivativeLevels);         // Базовых
+    callMultiThread(partsObjectBaseIncrease, &DivisionDataSignal::derivativeLevels); // Возрастающих базовых
+    callMultiThread(partsObjectBaseDecrease, &DivisionDataSignal::derivativeLevels); // Убывающих базовых
+    callMultiThread(partsObjectBaseNeutral, &DivisionDataSignal::derivativeLevels);  // Нейтральных базовых
     // Вычисление склеек
-    callMultiThread({partsBaseAccel, gluedAccel_}, &DivisionDataSignal::glueLevels);                 // Ускорений
-    callMultiThread({partsBaseAccelIncrease, gluedAccelIncrease_}, &DivisionDataSignal::glueLevels); // Возрастающих ускорений
-    callMultiThread({partsBaseAccelDecrease, gluedAccelDecrease_}, &DivisionDataSignal::glueLevels); // Убывающих ускорений
-    callMultiThread({partsBaseAccelNeutral, gluedAccelNeutral_}, &DivisionDataSignal::glueLevels);   // Нейтральных ускорений
+    callMultiThread({partsObjectBase, gluedBase_}, &DivisionDataSignal::glueLevels);                 // Базовых
+    callMultiThread({partsObjectBaseIncrease, gluedBaseIncrease_}, &DivisionDataSignal::glueLevels); // Возрастающих базовых
+    callMultiThread({partsObjectBaseDecrease, gluedBaseDecrease_}, &DivisionDataSignal::glueLevels); // Убывающих базовых
+    callMultiThread({partsObjectBaseNeutral, gluedBaseNeutral_}, &DivisionDataSignal::glueLevels);   // Нейтральных базовых
     // Запись имен
     for (int i = 0; i != nLevels_; ++i){
-        gluedAccel_[i].setMeasurePoint("Склееные ускорения");
-        gluedAccelIncrease_[i].setMeasurePoint("Склееные возрастающие ускорения");
-        gluedAccelDecrease_[i].setMeasurePoint("Склееные убывающие ускорения");
-        gluedAccelNeutral_[i].setMeasurePoint("Склееные нейтральные ускорения");
+        gluedBase_[i].setMeasurePoint("Склееные базовые");
+        gluedBaseIncrease_[i].setMeasurePoint("Склееные возрастающие базовые");
+        gluedBaseDecrease_[i].setMeasurePoint("Склееные убывающие базовые");
+        gluedBaseNeutral_[i].setMeasurePoint("Склееные нейтральные базовые");
     }
 }
 
@@ -78,23 +78,23 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
     if ( isEmpty() ) return; // Проверка расчета
     static const int MAX_POW = 22; // Максимальная степень двойки, для создания окна
     // Выделение памяти для хранения спектров
-    spectrumAccel_.resize(nLevels_);
-    spectrumAccelIncrease_.resize(nLevels_);
-    spectrumAccelDecrease_.resize(nLevels_);
-    spectrumAccelNeutral_.resize(nLevels_);
+    spectrumBase_.resize(nLevels_);
+    spectrumBaseIncrease_.resize(nLevels_);
+    spectrumBaseDecrease_.resize(nLevels_);
+    spectrumBaseNeutral_.resize(nLevels_);
     // Контейнеры
-    QVector<QString> const vecSpectrumName = {"Спектры склеенных ускорений", "Спектры возрастающих ускорений", "Спектры убывающих ускорений", "Спектры нейтральных ускорений"};
-    QVector<QVector<DataSignal> *> const vecSpectrumMonotone = {&spectrumAccelIncrease_, &spectrumAccelDecrease_, &spectrumAccelNeutral_};
-    QVector<QVector<DataSignal> const *> const vecMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
+    QVector<QString> const vecSpectrumName = {"Спектры склеенных базовых", "Спектры возрастающих базовых", "Спектры убывающих базовых", "Спектры нейтральных базовых"};
+    QVector<QVector<DataSignal> *> const vecSpectrumMonotone = {&spectrumBaseIncrease_, &spectrumBaseDecrease_, &spectrumBaseNeutral_};
+    QVector<QVector<DataSignal> const *> const vecMonotone = {&gluedBaseIncrease_, &gluedBaseDecrease_, &gluedBaseNeutral_};
     int nMonotone = vecMonotone.size(); // Число монотонных частей
     // Поиск ширины окна по всем типам частей (минимальная степень двойки)
-        // Склейки ускорений
-    int minAccelPow = MAX_POW;
+        // Склейки базовых
+    int minBasePow = MAX_POW;
     int tPow = 0;
     for (int i = 0; i != nLevels_; ++i){
-        tPow = previousPow2(gluedAccel_[i].size());
-        if (tPow < minAccelPow && tPow != 0)
-            minAccelPow = tPow;
+        tPow = previousPow2(gluedBase_[i].size());
+        if (tPow < minBasePow && tPow != 0)
+            minBasePow = tPow;
     }
         // Монотонные склейки
     int minMonotonePow = MAX_POW;
@@ -107,12 +107,12 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
         }
     }
     // Расчет спектров
-        // Склеек ускорений
-    int windowWidthAccel = qCeil(qPow(2.0, minAccelPow));
+        // Склеек базовых
+    int windowWidthBase = qCeil(qPow(2.0, minBasePow));
     for (int i = 0; i != nLevels_; ++i){
-        if (gluedAccel_[i].isEmpty()) continue; // Пропуск пустых склеек
-        spectrumAccel_[i] = computePowerSpectralDensity(gluedAccel_[i], windowFun, windowWidthAccel, overlapFactorWindow, lengthSpectrum, windowSmoothWidth);
-        spectrumAccel_[i].setMeasurePoint(vecSpectrumName[0]);
+        if (gluedBase_[i].isEmpty()) continue; // Пропуск пустых склеек
+        spectrumBase_[i] = computePowerSpectralDensity(gluedBase_[i], windowFun, windowWidthBase, overlapFactorWindow, lengthSpectrum, windowSmoothWidth);
+        spectrumBase_[i].setMeasurePoint(vecSpectrumName[0]);
     }
         // Склеек монотонных частей
     int windowWidthMonotone = qCeil(qPow(2.0, minMonotonePow));
@@ -129,9 +129,9 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
 }
 
 // Создание расчетных уровней
-void DivisionDataSignal::createLevels(DataSignal const& approxDisplacement, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
+void DivisionDataSignal::createLevels(DataSignal const& approxSupport, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
                                       QVector<double> & lowBoundLevels, QVector<double> & upperBoundLevels, QVector<int> & indLevels, int & nLevels){
-    QVector<double> const& data = approxDisplacement.getData(); // Данные перемещений
+    QVector<double> const& data = approxSupport.getData(); // Данные опорных
     auto [min, max] = minMaxVec(data, calculationInd.first, calculationInd.second);
     double mean = meanVec(data, calculationInd.first, calculationInd.second);
     nLevels = 1; // Один уровень гарантирован
@@ -452,7 +452,7 @@ void DivisionDataSignal::callMultiThread(T & someObject, void (DivisionDataSigna
 
 // Задание индексов расчетных границ
 void DivisionDataSignal::setCalculationInd(int lEstimationBound, int rEstimationBound){
-    if (rEstimationBound == -1) rEstimationBound = accel_.size(); // Правая граница по умолчанию
+    if (rEstimationBound == -1) rEstimationBound = base_.size(); // Правая граница по умолчанию
     --lEstimationBound; --rEstimationBound; // Сдвиг границ к индексам
     calculationInd_ = {lEstimationBound, rEstimationBound};
 }
@@ -469,24 +469,24 @@ void DivisionDataSignal::setTruncatePercent (double truncatePercent){ truncatePe
 void DivisionDataSignal::setDepthGluing(double depthGluing){ depthGluing_ = depthGluing; }
 
 // Файловые методы
-// Сохранение перемещений
-int DivisionDataSignal::writeDisplacement(QString const& path, QString const& fileName) const {
-    return displacement_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
+// Сохранение опорного сигнала
+int DivisionDataSignal::writeSupport(QString const& path, QString const& fileName) const {
+    return support_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
 }
 
-// Сохранение аппроксимированных перемещений
-int DivisionDataSignal::writeApproxDisplacement(QString const& path, QString const& fileName) const {
-    return approxDisplacement_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
+// Сохранение аппроксимации опорного сигнала
+int DivisionDataSignal::writeApproxSupport(QString const& path, QString const& fileName) const {
+    return approxSupport_.writeDataFile(path, fileName, calculationInd_.first, calculationInd_.second);
 }
 
 // Сохранение всех данных
 int DivisionDataSignal::writeAll(QString const& dirName) const{
     int exitStatus = 0; // Код возврата
-    exitStatus += writeDisplacement(dirName, "Перемещения.txt");              // Сохранение перемещений
-    exitStatus += writeApproxDisplacement(dirName, "Аппрокс перемещения.txt");  // Сохранение аппроксимированных перемещений
-    exitStatus += writeSpectrum(dirName);                                     // Сохранение спектров склеек
-    exitStatus += writeGluedParts(dirName);                                   // Сохранение склееных частей
-    exitStatus += writeInfo(dirName, "Информация об уровнях.txt");            // Сохранение информации об уровнях
+    exitStatus += writeSupport(dirName, "Опорный.txt");                // Сохранение опорного сигнала
+    exitStatus += writeApproxSupport(dirName, "Аппрокс опорный.txt");  // Сохранение аппроксимации опорного сигнала
+    exitStatus += writeSpectrum(dirName);                              // Сохранение спектров склеек
+    exitStatus += writeGluedParts(dirName);                            // Сохранение склееных частей
+    exitStatus += writeInfo(dirName, "Информация об уровнях.txt");     // Сохранение информации об уровнях
     return exitStatus;
 }
 
@@ -495,20 +495,20 @@ int DivisionDataSignal::writeSpectrum(QString const& dirName) const {
     QDir dir(dirName); // Инициализация директории c добавлением разделителя
     if (!dir.exists()) // Проверка существования директории
         dir.mkpath(".");
-    QVector<QString> vecSpectrumName = {"Спектры ускорений", "Спектры возрастающих ускорений", "Спектры убывающих ускорений",
-                                        "Спектры нейтральных ускорений"}; // Директории с именами спектров
+    QVector<QString> vecSpectrumName = {"Спектры базовых", "Спектры возрастающих базовых", "Спектры убывающих базовых",
+                                        "Спектры нейтральных базовых"}; // Директории с именами спектров
     // Создание директорий
     for (QString & spectrumName : vecSpectrumName){
         dir.mkdir(spectrumName);
         spectrumName = dirName + spectrumName + QDir::separator();
     }
     int exitStatus = 0; // Код возврата
-    // Ускорения
+    // Базовые
     for (int i = 0; i != nLevels_; ++i){
-        if (spectrumAccel_[i].isEmpty()) continue;
-        exitStatus += spectrumAccel_[i].writeDataFile(vecSpectrumName[0], QString::number(i + 1) + ".txt");
+        if (spectrumBase_[i].isEmpty()) continue;
+        exitStatus += spectrumBase_[i].writeDataFile(vecSpectrumName[0], QString::number(i + 1) + ".txt");
     }
-    QVector<QVector<DataSignal> const *> const vecSpectrumMonotone = {&spectrumAccelIncrease_, &spectrumAccelDecrease_, &spectrumAccelNeutral_};
+    QVector<QVector<DataSignal> const *> const vecSpectrumMonotone = {&spectrumBaseIncrease_, &spectrumBaseDecrease_, &spectrumBaseNeutral_};
     int nMonotone = vecSpectrumMonotone.size(); // Число монотонных частей
     // Монотонные части
     for (int k = 0; k != nMonotone; ++k){
@@ -527,20 +527,20 @@ int DivisionDataSignal::writeGluedParts(QString const& dirName) const {
     QDir dir(dirName); // Инициализация директории c добавлением разделителя
     if (!dir.exists()) // Проверка существования директории
         dir.mkpath(".");
-    QVector<QString> vecGluedName = {"Склееные ускорения", "Склееные возрастающие ускорения", "Склееные убывающие ускорения",
-                                     "Склееные нейтральных ускорения"}; // Директории с именами склееных частей
+    QVector<QString> vecGluedName = {"Склееные базовые", "Склееные возрастающие базовые", "Склееные убывающие базовые",
+                                     "Склееные нейтральных базовые"}; // Директории с именами склееных частей
     // Создание директорий
     for (QString & gluedName : vecGluedName){
         dir.mkdir(gluedName);
         gluedName = dirName + gluedName + QDir::separator();
     }
     int exitStatus = 0; // Код возврата
-    // Ускорения
+    // Базовые
     for (int i = 0; i != nLevels_; ++i){
-        if (gluedAccel_[i].isEmpty()) continue;
-        exitStatus += gluedAccel_[i].writeDataFile(vecGluedName[0], QString::number(i + 1) + ".txt");
+        if (gluedBase_[i].isEmpty()) continue;
+        exitStatus += gluedBase_[i].writeDataFile(vecGluedName[0], QString::number(i + 1) + ".txt");
     }
-    QVector<QVector<DataSignal> const *> const vecGluedMonotone = {&gluedAccelIncrease_, &gluedAccelDecrease_, &gluedAccelNeutral_};
+    QVector<QVector<DataSignal> const *> const vecGluedMonotone = {&gluedBaseIncrease_, &gluedBaseDecrease_, &gluedBaseNeutral_};
     int nMonotone = vecGluedMonotone.size(); // Число монотонных частей
     // Монотонные части
     for (int k = 0; k != nMonotone; ++k){
@@ -566,8 +566,8 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
     // Запись информиации об уровнях
-    outputStream << "Accel: " << accel_.getName() << endl;
-    outputStream << "Displacement: " << displacement_.getName() << endl;
+    outputStream << "Base: " << base_.getName() << endl;
+    outputStream << "Support: " << support_.getName() << endl;
     outputStream << "Calculation boundaries: " << QString::number(calculationInd_.first + 1);
     outputStream << " - " << QString::number(calculationInd_.second + 1) << endl;
     outputStream << "Number of levels: " << QString::number(nLevels_) << endl;
