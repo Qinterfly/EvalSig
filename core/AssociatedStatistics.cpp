@@ -193,7 +193,7 @@ int AssociatedStatistics::writeAllStatistics(QString const& dirName) const{
     exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3]); // Амплитуды рассеяния
     exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4]); // Коэффициенты шума
     // Сохранение информации о расчете
-    exitStatus += writeInfo(dirName, "Параметры расчета");
+    exitStatus += writeInfo(dirName, "Параметры расчета.txt");
     return exitStatus;
 }
 
