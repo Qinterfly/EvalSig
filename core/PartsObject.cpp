@@ -1,6 +1,6 @@
 #include "PartsObject.h"
 
-// -- PartsObject --
+// ---- PartsObject --------------------------------------------------------------------------------------------
 
 PartsObject::PartsObject(DataSignal const& signal) : signal_(signal) {}
 
@@ -29,7 +29,8 @@ void PartsObject::resizeInd(int levelInd){
     ind_[levelInd].resize(nFragmentLevels_[levelInd]);
 }
 
-// -- PartsSignal --
+// ---- PartsSignal --------------------------------------------------------------------------------------------
+
 PartsSignal::PartsSignal(DataSignal const& signal) : PartsObject(signal) { }
 
 // Создание частей сигнала по образу
@@ -56,7 +57,8 @@ void PartsSignal::constructByImage(PartsSignal const& other){
     }
 }
 
-// -- PartsMonotone --
+// ---- PartsMonotone --------------------------------------------------------------------------------------------
+
 PartsMonotone::PartsMonotone(PartsSignal const& baseObjectParts, PartsSignal const& baseSeparationParts)
     : PartsObject(baseObjectParts.signal_), baseObjectParts_(baseObjectParts), baseSeparationParts_(baseSeparationParts) {
     nLevels_ = baseObjectParts.nLevels_;

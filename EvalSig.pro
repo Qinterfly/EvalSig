@@ -19,6 +19,7 @@ CONFIG += c++17
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
+    core/AssociatedStatistics.cpp \
         core/DataSignal.cpp \
         core/DivisionDataSignal.cpp \
         core/PartsObject.cpp \
@@ -44,6 +45,7 @@ SOURCES += \
 
 
 HEADERS += \
+    core/AssociatedStatistics.h \
         core/DataSignal.h \
         core/DivisionDataSignal.h \
         core/PartsObject.h \

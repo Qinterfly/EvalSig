@@ -5,8 +5,8 @@
 #include "DataSignal.h"
 #include "TimeWindowProperty.h"
 
-// Класс статистических характеристик
-class Statistics{
+// Динамический класс статистических характеристик с индексаций [ номер первого сигнала, номер второго сигнала, номер окна ]
+class Statistics {
 public:
     Statistics(QVector<DataSignal> & vecDataSignal, int widthTimeWindow, int shiftTimeWindow, int leftEstimationBoundary, int rightEstimationBoundary);
     ~Statistics() = default; // Деструктор

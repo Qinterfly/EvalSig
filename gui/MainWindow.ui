@@ -665,7 +665,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -882,7 +882,7 @@
                 <enum>QAbstractSpinBox::UpDownArrows</enum>
                </property>
                <property name="minimum">
-                <number>1</number>
+                <number>2</number>
                </property>
                <property name="maximum">
                 <number>221196</number>

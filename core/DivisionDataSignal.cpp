@@ -2,10 +2,11 @@
 #include <QDebug>
 #include <QDir>
 #include <thread>
+#include <QTextCodec>
 #include "DivisionDataSignal.h"
 #include "core/NumericalFunctions.h"
 
-#include <QTextCodec>
+// ---- Разбиение базового временного сигнала по уровням согласно опорному -------------------------------------
 
 static const int MAX_THREAD_NUM = 8; // Максимальное число потоков
 
@@ -585,3 +586,5 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     return 0;
 }
 
+
+// -------------------------------------------------------------------------------------------------------------

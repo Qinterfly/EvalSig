@@ -5,7 +5,8 @@
 #include "core/PartsObject.h"
 #include "core/NumericalFunctions.h"
 
-class DivisionDataSignal{
+// Разбиение базового временного сигнала по уровням согласно опорному
+class DivisionDataSignal {
 public:
     DivisionDataSignal(DataSignal const& base, DataSignal const& support, DataSignal const& approxSupport,
                        double levelStep, double overlapFactor, double truncatePercent, double depthGluing,
@@ -47,7 +48,7 @@ private:
     double overlapFactor_; // Величина перекрытия уровней
     double truncatePercent_; // Процент усечения коротких фрагментов
     double depthGluing_; // Процент глубины склейки правой границы
-    DataSignal base_; // Базовый сигнал
+    DataSignal base_;    // Базовый сигнал
     DataSignal support_; // Опорный сигнал
     DataSignal approxSupport_; // Аппроксимированный опорный сигнал
     QPair <int, int> calculationInd_; // Индексы границ расчета
@@ -55,7 +56,7 @@ private:
     QVector<int> indLevels_; // Индексы уровней
     int nLevels_ = 0; // Число уровней
     // Части сигналов
-    PartsSignal partsBase;        // Базовые
+    PartsSignal partsBase;    // Базовые
     PartsSignal partsSupport; // Опорные
     // Монотонные
     PartsMonotone partsBaseIncrease; // Возрастающие базовые

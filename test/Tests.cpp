@@ -2,6 +2,7 @@
 #include "Tests.h"
 #include "core/NumericalFunctions.h"
 #include "core/DivisionDataSignal.h"
+#include "core/AssociatedStatistics.h"
 
 // Проверка временных сигналов
 void testDataSignal(){
@@ -123,4 +124,24 @@ void testDivisionDataSignal(){
     Q_ASSERT(!divSignal2.writeAll(testPath + "saveLevels/"));
     Q_ASSERT(!divSignal2.writeSupport(testPath, "dispOp182.txt"));
     Q_ASSERT(!divSignal2.writeApproxSupport(testPath, "approxDispOp182.txt"));
+}
+
+// Проверка неизменяемых статистических характеристик
+void testAssociatedStatistics() {
+    int volume = 12;
+    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
+    // Создание по готовым сигналам
+    DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
+    DataSignal obj2(testPath, "Short2.txt"); // Длина == 200
+    DataSignal obj3(testPath, "Short3.txt"); // Длина == 200
+    DataSignal obj4(testPath, "Short4.txt"); // Длина == 193
+    DataSignal obj5(testPath, "Short5.txt"); // Длина == 632
+    QVector<DataSignal> vecDataSignals;
+    vecDataSignals.reserve(volume);
+    vecDataSignals.push_back(obj1);
+    vecDataSignals.push_back(obj2);
+    vecDataSignals.push_back(obj3);
+    vecDataSignals.push_back(obj4);
+    vecDataSignals.push_back(obj5);
+    AssociatedStatistics stat(vecDataSignals, 100, 50, 50, 0); // Создание объекта статистик
 }

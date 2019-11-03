@@ -306,8 +306,13 @@ void Statistics::calcDistanceAmplitudeRegression(int i, int j){
         // Пока текущая левая граница не достигнет конца правой расчетной границы
     for (int s = estimationBoundaries_.first - 1; s < estimationBoundaries_.second && s < minSizeSignals_; ){
         int currRightBound = windowProperty.width_;
-        if (currRightBound + s > minSizeSignals_) // Проверка правой границы
-            currRightBound = minSizeSignals_ - s;
+        // Проверка правой границы
+        if (currRightBound + s > minSizeSignals_){
+            if (currWindow == 0) // Исключение для одного окна
+                currRightBound = minSizeSignals_ - s;
+            else
+                break; // Разрешены только цельные окна
+        }
         // Нахождение средних значений
         double meanX = 0, meanY = 0;
         for (int k = 0; k != currRightBound; ++k){
@@ -370,8 +375,13 @@ void Statistics::calcSimilarity(int i, int j){
         // Пока текущая левая граница не достигнет конца правой расчетной границы
     for (int s = estimationBoundaries_.first - 1; s < estimationBoundaries_.second && s < minSizeSignals_; ){
         int currRightBound = windowProperty.width_;
-        if (currRightBound + s > minSizeSignals_) // Проверка правой границы
-            currRightBound = minSizeSignals_ - s;
+        // Проверка правой границы
+        if (currRightBound + s > minSizeSignals_){
+            if (currWindow == 0) // Исключение для одного окна
+                currRightBound = minSizeSignals_ - s;
+            else
+                break; // Разрешены только цельные окна
+        }
         similarityCoeffs_[i][j][currWindow] = qSqrt(regressionParams_[i][j][currWindow].first * regressionParams_[j][i][currWindow].first);
         noiseCoeffs_[i][j][currWindow] = qSqrt(amplitudeScatter_[i][j][currWindow] * amplitudeScatter_[j][i][currWindow]);
         // Суммирование значений для среднего окна

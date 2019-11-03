@@ -21,8 +21,8 @@ void TimeWindowProperty::calcWindowParams(QPair<int, int> const& estimationBound
         // Пока текущая левая граница не достигнет конца правой расчетной границы
     for (int s = estimationBoundaries.first - 1; s < estimationBoundaries.second && s < minSizeSignals; ){
         int currRightBound = width_;
-        if (currRightBound + s > minSizeSignals) // Проверка правой границы
-            currRightBound = minSizeSignals - s;
+        if (currRightBound + s > minSizeSignals && currWindow != 0) // Проверка правой границы
+            break; // Разрешены только цельные окна
         // Сдвиг
         s += shiftWindow_; // Сдвиг левой границы окна
         currWindow += 1; // Приращение счетчика окон
