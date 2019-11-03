@@ -116,5 +116,15 @@ void MainWindow::saveScreenshot(){
         ui->statusBar->showMessage("Сохранение скриншота выполнено успешно");
 }
 
+// Сохранить относительные статистики
+void MainWindow::saveAssociatedStatistics(){
+    if (vecDataSignal_.size() < 2) return; // Проверка числа сигналов для сравнения
+    associatedStatisticsWindow_->setLastPath(lastPath_); // Передача последнего пути, выбранного пользователем
+    associatedStatisticsWindow_->setSignalsName(*ui->listFile); // Передача имен сигналов
+    associatedStatisticsWindow_->setParamsBoundaries(); // Выставление границ параметров окна
+    associatedStatisticsWindow_->refreshNumberOfWindows(); // Обновление чисел окон по сигналам
+    associatedStatisticsWindow_->show(); // Отобразить окно относительных статистик
+}
+
 
 // -----------------------------------------------------------------------------------------------------------------------

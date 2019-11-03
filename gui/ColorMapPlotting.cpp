@@ -88,11 +88,6 @@ void MainWindow::setColorMapData(int plotInd, int nGrid){
         assignDataForSpectrumSurface(plotInd, nGrid);
         break;
     }
-    // Регрессии
-    case 6: {
-
-        break;
-    }
     }
 }
 

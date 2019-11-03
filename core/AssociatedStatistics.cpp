@@ -1,5 +1,8 @@
 #include <QtMath>
 #include <thread>
+#include <QDir>
+#include <QTextStream>
+#include <QTextCodec>
 #include "AssociatedStatistics.h"
 
 // ---- Неизменяемый класс относительных статистических характеристик ------------------------------------------
@@ -14,7 +17,7 @@ AssociatedStatistics::AssociatedStatistics(QVector<DataSignal> const& vecDataSig
     vecNumberOfWindows_.resize(nSignal_); // Число окон по сигналам
     indCorrespond_.resize(nSize_);  // Вектор соответствия индекса в статистиках номеру сигнала
     // Предварительные оценки
-    calcNumberOfWindows(); // Числа окон по сигналам
+    vecNumberOfWindows_ = calcNumberOfWindows(vecDataSignal_, widthWindow_, shiftMainWindow_, shiftCompareWindow_, indMainSignal_); // Числа окон по сигналам
 }
 
 // Установка параметров окон
@@ -25,7 +28,7 @@ void AssociatedStatistics::setWindowsParams(int widthWindow, int shiftMainWindow
     widthWindow_ = widthWindow; // Ширина окна
     shiftMainWindow_ = shiftMainWindow; // Смещение окна по главному сигналу
     shiftCompareWindow_ = shiftCompareWindow; // Смещение окна по сигналам для сравнения
-    calcNumberOfWindows(); // Оценка числа окон по сигналам
+    vecNumberOfWindows_ = calcNumberOfWindows(vecDataSignal_, widthWindow_, shiftMainWindow_, shiftCompareWindow_, indMainSignal_); // Оценка числа окон по сигналам
 }
 
 // Расчет статистик
@@ -104,24 +107,26 @@ void AssociatedStatistics::calcSimilarity(int iStat){
     }
 }
 
-
 // Расчет числа окон по всем сигналам
-void AssociatedStatistics::calcNumberOfWindows(){
+QVector<int> AssociatedStatistics::calcNumberOfWindows(QVector<DataSignal> const& vecDataSignal, int widthWindow, int shiftMainWindow, int shiftCompareWindow, int indMainSignal){
     int shiftWindow = 0; // Параметры разбиения текущего сигнала
-    for (int i = 0; i != nSignal_; ++i){
-        shiftWindow = shiftCompareWindow_;
-        if (i == indMainSignal_) shiftWindow = shiftMainWindow_; // Изменение параметров окна для главного сигнала
-        int sizeSignal = vecDataSignal_[i].size();
+    int nSignal = vecDataSignal.size(); // Число сигналов
+    QVector<int> vecNumberOfWindows(nSignal); // Вектор количества окон по сигналам
+    for (int i = 0; i != nSignal; ++i){
+        shiftWindow = shiftCompareWindow;
+        if (i == indMainSignal) shiftWindow = shiftMainWindow; // Изменение параметров окна для главного сигнала
+        int sizeSignal = vecDataSignal[i].size();
         int currWindow = 0; // Номер текущего окна
         // Пока текущая левая граница не достигнет конца правой расчетной границы
         for (int s = 0; s < sizeSignal; ){
-            if (s + widthWindow_ > sizeSignal) // Проверка правой границы
+            if (s + widthWindow > sizeSignal) // Проверка правой границы
                 break; // Разрешены только цельные окна
             s += shiftWindow; // Сдвиг левой границы окна
             currWindow += 1; // Приращение счетчика окон
         }
-        vecNumberOfWindows_[i] = currWindow; // Установка числа окон (без учета среднего)
+        vecNumberOfWindows[i] = currWindow; // Установка числа окон (без учета среднего)
     }
+    return vecNumberOfWindows;
 }
 
 // Выделение памяти для поля типа ArrayStatCharacters и ArrayRegressionParams
@@ -171,4 +176,95 @@ void AssociatedStatistics::callMultiThread(void (AssociatedStatistics::*method)(
         thread[i].join();
 }
 
+// Сохранение всех статистик
+int AssociatedStatistics::writeAllStatistics(QString const& dirName) const{
+    if (isEmpty()) return 1; // Проверка на пустоту статистик
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    // Создание поддиректорий для каждой из статистик
+    QVector<QString> vecStatName = {"Угловые коэффициенты", "Дистанции рассеяния",
+                                "Коэффициенты подобия", "Амплитуды рассеяния", "Коэффициенты шума"}; // Имена статистик
+    // Сохранение статистик по всем окнам
+    int exitStatus = 0; // Код возврата
+    exitStatus += writeStatistic(regressionParams_, dirName, vecStatName[0]); // Угловые коэффициенты
+    exitStatus += writeStatistic(distanceScatter_, dirName, vecStatName[1]);  // Дистанция рассеяния
+    exitStatus += writeStatistic(similarityCoeffs_, dirName, vecStatName[2]); // Коэффициенты подобия
+    exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3]); // Амплитуды рассеяния
+    exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4]); // Коэффициенты шума
+    // Сохранение информации о расчете
+    exitStatus += writeInfo(dirName, "Параметры расчета");
+    return exitStatus;
+}
+
+// Сохранение информации о расчете
+int AssociatedStatistics::writeInfo(QString const& dirName, QString const& fileName) const{
+    QDir dir(dirName); // Инициализация директории c добавлением разделителя
+    if (!dir.exists()) // Проверка существования директории
+        dir.mkpath(".");
+    QString fileFullPath = dirName + fileName; // Полный путь к файлу
+    QFile file(fileFullPath); // Инициализация файла для записи
+    if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
+    file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
+    QTextStream outputStream(&file); // Создание потока для записи
+    outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
+    // Запись информации о расчете
+    outputStream << "Name of main signal: " << vecDataSignal_[indMainSignal_].getName() << endl;
+    outputStream << "Width of window: " << widthWindow_ << endl;
+    outputStream << "Shift of main window: " << shiftMainWindow_ << endl;
+    outputStream << "Shift of comparing window: " << shiftCompareWindow_ << endl;
+    file.close(); // Закрытие файла
+    return 0;
+}
+
+// Сохранение выбранной статистики
+// ArrayRegressionParams и ArrayStatCharacters
+template<typename T>
+int AssociatedStatistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName) const{
+    QString basePath = dirName + statName + QDir::separator(); // Базовая часть пути до статистики
+    QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
+    int exitStatus = 0; // Код возврата
+    int nMainWin = vecNumberOfWindows_[indMainSignal_];
+    for (int iStat = 0; iStat != nSize_; ++iStat){ // По числу сигналов
+        // Добавление статистики по всем окнам в контейнер
+        PropertyDataSignal tProperty = vecDataSignal_[indCorrespond_[iStat]].getProperty(); // Получение свойств сигнала
+        tProperty.physicalFactor_ = 1; // Безразмерные коэффициенты
+        QString path = basePath + QFileInfo(tProperty.fileName_).baseName() + QDir::separator();
+        QDir dir(path);
+        if (!dir.exists()) dir.mkpath("."); // Создание директории
+        for (int jMainWin = 0; jMainWin != nMainWin; ++jMainWin){
+            tData = getWindowStatisticData(stat, iStat, jMainWin); // Получение временных данных
+            tProperty.nCount_ = tData.size(); // Запись длины сигнала
+            tProperty.measurePoint_ = statName; // Имя статистики
+            DataSignal tDataSignal(tData, tProperty); // Создание временного сигнала
+            QString fileName = QString::number(jMainWin + 1) + ".txt"; // Определение имени временного сигнала
+            exitStatus += tDataSignal.writeDataFile(path, fileName); // Запись сигнала без конвертации
+        }
+    }
+    return exitStatus;
+}
+
+// ---- Вспомогательные функции --------------------------------------------------------------------------------
+
+// Получение оконного распределения статистики
+    // ArrayRegressionParams
+QVector<double> AssociatedStatistics::getWindowStatisticData(ArrayRegressionParams const& stat, int iStat, int jMainWin) const {
+    int nWin = stat[iStat][jMainWin].size();
+    QVector<double> tData(nWin); // Вектор данных для хранения статистик
+    for (int s = 0; s != nWin; ++s){ // По всем окнам, за исключением среднего
+        tData[s] = stat[iStat][jMainWin][s].first; // Угловые коэффициенты
+    }
+    return tData;
+}
+    // ArrayStatCharacters
+QVector<double> AssociatedStatistics::getWindowStatisticData(ArrayStatCharacters const& stat, int iStat, int jMainWin) const {
+    int nWin = stat[iStat][jMainWin].size();
+    QVector<double> tData(nWin); // Вектор данных для хранения статистик
+    for (int s = 0; s != nWin; ++s){ // По всем окнам, за исключением среднего
+        tData[s] = stat[iStat][jMainWin][s]; // Угловые коэффициенты
+    }
+    return tData;
+}
+
 // -------------------------------------------------------------------------------------------------------------
+

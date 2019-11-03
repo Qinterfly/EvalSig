@@ -11,16 +11,18 @@ public:
     ~AssociatedStatistics() = default;
     AssociatedStatistics(AssociatedStatistics const&) = delete;
     // Интерфейс пользователя
+    static QVector<int> calcNumberOfWindows(QVector<DataSignal> const& vecDataSignal, int widthWindow, int shiftMainWindow, int shiftCompareWindow, int indMainSignal = 0); // Расчет числа окон по всем сигналам
     int size() const { return nSize_; }      // Число пар сигналов
     bool isEmpty() const { return !size(); } // Проверка на пустоту
     QVector<int> const& getNumberOfWindows() const { return vecNumberOfWindows_; } // Получить число окон по сигналам
     void setWindowsParams(int widthWindow, int shiftMainWindow, int shiftCompareWindow); // Установка параметров окон
     void setIndMainSignal(int indMainSignal){ indMainSignal_ = indMainSignal; } // Установка индекса главного сигнала
+    int writeAllStatistics(QString const& dirName) const; // Сохранение всех статистик
+    int writeInfo(QString const& dirName, QString const& fileName) const; // Сохранение информации о расчете
     // Расчетные методы
     int computeStatistics(); // Расчет статистик
 private:
     // Оценочные методы
-    void calcNumberOfWindows(); // Расчет числа окон по всем сигналам
     void findCorrespondence(); // Установление соответствия статистик и сигналов
     // Расчетные методы
     void calcDistanceAmplitudeRegression(int iStat); // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров
@@ -31,6 +33,12 @@ private:
     void allocateAllFields(); // Выделение памяти для всех полей
     // Вызов метода в многопоточном режиме
     void callMultiThread(void (AssociatedStatistics::*method)(int));
+    // Сохранение выбранной статистики
+    template<typename T>
+    int writeStatistic(T const& stat, QString const& dirName, QString const& statName) const; // ArrayRegressionParams и ArrayStatCharacters
+    // Вспомогательные функции получения оконного распределения статистики
+    QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j) const; // ArrayRegressionParams
+    QVector<double> getWindowStatisticData(ArrayStatCharacters const& stat, int i, int j) const; // ArrayStatCharacters
 private:
     QVector<DataSignal> const& vecDataSignal_; // Ссылка на вектор сигналов
     int widthWindow_;                          // Ширина окна

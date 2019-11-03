@@ -15,4 +15,10 @@ void MainWindow::saveLevelsFinished(){
     lastPath_ = levelsWindow_->lastPath(); // Запись последнего пути
 }
 
+// Завершение сохранения относительных статистик
+void MainWindow::saveAssociatedStatisticsFinished(){
+    ui->statusBar->showMessage("Сохранение относительных статистик завершилось успешно"); // Вывод информационного сообщения
+    lastPath_= associatedStatisticsWindow_->lastPath();
+}
+
 // --------------------------------------------------------------------------------------------------------------

@@ -566,7 +566,7 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
-    // Запись информиации об уровнях
+    // Запись информации об уровнях
     outputStream << "Base: " << base_.getName() << endl;
     outputStream << "Support: " << support_.getName() << endl;
     outputStream << "Calculation boundaries: " << QString::number(calculationInd_.first + 1);

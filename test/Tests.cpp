@@ -145,4 +145,5 @@ void testAssociatedStatistics() {
     vecDataSignals.push_back(obj5);
     AssociatedStatistics stat(vecDataSignals, 80, 25, 10, 0); // Создание объекта статистик
     Q_ASSERT(!stat.computeStatistics());
+    Q_ASSERT(!stat.writeAllStatistics(testPath + "AssociatedStat/"));
 }

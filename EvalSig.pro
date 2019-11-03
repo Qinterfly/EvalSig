@@ -24,6 +24,7 @@ SOURCES += \
         core/DivisionDataSignal.cpp \
         core/PartsObject.cpp \
         core/Statistics.cpp \
+    gui/AssociatedStatisticsWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
         gui/SignalProcessing.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
         core/PartsObject.h \
         core/Statistics.h \
         core/Macroses.h \
+    gui/AssociatedStatisticsWindow.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         test/Tests.h \
@@ -64,6 +66,7 @@ HEADERS += \
     include/fftw3.h
 
 FORMS += \
+    gui/AssociatedStatisticsWindow.ui \
     gui/LevelsWindow.ui \
         gui/MainWindow.ui \
     gui/SignalCharacteristicsWindow.ui

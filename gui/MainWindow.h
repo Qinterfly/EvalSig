@@ -6,6 +6,7 @@
 #include "gui/QCustomPlotZoom.h"
 #include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
+#include "gui/AssociatedStatisticsWindow.h"
 
 enum ColorMapType { STATS, SPECTRUM }; // Тип цветовой карты
 
@@ -29,6 +30,7 @@ public slots:
     void saveCalcualtion(); // Сохранение результатов расчета
     void saveLevels(); // Сохранить разбиения по уровням
     void saveScreenshot(); // Сохранить скриншот программы
+    void saveAssociatedStatistics(); // Сохранить относительные статистики
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
@@ -49,6 +51,7 @@ public slots:
     // Обмен данными между окнами
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
+    void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
@@ -84,6 +87,7 @@ private:
     // Дополнительные окна
     SignalCharacteristicsWindow * signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
     LevelsWindow * levelsWindow_; // Окно сохранение разбиения по уровням
+    AssociatedStatisticsWindow * associatedStatisticsWindow_; // Окно относительных статистик
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
