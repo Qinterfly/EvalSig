@@ -3,7 +3,7 @@ debug/
 doc/
 release/
 exec/
-test/save
+test/
 profile/
 *.txt
 *.xls
