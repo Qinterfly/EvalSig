@@ -69,7 +69,7 @@ void MainWindow::initializeAllPlot(){
 
 // Инициализация цветовых карт
 void MainWindow::initializeAllColorMap(){
-    int const nCMapPlot = 6; // Число цветовых карт
+    int const nCMapPlot = 7; // Число цветовых карт
     bool isInterpolate = ui->checkBoxInterpolateColorMap->isChecked(); // Необходимость интерполяции
     // Выделение буфера для хранения объектов
     vecTablePlot_.resize(nCMapPlot); // На графические объекты
@@ -84,6 +84,7 @@ void MainWindow::initializeAllColorMap(){
     vecTablePlot_[3] = ui->amplitudePlot;
     vecTablePlot_[4] = ui->noisePlot;
     vecTablePlot_[5] = ui->spectrumPlot;
+    vecTablePlot_[6] = ui->groupPlot;
         // Типы цветовых карт
     vecColorMapType_[0] = STATS;
     vecColorMapType_[1] = STATS;
@@ -91,6 +92,7 @@ void MainWindow::initializeAllColorMap(){
     vecColorMapType_[3] = STATS;
     vecColorMapType_[4] = STATS;
     vecColorMapType_[5] = SPECTRUM;
+    vecColorMapType_[6] = GROUP;
     // Цветовые карты и цветовые шкалы
     for (int plotInd = 0; plotInd != nCMapPlot; ++plotInd){
         vecTablePlot_[plotInd]->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // Установить пользовательские взаимодействия (перетаскивание + масштабирование)

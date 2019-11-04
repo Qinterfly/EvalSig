@@ -13,6 +13,7 @@ LevelsWindow::LevelsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *pa
     connect(ui->comboBoxBase, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения
     connect(ui->pushButtonSaveLevels, SIGNAL(clicked()), this, SLOT(save())); // Сохранение результатов
     connect(ui->pushButtonShowLevels, SIGNAL(clicked()), this, SLOT(showLevels())); // Отображение уровней на графике
+    connect(ui->pushButtonAssessNumberOfLevels, SIGNAL(clicked()), this, SLOT(assessNumberOfLevels())); // Оценить число уровней
 }
 
 // Деструктор
@@ -52,10 +53,13 @@ void LevelsWindow::setSaveState(int){
     if (!ui->comboBoxBase->currentText().isEmpty()){
         ui->pushButtonSaveLevels->setEnabled(true);
         ui->pushButtonShowLevels->setEnabled(true);
+        ui->pushButtonAssessNumberOfLevels->setEnabled(true);
     }
     else {
         ui->pushButtonSaveLevels->setEnabled(false);
         ui->pushButtonShowLevels->setEnabled(false);
+        ui->pushButtonAssessNumberOfLevels->setEnabled(false);
+        ui->groupBoxParams->setTitle("Параметры разбиения");
         clearAllPlot();
     }
 }
@@ -177,6 +181,26 @@ void LevelsWindow::showLevels(){
     }
     ui->showLevelsPlot->xAxis->setRange(XBound[0], (1.0 + SHIFT_XMAX) * XBound[1]);
     ui->showLevelsPlot->replot(); // Обновление окна построения
+}
+
+// Оценить число уровней
+void LevelsWindow::assessNumberOfLevels(){
+    DataSignal const& base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
+    DataSignal support; // Опорный
+    // Параметры
+    double levelStep = ui->spinBoxLevelStep->value();
+    double overlapFactor = ui->spinBoxOverlapFactor->value();
+    double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
+    double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
+    // Получение опорного
+    if (ui->comboBoxSupport->currentText().isEmpty())
+        support = integrate(base, 2, smoothIntegrFactor)[1];
+    else
+        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
+    support.normalize(FIRST); // Опорного
+    DataSignal approxSupport = approximateSmoothSpline(support, smoothApproxFactor); // Аппроксимация опорного
+    int nLevels = DivisionDataSignal::assessNumberOfLevels(approxSupport, calculationInd_, overlapFactor, levelStep); // Оценка числа уровней
+    ui->groupBoxParams->setTitle("Параметры разбиения [ n = " + QString::number(nLevels) + " ]");
 }
 
 // Построение графика

@@ -8,7 +8,7 @@
 #include "gui/LevelsWindow.h"
 #include "gui/AssociatedStatisticsWindow.h"
 
-enum ColorMapType { STATS, SPECTRUM }; // Тип цветовой карты
+enum ColorMapType { STATS, SPECTRUM, GROUP }; // Тип цветовой карты
 
 namespace Ui {
     class MainWindow;
@@ -77,9 +77,11 @@ private:
     void setColorMapData(int plotInd, int nGrid); // Выставление данных для цветовой карты по индексу
     void setTextTickerForStats(int plotInd, int nGrid); // Выставление подписей поверхности статистик
     void setTextTickerForSpectrum(int plotInd, int nGrid, QVector<bool> mask); // Выставление подписей поверхности спектров
+    void setTextTickerForGroup(int plotInd, int nGrid); // Выставление подписей поверхности группы
     void assignDataForColorMap(ArrayRegressionParams const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayRegressionParams
     void assignDataForColorMap(ArrayStatCharacters const& arrData, int plotInd, int nGrid); // Назначение данных в ColorMap для ArrayStatCharacters
     void assignDataForSpectrumSurface(int plotInd, int nGrid); // Назначение данных для поверхности спектров
+    void assignDataForGroupSurface(int plotInd, int nGrid); // Назначение данных для групповой поверхности
     void clearAllColorMap(); // Очистка цветовых карт
 private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner

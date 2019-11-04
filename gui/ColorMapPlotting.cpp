@@ -88,6 +88,11 @@ void MainWindow::setColorMapData(int plotInd, int nGrid){
         assignDataForSpectrumSurface(plotInd, nGrid);
         break;
     }
+    // Группа
+    case 6: {
+        assignDataForGroupSurface(plotInd, nGrid);
+        break;
+    }
     }
 }
 
@@ -113,6 +118,23 @@ void MainWindow::setTextTickerForSpectrum(int plotInd, int nGrid, QVector<bool> 
     vecTablePlot_[plotInd]->xAxis->setTicker(textTickerX);
     for (int i = 0; i != nGrid; ++i){
         if (!mask[i]) continue; // Пропуск сигналов по маске
+        QString currTick = ui->listFile->item(i)->text(); // Текущее имя файла
+        if (currTick.size() > MAX_TICK_LEN)
+            currTick = currTick.right(MAX_TICK_LEN); // Срез по последним символам
+        textTickerX->addTick(i, currTick); // Отображения имен файлов
+    }
+    // Метки по оси ординат
+    QSharedPointer<QCPAxisTickerFixed> tickerY(new QCPAxisTickerFixed);
+    vecTablePlot_[plotInd]->yAxis->setTicker(tickerY);
+    tickerY->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
+}
+
+// Выставление подписей поверхности группы
+void MainWindow::setTextTickerForGroup(int plotInd, int nGrid){
+    QSharedPointer<QCPAxisTickerText> textTickerX(new QCPAxisTickerText);
+    // Метки по оси абсцисс
+    vecTablePlot_[plotInd]->xAxis->setTicker(textTickerX);
+    for (int i = 0; i != nGrid; ++i){
         QString currTick = ui->listFile->item(i)->text(); // Текущее имя файла
         if (currTick.size() > MAX_TICK_LEN)
             currTick = currTick.right(MAX_TICK_LEN); // Срез по последним символам
@@ -191,6 +213,21 @@ void MainWindow::assignDataForSpectrumSurface(int plotInd, int nGrid){
         ++iSpectrum;
     }
     setTextTickerForSpectrum(plotInd, nGrid, mask); // Установка текстовых меток по маске
+}
+
+// Назначение данных для групповой поверхности
+void MainWindow::assignDataForGroupSurface(int plotInd, int nGrid){
+    int minSizeSignals = statSignal_.minSizeSignals();
+    // Задание размеров таблицы
+    vecColorMap_[plotInd]->data()->setSize(nGrid, minSizeSignals); // Размеры
+    vecColorMap_[plotInd]->data()->setRange(QCPRange(0, nGrid - 1), QCPRange(1, minSizeSignals)); // Диапазон значений
+    // Занесение данных в таблицу
+    for (int i = 0; i != nGrid; ++i){
+        DataSignal const& dataSignal = vecDataSignal_[i];
+        for (int j = 0; j != minSizeSignals; ++j)
+            vecColorMap_[plotInd]->data()->setCell(i, j, dataSignal[j]);
+    }
+    setTextTickerForGroup(plotInd, nGrid); // Установка текстовых меток
 }
 
 // Очистка цветовых карт

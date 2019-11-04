@@ -130,12 +130,12 @@ void DivisionDataSignal::calculatePowerSpectralDensity(WindowFunction windowFun,
 }
 
 // Создание расчетных уровней
-void DivisionDataSignal::createLevels(DataSignal const& approxSupport, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
+void DivisionDataSignal::createLevels(DataSignal const& approxSupport, QPair<int, int> const& calculationInd, double overlapFactor, double levelStep,
                                       QVector<double> & lowBoundLevels, QVector<double> & upperBoundLevels, QVector<int> & indLevels, int & nLevels){
     QVector<double> const& data = approxSupport.getData(); // Данные опорных
     auto [min, max] = minMaxVec(data, calculationInd.first, calculationInd.second);
     double mean = meanVec(data, calculationInd.first, calculationInd.second);
-    nLevels = 1; // Один уровень гарантирован
+    nLevels = 1; // Один уровень гарантирован (OWG)
     // Обработка единственного уровня
     if (max <= mean + levelStep / 2 && min >= mean - levelStep / 2){
         lowBoundLevels[0] = mean - levelStep / 2;
@@ -167,6 +167,25 @@ void DivisionDataSignal::createLevels(DataSignal const& approxSupport, QPair <in
         // Верхние уровни
     for (int i = indZeroLevel + 1; i != nLevels; ++i)
         indLevels[i] = i - indZeroLevel;
+}
+
+ // Оценить число уровней
+int DivisionDataSignal::assessNumberOfLevels(DataSignal const& approxSupport, QPair<int, int> const& calculationInd, double overlapFactor, double levelStep){
+    QVector<double> const& data = approxSupport.getData(); // Данные опорных
+    auto [min, max] = minMaxVec(data, calculationInd.first, calculationInd.second);
+    double mean = meanVec(data, calculationInd.first, calculationInd.second);
+    int nLevels = 1; // Один уровень гарантирован (OWG)
+    // Обработка единственного уровня
+    if (max <= mean + levelStep / 2 && min >= mean - levelStep / 2){
+        return nLevels;
+    }
+    // Оценка числа уровней
+    double lastUpperBound = min + levelStep;
+    while (lastUpperBound <= max){
+        lastUpperBound += overlapFactor * levelStep; // Сдвиг верхней границы
+        ++nLevels;
+    }
+    return nLevels;
 }
 
 // Назначить уровни

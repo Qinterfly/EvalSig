@@ -13,8 +13,9 @@ public:
                        int lEstimationBound = 1, int rEstimationBound = -1);
     ~DivisionDataSignal() = default; // Деструктор
     // Расчетные методы
-    static void createLevels(DataSignal const& approxSupport, QPair <int, int> const& calculationInd, double overlapFactor, double levelStep,
+    static void createLevels(DataSignal const& approxSupport, QPair<int, int> const& calculationInd, double overlapFactor, double levelStep,
                              QVector<double> & lowBoundLevels, QVector<double> & upperBoundLevels, QVector<int> & indLevels, int & nLevels); // Создание расчетных уровней
+    static int assessNumberOfLevels(DataSignal const& approxSupport, QPair<int, int> const& calculationInd, double overlapFactor, double levelStep); // Оценить число уровней
     void calculateLevels(); // Управляющий расчетный метод
     void calculatePowerSpectralDensity(WindowFunction windowFun, double overlapFactorWindow, int lengthSpectrum, int windowSmoothWidth); // Расчет плотности спектральной мощности
     // Установочные методы

@@ -23,6 +23,7 @@ private slots:
     void setSaveState(int); // Проверка возможности сохранения
     void save(); // Сохранение и расчет
     void showLevels(); // Отображение уровней на графике
+    void assessNumberOfLevels(); // Оценить число уровней
 private:
     void plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение графика
     void plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение кривой
