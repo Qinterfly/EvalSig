@@ -27,6 +27,7 @@ SOURCES += \
     gui/AssociatedStatisticsWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
+    gui/QCPColorCurve.cpp \
         gui/SignalProcessing.cpp \
         gui/Main.cpp \
         test/Tests.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     gui/AssociatedStatisticsWindow.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
+    gui/QCPColorCurve.h \
         test/Tests.h \
         core/FileOperate.h \
         core/PropertyDataSignal.h \

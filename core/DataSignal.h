@@ -13,7 +13,7 @@ class DataSignal {
 public:
     // Конструкторы и деструктор
     DataSignal() = default;
-    DataSignal(QString const& path, QString const& fileName); // Конструктор от пути и имени файла
+    DataSignal(QString const& path, QString const& fileName, int shift = 0); // Конструктор от пути и имени файла
     DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty);
     DataSignal(DataSignal const& other, int leftInd = 0, int rightInd = -1); // Копирующий конструктор по заданной области
     DataSignal(DataSignal &&) noexcept; // Перемещающий конструктор для всего сигнала
@@ -37,7 +37,7 @@ public:
     double convertCountToTime(int count) const { return count * 1.0e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
     double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-2 / 2.0; } // Частота Найквиста
     // Файловые методы
-    int readDataFile(QString const& path, QString const& fileName); // Чтение файла с данными
+    int readDataFile(QString const& path, QString const& fileName, int shift = 0); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName, int leftInd = 0, int rightInd = -1) const; // Запись временного сигнала на выбранном участке
     // Изменение параметров сигнала
     void setFileName(QString const& fileName);             // Имя файла

@@ -385,6 +385,7 @@
      <string>&amp;Файл</string>
     </property>
     <addaction name="actionAddSignal"/>
+    <addaction name="actionAddShiftSignal"/>
     <addaction name="actionRemoveSignal"/>
     <addaction name="actionSaveSignal"/>
    </widget>
@@ -1410,6 +1411,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
+   </property>
+  </action>
+  <action name="actionAddShiftSignal">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/plus.png</normaloff>:/images/icons/plus.png</iconset>
+   </property>
+   <property name="text">
+    <string>Добавить со смещением</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить сигнал со смещение</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+I</string>
    </property>
   </action>
  </widget>

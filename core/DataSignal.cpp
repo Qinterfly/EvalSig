@@ -6,7 +6,7 @@
 // ---- Временной сигнал ---------------------------------------------------------------------------------------
 
 // Конструктор от пути и имени файла
-DataSignal::DataSignal(QString const& path, QString const& fileName){ readDataFile(path, fileName); }
+DataSignal::DataSignal(QString const& path, QString const& fileName, int shift){ readDataFile(path, fileName, shift); }
 DataSignal::DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty):
     property(someProperty), data_(someData)
 {
@@ -69,7 +69,7 @@ void DataSignal::normalize(NormalizeOption option) {
 }
 
 // Чтение текстового файла с временным сигналом
-int DataSignal::readDataFile(QString const& path, QString const& fileName){
+int DataSignal::readDataFile(QString const& path, QString const& fileName, int shift){
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для чтения
     if (!checkFile(fileFullPath, "read")){ return -1; } // Обработка ошибок
@@ -87,15 +87,32 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName){
     property.sensorType_ = inputStream.readLine();                // Тип датчика
     property.physicalFactor_ = inputStream.readLine().toDouble(); // Физический коэффициент
     property.measureUnit_ = inputStream.readLine();               // Единица измерения
-    property.scanPeriod_ = inputStream.readLine().toInt();     // Период опроса датчика
-    property.characteristic_ = inputStream.readLine();             // Характеристика
+    property.scanPeriod_ = inputStream.readLine().toInt();        // Период опроса датчика
+    property.characteristic_ = inputStream.readLine();            // Характеристика
     property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
-    property.isSpectrum = property.fileName_.contains("Спектр") || property.characteristic_.contains("Спектр");  // Является ли сигнал спектром
+    property.isSpectrum = property.fileName_.contains("Спектр") || property.characteristic_.contains("Спектр");  // Является ли сигнал спектром       
     // Чтение временного сигнала
     data_.clear(); // Очистка сигнала (remove, size -> 0, capacity /-> 0)
     data_.resize(property.nCount_); // size() == nCount_
-    for (int i = 0; i != property.nCount_; ++i )
-        data_[i] = inputStream.readLine().toDouble() * property.physicalFactor_;
+    // Предобработка смещения
+    int nRead = property.nCount_;
+    int iInsert = 0;
+    // Пропуск строк в конце
+    if (shift < 0) {
+        nRead += shift;
+    } else if (shift > 0) {
+        iInsert = shift;
+        nRead -= shift;
+        // Пропуск строк в начале
+        while (shift > 0 && !inputStream.atEnd()){
+            inputStream.readLine();
+            --shift;
+        }
+    }
+    if (nRead <= 0) return 1;
+    // Чтение данных
+    for (int i = 0; i != nRead; ++i )
+        data_[iInsert + i] = inputStream.readLine().toDouble() * property.physicalFactor_;
     file.close(); // Закрытие файла
     return 0;
 }

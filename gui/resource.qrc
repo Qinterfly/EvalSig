@@ -14,5 +14,6 @@
         <file>icons/photo-camera.png</file>
         <file>icons/timeLine.png</file>
         <file>icons/statistics.png</file>
+        <file>icons/plus.png</file>
     </qresource>
 </RCC>

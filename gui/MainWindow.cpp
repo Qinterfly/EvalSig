@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonShowRegression, SIGNAL(clicked()), this, SLOT(plotRegression())); // Отобразить рассеяние для пары сигналов
     connect(ui->actionSaveScreenshot, SIGNAL(triggered()), this, SLOT(saveScreenshot())); // Сохранить скриншот программы
     connect(ui->actionSaveAssociatedStatistics, SIGNAL(triggered()), this, SLOT(saveAssociatedStatistics())); // Сохранить относительные статистики
+    connect(ui->actionAddShiftSignal, SIGNAL(triggered()), this, SLOT(addShiftSignal())); // Добавление сигнала со смещением
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

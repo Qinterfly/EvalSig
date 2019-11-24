@@ -9,7 +9,8 @@ void testDataSignal(){
    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
    DataSignal obj1(testPath, "ОП 182 1с ку.txt");
    DataSignal obj2(testPath, "ОП 182 2с ку.txt");
-
+   DataSignal obj3(testPath, "Short1.txt", 10);
+   DataSignal obj4(testPath, "Short1.txt", -10);
    // Операторы
    Q_ASSERT(obj1 != obj2);
    Q_ASSERT(obj1 == obj1);

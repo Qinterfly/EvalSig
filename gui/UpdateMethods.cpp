@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "gui/QCPColorCurve.h"
 
 // ---- Методы для обновления параметров программы -------------------------------------------------------------
 
@@ -59,19 +60,26 @@ void MainWindow::plotRegression() {
     if (regressionParams.second < 0) signCoeff = '-';
     QString regressionName = "y = " + QString::number(regressionParams.first) + " * x " + signCoeff + " " + QString::number(qAbs(regressionParams.second));
     // Построение облака точек
-    QCPCurve * curve = new QCPCurve(ui->regressionPlot->xAxis, ui->regressionPlot->yAxis);
+    QCPColorCurve * curve = new QCPColorCurve(ui->regressionPlot->xAxis, ui->regressionPlot->yAxis);
+    // Создание распределения цветов по точкам
+    int nColors = calculationInd.second - calculationInd.first + 1;
+    QVector<QColor> colors(nColors);
+    QCPColorGradient colorGradient = colorScaleRegression_->gradient();
+    QCPRange rangeGradient(0, nColors - 1);
+    for (int i = 0; i != nColors; ++i)
+        colors[i] = colorGradient.color(i, rangeGradient);
+    // Определение стиля и размера кривой
     curve->setLineStyle(QCPCurve::lsNone);
-    curve->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
-    curve->setPen(QPen(Qt::red));
+    curve->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 4));
     curve->setData(baseSignal.getData(calculationInd.first, calculationInd.second),
-                   compareSignal.getData(calculationInd.first, calculationInd.second));
+                   compareSignal.getData(calculationInd.first, calculationInd.second), colors);
     curve->removeFromLegend(); // Исключение точек из легенды
     // Построение линейной регрессии
     ui->regressionPlot->addGraph();
     ui->regressionPlot->graph(0)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->regressionPlot->graph(0)->setPen(QPen(Qt::blue, 2)) ; // Выставление цвета графика
     ui->regressionPlot->graph(0)->setData(limBaseSignal, valRegression, true); // Передача отсортированных данных
-    ui->regressionPlot->graph(0)->setName(regressionName);
+    ui->regressionPlot->graph(0)->setName(regressionName); // Передача имени графика
     // Подпись осей
     ui->regressionPlot->xAxis->setLabel(ui->listFile->item(indexBaseSignal)->text());
     ui->regressionPlot->yAxis->setLabel(ui->listFile->item(indexCompareSignal)->text());

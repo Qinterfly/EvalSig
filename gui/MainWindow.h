@@ -24,7 +24,8 @@ public:
 
 public slots:
     // Чтение, запись и удаление сигналов
-    void addSignal(); // Добавить сигнал
+    void addSignal(int shiftRead = 0); // Добавить сигнал
+    void addShiftSignal(); // Добавить сигнал со смещением
     void removeSignal(bool isReplot = true); // Удалить сигнал
     void saveSignalCharacteristics(); // Сохранить характеристики сигнала
     void saveCalcualtion(); // Сохранение результатов расчета
@@ -100,6 +101,7 @@ private:
     QVector<QColor> colorList_; // Список цветов для отображения
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
     int const SECONDARY_PLOT_IND = 2; // Число вспомогательных графиков
+    QCPColorScale * colorScaleRegression_; // Цветовая карта регрессии
     // Контейнеры для построения цветовых карт
     QVector<QCustomPlotZoom *> vecTablePlot_; // Вектор указателей на графические объекты
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты

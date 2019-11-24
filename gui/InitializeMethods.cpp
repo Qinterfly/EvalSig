@@ -63,6 +63,16 @@ void MainWindow::initializeAllPlot(){
     }
     // -- regressionPlot --
     ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
+    // Создание цветовой карты
+    colorScaleRegression_ = new QCPColorScale(ui->regressionPlot);
+    ui->regressionPlot->plotLayout()->addElement(0, 1, colorScaleRegression_); // Добавление шкалы справа
+    colorScaleRegression_->setType(QCPAxis::atRight); // Метки к шкале справа
+    colorScaleRegression_->axis()->setLabel("Относительная длина"); // Метка шкалы
+    colorScaleRegression_->setDataRange(QCPRange(0.0, 1.0)); // Задание границ данных
+    colorScaleRegression_->setGradient(QCPColorGradient::gpJet); // Тип градиента цвета для отображения
+    QSharedPointer<QCPAxisTickerFixed> axisTicker(new QCPAxisTickerFixed);
+    axisTicker->setTickStep(0.1);
+    colorScaleRegression_->axis()->setTicker(axisTicker);
     // -- AllColorMap --
     initializeAllColorMap(); // Инициализация всех цветовых карт
 }

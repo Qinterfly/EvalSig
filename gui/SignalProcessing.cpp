@@ -4,12 +4,12 @@
 // ----  Чтение, запись и удаление сигналов ------------------------------------------------------------------------
 
 // Добавить сигнал
-void MainWindow::addSignal(){
+void MainWindow::addSignal(int shiftRead){
     // Организация диалога с пользователем
     QStringList listFullFilePath = QFileDialog::getOpenFileNames(this, "Выберите один или несколько файлов с временными сигналами", lastPath_, "Text files (*.txt)");
     if (listFullFilePath.isEmpty()) return;
     int indFile = 0; // Номер файла в обработке
-    for ( QString const& fullFilePath : listFullFilePath){
+    for ( QString const& fullFilePath : listFullFilePath ){
         int exitStatus = 0; // Код возврата
         ++indFile; // Инкремент номера обрабатываемого файла
         QFileInfo infoName(fullFilePath); // Создание информационного объекта
@@ -17,7 +17,7 @@ void MainWindow::addSignal(){
         if (indFile == 1) // Выставление релевантного пути по первому файлу
             lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
         // Добавление сигнала в контейнеры
-        exitStatus = statSignal_.addSignal(DataSignal(lastPath_, fileName)); // Расчет статистик + пополнение вектора сигналов
+        exitStatus = statSignal_.addSignal(DataSignal(lastPath_, fileName, shiftRead)); // Расчет статистик + пополнение вектора сигналов
         if (exitStatus == 0){ // При успешном добавлении в контейнер
             QListWidgetItem * item = new QListWidgetItem(infoName.baseName()); // Занесение в список имени без расширения
             int randColorInd = QRandomGenerator::global()->bounded(colorList_.size()); // Случайный цвет из контейнера цветов
@@ -35,6 +35,14 @@ void MainWindow::addSignal(){
     // Установка свойств по последнему сигналу
     int nItem = ui->listFile->count() - 1; // Число элементов в списке
     ui->listFile->setCurrentRow(nItem); // Фокус на последнем элементе (вызов setSignalProperty() по сигналу)
+}
+
+// Добавить сигнал со смещением
+void MainWindow::addShiftSignal(){
+    bool resDialog;
+    int shift = QInputDialog::getInt(this, "Задание смещения при чтении", "Величина смещения:", 0, -1e5, 1e5, 1, &resDialog); // Диалоговое окно
+    if (resDialog)
+        addSignal(shift); // Добавление сигналов со смещением
 }
 
 // Удалить сигнал
