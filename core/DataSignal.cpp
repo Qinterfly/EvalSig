@@ -97,22 +97,34 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName, int s
     // Предобработка смещения
     int nRead = property.nCount_;
     int iInsert = 0;
-    // Пропуск строк в конце
+    double tValue = 0;
+    // Смещение влево
     if (shift < 0) {
         nRead += shift;
-    } else if (shift > 0) {
+        tValue = shift;
+        while (tValue < 0 && !inputStream.atEnd()){
+            inputStream.readLine();
+            ++tValue;
+        }
+    } else if (shift > 0) { // Смещение вправо
         iInsert = shift;
         nRead -= shift;
-        // Пропуск строк в начале
-        while (shift > 0 && !inputStream.atEnd()){
-            inputStream.readLine();
-            --shift;
-        }
     }
     if (nRead <= 0) return 1;
     // Чтение данных
     for (int i = 0; i != nRead; ++i )
         data_[iInsert + i] = inputStream.readLine().toDouble() * property.physicalFactor_;
+    // Копирование краевых значений
+    if (shift != 0){
+        tValue = data_[iInsert];
+        // Слева
+        for (int j = 0; j != iInsert; ++j)
+            data_[j] = tValue;
+        // Справа
+        tValue = data_[iInsert + nRead - 1];
+        for (int j = nRead; j != property.nCount_; ++j)
+            data_[iInsert + j] = tValue;
+    }
     file.close(); // Закрытие файла
     return 0;
 }
