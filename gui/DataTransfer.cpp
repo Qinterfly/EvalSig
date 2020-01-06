@@ -22,8 +22,15 @@ void MainWindow::saveAssociatedStatisticsFinished(){
 }
 
 // Завершение сохранения расчетного шаблона
-void MainWindow::saveCalculationTemplateFinished(){
-    ui->statusBar->showMessage("Сохранение расчетного шаблона завершилось успешно"); // Вывод информационного сообщения
+void MainWindow::calculationTemplateFinished(int state){
+    switch (state) {
+    case 1:
+        ui->statusBar->showMessage("Сохранение расчетного шаблона завершилось успешно"); // Вывод информационного сообщения
+        break;
+    case 2:
+        ui->statusBar->showMessage("Загрузка расчетного шаблона завершилась успешно"); // Вывод информационного сообщения
+        break;
+    }
     lastPath_= calcTemplateWindow_->lastPath();
 }
 

@@ -2,7 +2,8 @@
 #define TEMPLATEWINDOW_H
 
 #include <QDialog>
-#include "gui/CalculationTemplate.h"
+#include "core/CalculationTemplate.h"
+#include "core/DataSignal.h"
 
 namespace Ui {
 class CalculationTemplateWindow;
@@ -13,20 +14,21 @@ class CalculationTemplateWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit CalculationTemplateWindow(CalculationTemplate & calcTemplate, QWidget *parent = nullptr);
+    explicit CalculationTemplateWindow(CalculationTemplate & calcTemplate, QVector<DataSignal> const& vecDataSignal, QWidget *parent = nullptr);
     ~CalculationTemplateWindow();
     QString const& lastPath() const { return lastPath_; }
 public slots:
-    void updateSequenceOfActions(); // Обновить последовательность действий
+    void updateSequenceOfWindows(); // Обновить последовательность окон
     void setLastPath(QString const& lastPath); // Установка пути по умолчанию
 private slots:
     void changeState(); // Изменить состояние записи
-    void removeAction(); // Удалить действие
+    void removeWindow(); // Удалить окно
     void save(); // Сохранить шаблон
-    void read(); // Прочитать шаблон из файла
+    void load(); // Загрузить шаблон
 private:
     Ui::CalculationTemplateWindow *ui;
-    CalculationTemplate * const pCalcTemplate_; // Указатель на расчетный шаблон
+    CalculationTemplate & calcTemplate_; // Расчетный шаблон
+    QVector<DataSignal> const& vecDataSignal_; // Временные сигналы
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
 };
 

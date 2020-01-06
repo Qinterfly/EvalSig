@@ -1,7 +1,8 @@
 #include <QDir>
 #include <QFile>
 #include <QDataStream>
-#include "gui/CalculationTemplate.h"
+#include <QDateTime>
+#include "core/CalculationTemplate.h"
 #include "core/FileOperate.h"
 
 // ---- Расчетный шаблон для обработки файлов ------------------------------------------------------------------
@@ -20,13 +21,15 @@ void CalculationTemplate::addWindowData(QString const& windowName, QString const
     // Проверка существования переданного окна
     if (!windowsData_.contains(windowName)){
         windowsData_.insert(windowName, WindowData());
-        sequenceOfWindows_.push_back(windowName);
+        if (!sequenceOfWindows_.contains(windowName))
+            sequenceOfWindows_.push_back(windowName);
     }
     windowsData_[windowName].insert(dataName, data);
 }
 
-// Удаление действия
+// Удаление окна
 void CalculationTemplate::removeWindow(int index){
+    windowsData_.remove(sequenceOfWindows_[index]);
     sequenceOfWindows_.removeAt(index);
 }
 
@@ -34,21 +37,28 @@ void CalculationTemplate::removeWindow(int index){
 void CalculationTemplate::clear(){
     windowsData_.clear();
     sequenceOfWindows_.clear();
-    estimationBoundaries_ = {0, 0};
-    widthWindow_ = 0;
-    shiftWindow_ = 0;
+    estimationBoundaries_ = {0, 0}; // Границы расчета
+    widthWindow_ = 0; // Ширина окна
+    shiftWindow_ = 0; // Смещение окна
+    version_ = DEFAULT_VERSION; // Версия шаблона
+    date_ = ""; // Дата
+    note_ = ""; // Примечание к шаблону
 }
 
 // Запись в бинарный файл
-int CalculationTemplate::write(QString const& path, QString const& fileName) const{
+int CalculationTemplate::write(QString const& path, QString const& fileName) {
     QDir::setCurrent(path); // Выбираем директорию для сохранения
     QFile file(fileName); // Инициализация файла для записи
     QString fileFullPath = path + fileName; // Полное имя файла
     if (!checkFile(fileFullPath, "write")){ return -1; } // Обработка ошибок
     file.open(QIODevice::WriteOnly); // Открытие файла для записи
     QDataStream outputStream(&file); // Создание потока для записи
+    date_ = QDateTime::currentDateTime().toString("dd MMMM yyyy hh:mm:ss");
+    // Служебная информация
+    outputStream << version_; // Версия
+    outputStream << date_; // Версия
+    outputStream << note_; // Версия
     // Запись информации параметров окна для вычисления статистик
-    outputStream << 1; // Версия
     outputStream << estimationBoundaries_.first << estimationBoundaries_.second; // Расчетные границы
     outputStream << widthWindow_; // Ширина окна
     outputStream << shiftWindow_; // Смещение окна
@@ -62,27 +72,54 @@ int CalculationTemplate::write(QString const& path, QString const& fileName) con
     for (QString const& windowName : sequenceOfWindows_){
         QHash<QString, QVariant>::const_iterator dataIterator = windowsData_[windowName].cbegin();
         QHash<QString, QVariant>::const_iterator endDataIterator = windowsData_[windowName].cend();
-        for (; dataIterator != endDataIterator; ++dataIterator){
+        for (; dataIterator != endDataIterator; ++dataIterator)
             outputStream << QString(dataIterator.key()) << dataIterator.value();
-        }
     }
     file.close();
     return outputStream.status();
 }
 
 // Чтение бинарного файла
-int CalculationTemplate::read(QString const& path, QString const& fileName) const {
+int CalculationTemplate::read(QString const& path, QString const& fileName) {
     QDir::setCurrent(path); // Выбираем директорию для сохранения
     QFile file(fileName); // Инициализация файла для чтения
     QString fileFullPath = path + fileName; // Полное имя файла
     if (!checkFile(fileFullPath, "read")){ return -1; } // Обработка ошибок
     file.open(QIODevice::ReadOnly); // Открытие файла для чтения
-    QDataStream outputStream(&file); // Создание потока для чтения
+    QDataStream inputStream(&file); // Создание потока для чтения
     // Чтение файла
-    int version;
-    outputStream >> version;
+    clear(); // Очистка шаблона
+    // Служебная информация
+    inputStream >> version_;
+    inputStream >> date_;
+    inputStream >> note_;
+    if (version_ > DEFAULT_VERSION) return -1; // Если версия не поддерживается
+    // Параметры окна для вычисления статистик
+    inputStream >> estimationBoundaries_.first >> estimationBoundaries_.second; // Расчетные границы
+    inputStream >> widthWindow_; // Ширина окна
+    inputStream >> shiftWindow_; // Смещение окна
+    // Информация о шаблоне
+    int nWindows = 0;
+    inputStream >> nWindows; // Число графических окон
+    // Имя и длина данных для каждого окна
+    QVector<int> sizeOfWindows(nWindows);
+    QString tString;
+    for (int i = 0; i != nWindows; ++i){
+        inputStream >> tString >> sizeOfWindows[i];
+        sequenceOfWindows_.push_back(tString);
+    }
+    // Данные для каждого окна
+    QVariant tVariant;
+    for (int i = 0; i != nWindows; ++i){
+        int currSize = sizeOfWindows[i];
+        QString const& windowName = sequenceOfWindows_[i];
+        for (int j = 0; j != currSize; ++j){
+            inputStream >> tString >> tVariant;
+            addWindowData(windowName, tString, tVariant);
+        }
+    }
     file.close(); // Закрытие файла
-    return 0;
+    return inputStream.status();
 }
 
 // -------------------------------------------------------------------------------------------------------------

@@ -138,7 +138,7 @@ void MainWindow::saveAssociatedStatistics(){
 // Изменить расчетный шаблон
 void MainWindow::changeCalculationTemplate(){
     calcTemplate_.setStatParams(statSignal_.getEstimationBoundaries(), widthTimeWindow_, shiftWindow_);
-    calcTemplateWindow_->updateSequenceOfActions();
+    calcTemplateWindow_->updateSequenceOfWindows();
     calcTemplateWindow_->show();
 }
 

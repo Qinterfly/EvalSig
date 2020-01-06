@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "core/DataSignal.h"
-#include "gui/CalculationTemplate.h"
+#include "core/CalculationTemplate.h"
 
 namespace Ui {
 class SignalCharacteristicsWindow;

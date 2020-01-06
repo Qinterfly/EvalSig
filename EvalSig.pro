@@ -20,13 +20,13 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
         core/AssociatedStatistics.cpp \
-        gui/CalculationTemplate.cpp \
+        core/CalculationTemplate.cpp \
         core/DataSignal.cpp \
         core/DivisionDataSignal.cpp \
         core/PartsObject.cpp \
         core/Statistics.cpp \
         gui/AssociatedStatisticsWindow.cpp \
-    gui/CalculationTemplateWindow.cpp \
+        gui/CalculationTemplateWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
         gui/QCPColorCurve.cpp \
@@ -50,7 +50,7 @@ SOURCES += \
 
 HEADERS += \
         core/AssociatedStatistics.h \
-        gui/CalculationTemplate.h \
+        core/CalculationTemplate.h \
         core/DataSignal.h \
         core/DivisionDataSignal.h \
         core/PartsObject.h \

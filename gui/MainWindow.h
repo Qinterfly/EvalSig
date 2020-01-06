@@ -7,7 +7,7 @@
 #include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
 #include "gui/AssociatedStatisticsWindow.h"
-#include "gui/CalculationTemplate.h"
+#include "core/CalculationTemplate.h"
 #include "gui/CalculationTemplateWindow.h"
 
 enum ColorMapType { STATS, SPECTRUM, GROUP }; // Тип цветовой карты
@@ -56,7 +56,7 @@ public slots:
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
-    void saveCalculationTemplateFinished(); // Завершение сохранения расчетного шаблона
+    void calculationTemplateFinished(int state); // Завершение сохранения расчетного шаблона
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

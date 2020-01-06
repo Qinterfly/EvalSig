@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
     levelsWindow_ = new LevelsWindow(vecDataSignal_, this);
     associatedStatisticsWindow_ = new AssociatedStatisticsWindow(vecDataSignal_, this);
-    calcTemplateWindow_ = new CalculationTemplateWindow(calcTemplate_, this);
+    calcTemplateWindow_ = new CalculationTemplateWindow(calcTemplate_, vecDataSignal_, this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
     connect(levelsWindow_, SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_, SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
-    connect(calcTemplateWindow_, SIGNAL(accepted()), this, SLOT(saveCalculationTemplateFinished())); // Сохранение расчетного шаблона
+    connect(calcTemplateWindow_, SIGNAL(finished(int)), this, SLOT(calculationTemplateFinished(int))); // Сохранение расчетного шаблона
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
