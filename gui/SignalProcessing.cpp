@@ -69,6 +69,7 @@ void MainWindow::saveSignalCharacteristics(){
     signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[saveInd]); // Передача сигнала
     signalCharacteristicsWindow_->setEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Границы расчета
     signalCharacteristicsWindow_->setLastPath(lastPath_); // Передача пути по умолчанию
+    signalCharacteristicsWindow_->setCalculationTemplate(calcTemplate_); // Передача расчетного шаблона
     signalCharacteristicsWindow_->show(); // Отображение диалогового окна
 }
 
@@ -134,5 +135,11 @@ void MainWindow::saveAssociatedStatistics(){
     associatedStatisticsWindow_->show(); // Отобразить окно относительных статистик
 }
 
+// Изменить расчетный шаблон
+void MainWindow::changeCalculationTemplate(){
+    calcTemplate_.setStatParams(statSignal_.getEstimationBoundaries(), widthTimeWindow_, shiftWindow_);
+    calcTemplateWindow_->updateSequenceOfActions();
+    calcTemplateWindow_->show();
+}
 
 // -----------------------------------------------------------------------------------------------------------------------

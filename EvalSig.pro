@@ -19,15 +19,17 @@ CONFIG += c++17
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
-    core/AssociatedStatistics.cpp \
+        core/AssociatedStatistics.cpp \
+        gui/CalculationTemplate.cpp \
         core/DataSignal.cpp \
         core/DivisionDataSignal.cpp \
         core/PartsObject.cpp \
         core/Statistics.cpp \
-    gui/AssociatedStatisticsWindow.cpp \
+        gui/AssociatedStatisticsWindow.cpp \
+    gui/CalculationTemplateWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
-    gui/QCPColorCurve.cpp \
+        gui/QCPColorCurve.cpp \
         gui/SignalProcessing.cpp \
         gui/Main.cpp \
         test/Tests.cpp \
@@ -47,16 +49,18 @@ SOURCES += \
 
 
 HEADERS += \
-    core/AssociatedStatistics.h \
+        core/AssociatedStatistics.h \
+        gui/CalculationTemplate.h \
         core/DataSignal.h \
         core/DivisionDataSignal.h \
         core/PartsObject.h \
         core/Statistics.h \
         core/Macroses.h \
-    gui/AssociatedStatisticsWindow.h \
+        gui/AssociatedStatisticsWindow.h \
+    gui/CalculationTemplateWindow.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
-    gui/QCPColorCurve.h \
+        gui/QCPColorCurve.h \
         test/Tests.h \
         core/FileOperate.h \
         core/PropertyDataSignal.h \
@@ -69,6 +73,7 @@ HEADERS += \
 
 FORMS += \
     gui/AssociatedStatisticsWindow.ui \
+    gui/CalculationTemplateWindow.ui \
     gui/LevelsWindow.ui \
         gui/MainWindow.ui \
     gui/SignalCharacteristicsWindow.ui

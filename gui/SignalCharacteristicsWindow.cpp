@@ -44,6 +44,11 @@ void SignalCharacteristicsWindow::setLastPath(QString const& lastPath){
     lastPath_ = lastPath;
 }
 
+// Установка расчетного шаблона
+void SignalCharacteristicsWindow::setCalculationTemplate(CalculationTemplate & calcTemplate){
+    pCalcTemplate_ = &calcTemplate;
+}
+
 // Установка границ изменения параметров
 void SignalCharacteristicsWindow::setBoundaries(){
     // Ширина окна не должна превышать длину сигнала
@@ -109,7 +114,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
     if (isChoosedSignal){
         // Проверка необходимости коррекции
         if (ui->checkBoxChoosedSignalCorrectionFactor->isChecked()){
-            double correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value(); // Коэффициент коррекции
+            double correctionFactor = ui->spinBoxChoosedSignalCorrectionFactor->value(); // Коэффициент коррекции
             DataSignal corrDataSignal = correct(resDataSignal, correctionFactor); // Скорректированный временной сигнала
             saveStatus += corrDataSignal.writeDataFile(lastPath_, signalName + "-Скоррект" + ".txt"); // Сохранение скорректированного временного сигнала
         }
@@ -128,6 +133,31 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
     if (saveStatus == 0) // В случае успешного сохранения
         emit this->accepted();
     this->hide(); // Скрытие окна
+    // Заполнение расчетного шаблона
+    if ( saveStatus != 0 || !pCalcTemplate_ || !pCalcTemplate_->isRecord() ) return;
+    static QString const WINDOW_NAME = "SignalCharacteristicsWindow";
+    // Данные аппроксимации
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isApproximation", isApproximation); // Флаг аппроксимации
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "smoothFactor", ui->spinBoxApproximationSmoothFactor->value()); // Коэффициент сглаживания
+    // Данные интегрирования
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isIntegration", isIntegration); // Флаг интегрирования
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "integrationOrder", ui->spinBoxIntegrationOrder->value()); // Порядок интегрирования
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isIntegrationCorrection", ui->checkBoxIntegrationCorrection->isChecked()); // Флаг коррекции
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "integrationCorrectionFactor", ui->spinBoxIntegrationCorrectionFactor->value()); // Корректировочный коэффициент
+    // Данные спектрального разложения
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isPowerSpectralDensity", isPowerSpectralDensity); // Флаг спектрального разложения
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "windowFun", ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "weightWindowWidth", ui->spinBoxWeightWindowWidth->value()); // Ширина весового окна
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "overlapFactor", ui->spinBoxOverlapFactor->value()); // Коэффициент перекрытия окон
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "lengthSpectrum", ui->spinBoxSpectrumInterpolation->value()); // Число точек для интерполяции
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "windowSmoothWidth", ui->spinBoxSmoothWidth->value()); // Число точек для сглаживания
+    // Данные выбранного сигнала
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isChoosedSignal", ui->groupBoxChoosedSignal->isChecked()); // Флаг сохранения выбранного сигнала
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isChoosedSignalCorrection", ui->checkBoxChoosedSignalCorrectionFactor->isChecked()); // Флаг коррекции
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "choosedSignalCorrectionFactor", ui->spinBoxChoosedSignalCorrectionFactor->value()); // Коэффициент коррекции
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "isFiltration", ui->checkBoxChoosedSignalFiltration->isChecked()); // Флаг фильтрации
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "lowerFreq", ui->spinBoxChoosedSignalLowerFrequency->value()); // Нижняя частота
+    pCalcTemplate_->addWindowData(WINDOW_NAME, "upperFreq", ui->spinBoxChoosedSignalUpperFrequency->value()); // Верхняя частота
 }
 
 // Проверка ширины весового окна

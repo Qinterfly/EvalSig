@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "core/DataSignal.h"
+#include "gui/CalculationTemplate.h"
 
 namespace Ui {
 class SignalCharacteristicsWindow;
@@ -19,6 +20,7 @@ public:
     void setDataSignal(DataSignal const& dataSignal); // Установка временного сигнала
     void setEstimationBoundaries(QPair <int, int> const& estimationBoundaries); // Установка расчетных границ
     void setLastPath(QString const& lastPath); // Установка пути по умолчанию
+    void setCalculationTemplate(CalculationTemplate & calcTemplate); // Установка расчетного шаблона
     QString const& lastPath() { return lastPath_; } // Получение пути по умолчанию
 public slots:
     void saveCharacteristics(); // Сохранение выбранных характеристик
@@ -32,6 +34,7 @@ private:
     DataSignal const * pDataSignal_; // Указатель на временной сигнал
     QPair <int, int> const * pEstimationBoundaries_; // Указатель на границы расчета
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
+    CalculationTemplate * pCalcTemplate_ = nullptr; // Указатель на расчетный шаблон
 };
 
 #endif // SIGNALCHARACTERISTICSWINDOW_H

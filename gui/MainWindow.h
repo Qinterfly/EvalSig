@@ -7,6 +7,8 @@
 #include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
 #include "gui/AssociatedStatisticsWindow.h"
+#include "gui/CalculationTemplate.h"
+#include "gui/CalculationTemplateWindow.h"
 
 enum ColorMapType { STATS, SPECTRUM, GROUP }; // Тип цветовой карты
 
@@ -32,6 +34,7 @@ public slots:
     void saveLevels(); // Сохранить разбиения по уровням
     void saveScreenshot(); // Сохранить скриншот программы
     void saveAssociatedStatistics(); // Сохранить относительные статистики
+    void changeCalculationTemplate(); // Изменить расчетный шаблон
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
@@ -53,6 +56,7 @@ public slots:
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
+    void saveCalculationTemplateFinished(); // Завершение сохранения расчетного шаблона
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
@@ -91,6 +95,7 @@ private:
     SignalCharacteristicsWindow * signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
     LevelsWindow * levelsWindow_; // Окно сохранение разбиения по уровням
     AssociatedStatisticsWindow * associatedStatisticsWindow_; // Окно относительных статистик
+    CalculationTemplateWindow * calcTemplateWindow_; // Окно построения расчетного шаблона
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
@@ -107,6 +112,8 @@ private:
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
     QVector<int> vecColorMapType_; // Типы цветовых карт
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
+    // Расчетный шаблон
+    CalculationTemplate calcTemplate_;
 };
 
 #endif // MAINWINDOW_H

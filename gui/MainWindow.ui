@@ -713,7 +713,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -1188,6 +1188,7 @@
    <addaction name="actionSaveCalculation"/>
    <addaction name="actionSaveAssociatedStatistics"/>
    <addaction name="actionSaveLevels"/>
+   <addaction name="actionCalculationTemplate"/>
   </widget>
   <widget class="QToolBar" name="InteractionToolBar">
    <property name="maximumSize">
@@ -1409,6 +1410,9 @@
    <property name="text">
     <string>Сохранить относительные статистики</string>
    </property>
+   <property name="statusTip">
+    <string>Сохранить относительные статистики</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
    </property>
@@ -1422,10 +1426,31 @@
     <string>Добавить со смещением</string>
    </property>
    <property name="toolTip">
-    <string>Добавить сигнал со смещение</string>
+    <string>Добавить сигнал со смещением</string>
+   </property>
+   <property name="statusTip">
+    <string>Добавить сигнал со смещением</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+I</string>
+   </property>
+  </action>
+  <action name="actionCalculationTemplate">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/clone.png</normaloff>:/images/icons/clone.png</iconset>
+   </property>
+   <property name="text">
+    <string>Расчетный шаблон</string>
+   </property>
+   <property name="toolTip">
+    <string>Создание и сохранение расчетного шаблона</string>
+   </property>
+   <property name="statusTip">
+    <string>Создание и сохранение расчетного шаблона</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
@@ -1441,5 +1466,22 @@
  <resources>
   <include location="resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>346</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

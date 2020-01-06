@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
     levelsWindow_ = new LevelsWindow(vecDataSignal_, this);
     associatedStatisticsWindow_ = new AssociatedStatisticsWindow(vecDataSignal_, this);
+    calcTemplateWindow_ = new CalculationTemplateWindow(calcTemplate_, this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSaveScreenshot, SIGNAL(triggered()), this, SLOT(saveScreenshot())); // Сохранить скриншот программы
     connect(ui->actionSaveAssociatedStatistics, SIGNAL(triggered()), this, SLOT(saveAssociatedStatistics())); // Сохранить относительные статистики
     connect(ui->actionAddShiftSignal, SIGNAL(triggered()), this, SLOT(addShiftSignal())); // Добавление сигнала со смещением
+    connect(ui->actionCalculationTemplate, SIGNAL(triggered()), this, SLOT(changeCalculationTemplate())); // Добавление сигнала со смещением
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
@@ -48,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
     connect(levelsWindow_, SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_, SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
+    connect(calcTemplateWindow_, SIGNAL(accepted()), this, SLOT(saveCalculationTemplateFinished())); // Сохранение расчетного шаблона
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }

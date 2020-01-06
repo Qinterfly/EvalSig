@@ -15,5 +15,6 @@
         <file>icons/timeLine.png</file>
         <file>icons/statistics.png</file>
         <file>icons/plus.png</file>
+        <file>icons/clone.png</file>
     </qresource>
 </RCC>
