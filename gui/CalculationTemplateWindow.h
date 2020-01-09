@@ -32,6 +32,7 @@ private slots:
     void load(); // Загрузить шаблон
     void setResultPath(); // Установка пути для сохранения результатов
     void checkApplicability(); // Проверка применимость шаблона к загруженным данным
+    void checkCreatingFinished(int index); // Проверка завершения создания шаблона
     void wrapApplyingTemplate(); // Подготовка данных для применения шаблона
 private:
     Ui::CalculationTemplateWindow *ui;

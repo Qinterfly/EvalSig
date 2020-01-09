@@ -27,7 +27,6 @@ SOURCES += \
         core/Statistics.cpp \
         gui/AssociatedStatisticsWindow.cpp \
         gui/CalculationTemplateWindow.cpp \
-    gui/DoubleProgressDialog.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
         gui/QCPColorCurve.cpp \
@@ -59,7 +58,6 @@ HEADERS += \
         core/Macroses.h \
         gui/AssociatedStatisticsWindow.h \
     gui/CalculationTemplateWindow.h \
-    gui/DoubleProgressDialog.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         gui/QCPColorCurve.h \
@@ -76,7 +74,6 @@ HEADERS += \
 FORMS += \
     gui/AssociatedStatisticsWindow.ui \
     gui/CalculationTemplateWindow.ui \
-    gui/DoubleProgressDialog.ui \
     gui/LevelsWindow.ui \
         gui/MainWindow.ui \
     gui/SignalCharacteristicsWindow.ui

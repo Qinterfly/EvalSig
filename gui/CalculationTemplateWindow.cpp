@@ -1,6 +1,6 @@
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QList>
+#include <QMessageBox>
 #include "CalculationTemplateWindow.h"
 #include "ui_CalculationTemplateWindow.h"
 
@@ -21,6 +21,7 @@ CalculationTemplateWindow::CalculationTemplateWindow(CalculationTemplate & calcT
     connect(ui->pushButtonLoad, SIGNAL(clicked()), this, SLOT(load())); // Загрузка шаблона
     connect(ui->pushButtonResultPath, SIGNAL(clicked()), this, SLOT(setResultPath())); // Установка пути сохранения результатов
     connect(ui->pushButtonApply, SIGNAL(clicked()), this, SLOT(wrapApplyingTemplate())); // Применение шаблона
+    connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(checkCreatingFinished(int))); // Проверка завершения создания шаблона
     // Оценка возможности применения шаблона
     connect(ui->pushButtonRemoveWindow, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При нажатии кнопки удалить
     connect(ui->pushButtonLoad, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При загрузке шаблона
@@ -144,6 +145,17 @@ void CalculationTemplateWindow::checkApplicability(){
         return;
     }
     ui->pushButtonApply->setEnabled(true);
+}
+
+// Проверка завершения создания шаблона
+void CalculationTemplateWindow::checkCreatingFinished(int index){
+    if (calcTemplate_.isRecord() && index > 0){
+        ui->tabWidget->setCurrentIndex(0);
+        QMessageBox messageBox;
+        messageBox.setText("Завершите создание расчетного шаблона");
+        messageBox.setIcon(QMessageBox::Warning);
+        messageBox.exec();
+    }
 }
 
 // Подготовка данных для применения шаблона

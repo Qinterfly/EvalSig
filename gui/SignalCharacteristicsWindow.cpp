@@ -60,16 +60,18 @@ void SignalCharacteristicsWindow::setBoundaries(){
 }
 
 // Сохранение выбранных характеристик
-void SignalCharacteristicsWindow::saveCharacteristics(){
-    // Диалог с пользователем для выбора директории для сохранения
-    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+void SignalCharacteristicsWindow::saveCharacteristics(bool isUserCalc){
     int saveStatus; // Код сохранения
-    // Проверка корректности выбора
-    if (saveDir.isEmpty()){
-        saveStatus = -1;
-        return;
+    // Диалог с пользователем для выбора директории для сохранения
+    if (isUserCalc){
+        QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+        // Проверка корректности выбора
+        if (saveDir.isEmpty()){
+            saveStatus = -1;
+            return;
+        }
+        lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     }
-    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     QFileInfo fileInfo(pDataSignal_->getName()); // Информация о файле
     QString const& signalName = fileInfo.baseName(); // Базовое имя сигналаа
     // Выставление флагов расчета
@@ -128,11 +130,11 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         }
         saveStatus += resDataSignal.writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
     }
-    if (saveStatus == 0) // В случае успешного сохранения
+    if (saveStatus == 0 && isUserCalc) // В случае успешного сохранения
         emit this->accepted();
     this->hide(); // Скрытие окна
     // Заполнение расчетного шаблона
-    if ( saveStatus != 0 || !calcTemplate_.isRecord() ) return;
+    if ( saveStatus != 0 || !calcTemplate_.isRecord() || !isUserCalc ) return;
     // Данные аппроксимации
     calcTemplate_.addWindowData(WINDOW_NAME, "isApproximation", isApproximation); // Флаг аппроксимации
     calcTemplate_.addWindowData(WINDOW_NAME, "smoothFactor", ui->spinBoxApproximationSmoothFactor->value()); // Коэффициент сглаживания
@@ -185,6 +187,7 @@ void SignalCharacteristicsWindow::reject(){
 // Применить расчетный шаблон
 void SignalCharacteristicsWindow::applyCalculationTemplate(){
     if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
+    setEstimationBoundaries(calcTemplate_.estimationBoundaries()); // Установка расчетных границ
     WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
     // Данные аппроксимации
     ui->groupBoxApproximation->setChecked(windowData["isApproximation"].toBool()); // Флаг аппроксимации

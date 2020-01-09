@@ -23,7 +23,7 @@ public:
     void applyCalculationTemplate(); // Применить расчетный шаблон
     QString const& lastPath() { return lastPath_; } // Получение пути по умолчанию
 public slots:
-    void saveCharacteristics(); // Сохранение выбранных характеристик
+    void saveCharacteristics(bool isUserCalc = true); // Сохранение выбранных характеристик
     void checkWeightWindowWidth(); // Проверка ширины весового окна
     void checkBandpassFrequencies(); // Проверка частот в полосе пропускания
     void reject() override; // Переопределение закрытия окна

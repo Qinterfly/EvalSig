@@ -1,7 +1,7 @@
+#include <QDir>
 #include <QMouseEvent>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include "gui/DoubleProgressDialog.h"
 
 // ---- Методы для определения параметров программы -------------------------------------------------------------------------
 
@@ -255,12 +255,29 @@ void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals){
     // Настройка окна с прогрессом
     int nSelectedSignals = iSelectedSignals.size(); // Число сигналов
     int lengthSequence = calcTemplate_.lengthSequence(); // Длина последовательности
-    DoubleProgressDialog * progressDialog = new DoubleProgressDialog("Применение расчетного шаблона", this); // Создание экземпляра окна с прогрессом
-    progressDialog->setCurrentBoundaries(0, lengthSequence); // Границы текущего прогресса
-    progressDialog->setOverallBoundaries(0, nSelectedSignals); // Границы общего прогресса
-    progressDialog->show(); // Отображение окна
+    QProgressDialog progressDialog = QProgressDialog("", "Отменить", 0, nSelectedSignals, this); // Создание экземпляра окна с прогрессом
+    progressDialog.setMinimumDuration(0);
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.show(); // Отображение окна
     // Применение шаблона к сигналам по последовательности
-    // <...>
+    QDir baseDir(lastPath_);
+    for (int iSig = 0; iSig != nSelectedSignals; ++iSig){
+        QString signalName = ui->listFile->item(iSig)->text(); // Имя сигнала
+        baseDir.mkdir(signalName); // Создаем директорию по имени сигнала
+        QString fullSignalPath = lastPath_ + signalName + QDir::separator(); // Директория сигнала
+        // Обработка прогресса
+        progressDialog.setLabelText(signalName);
+        progressDialog.setValue(iSig);
+        QApplication::processEvents();
+        for (int jSeq = 0; jSeq != lengthSequence; ++jSeq){
+            if (progressDialog.wasCanceled()) break;
+            // Характеристики сигнала
+            signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[iSelectedSignals[iSig]]); // Передача сигнала
+            signalCharacteristicsWindow_->setLastPath(fullSignalPath); // Передача пути по умолчанию
+            signalCharacteristicsWindow_->saveCharacteristics(false); // Сохранение результатов
+        }
+    }
+    progressDialog.setValue(nSelectedSignals);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
