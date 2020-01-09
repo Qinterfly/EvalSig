@@ -8,10 +8,13 @@
 
 // ---- Свойства сохраняемого сигнала --------------------------------------------------------------------------
 
+ static QString const WINDOW_NAME = "SignalCharacteristicsWindow";
+
 // Конструктор окна свойств сохраняемого сигнала
-SignalCharacteristicsWindow::SignalCharacteristicsWindow(QWidget *parent) :
+SignalCharacteristicsWindow::SignalCharacteristicsWindow(CalculationTemplate & calcTemplate, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SignalCharacteristicsWindow)
+    ui(new Ui::SignalCharacteristicsWindow),
+    calcTemplate_(calcTemplate)
 {
     ui->setupUi(this);
     // Сигналы - слоты
@@ -42,11 +45,6 @@ void SignalCharacteristicsWindow::setEstimationBoundaries(QPair <int, int> const
 // Установка пути по умолчанию
 void SignalCharacteristicsWindow::setLastPath(QString const& lastPath){
     lastPath_ = lastPath;
-}
-
-// Установка расчетного шаблона
-void SignalCharacteristicsWindow::setCalculationTemplate(CalculationTemplate & calcTemplate){
-    pCalcTemplate_ = &calcTemplate;
 }
 
 // Установка границ изменения параметров
@@ -134,30 +132,29 @@ void SignalCharacteristicsWindow::saveCharacteristics(){
         emit this->accepted();
     this->hide(); // Скрытие окна
     // Заполнение расчетного шаблона
-    if ( saveStatus != 0 || !pCalcTemplate_ || !pCalcTemplate_->isRecord() ) return;
-    static QString const WINDOW_NAME = "SignalCharacteristicsWindow";
+    if ( saveStatus != 0 || !calcTemplate_.isRecord() ) return;
     // Данные аппроксимации
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isApproximation", isApproximation); // Флаг аппроксимации
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "smoothFactor", ui->spinBoxApproximationSmoothFactor->value()); // Коэффициент сглаживания
+    calcTemplate_.addWindowData(WINDOW_NAME, "isApproximation", isApproximation); // Флаг аппроксимации
+    calcTemplate_.addWindowData(WINDOW_NAME, "smoothFactor", ui->spinBoxApproximationSmoothFactor->value()); // Коэффициент сглаживания
     // Данные интегрирования
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isIntegration", isIntegration); // Флаг интегрирования
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "integrationOrder", ui->spinBoxIntegrationOrder->value()); // Порядок интегрирования
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isIntegrationCorrection", ui->checkBoxIntegrationCorrection->isChecked()); // Флаг коррекции
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "integrationCorrectionFactor", ui->spinBoxIntegrationCorrectionFactor->value()); // Корректировочный коэффициент
+    calcTemplate_.addWindowData(WINDOW_NAME, "isIntegration", isIntegration); // Флаг интегрирования
+    calcTemplate_.addWindowData(WINDOW_NAME, "integrationOrder", ui->spinBoxIntegrationOrder->value()); // Порядок интегрирования
+    calcTemplate_.addWindowData(WINDOW_NAME, "isIntegrationCorrection", ui->checkBoxIntegrationCorrection->isChecked()); // Флаг коррекции
+    calcTemplate_.addWindowData(WINDOW_NAME, "integrationCorrectionFactor", ui->spinBoxIntegrationCorrectionFactor->value()); // Корректировочный коэффициент
     // Данные спектрального разложения
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isPowerSpectralDensity", isPowerSpectralDensity); // Флаг спектрального разложения
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "windowFun", ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "weightWindowWidth", ui->spinBoxWeightWindowWidth->value()); // Ширина весового окна
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "overlapFactor", ui->spinBoxOverlapFactor->value()); // Коэффициент перекрытия окон
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "lengthSpectrum", ui->spinBoxSpectrumInterpolation->value()); // Число точек для интерполяции
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "windowSmoothWidth", ui->spinBoxSmoothWidth->value()); // Число точек для сглаживания
+    calcTemplate_.addWindowData(WINDOW_NAME, "isPowerSpectralDensity", isPowerSpectralDensity); // Флаг спектрального разложения
+    calcTemplate_.addWindowData(WINDOW_NAME, "windowFun", ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    calcTemplate_.addWindowData(WINDOW_NAME, "weightWindowWidth", ui->spinBoxWeightWindowWidth->value()); // Ширина весового окна
+    calcTemplate_.addWindowData(WINDOW_NAME, "overlapFactor", ui->spinBoxOverlapFactor->value()); // Коэффициент перекрытия окон
+    calcTemplate_.addWindowData(WINDOW_NAME, "lengthSpectrum", ui->spinBoxSpectrumInterpolation->value()); // Число точек для интерполяции
+    calcTemplate_.addWindowData(WINDOW_NAME, "windowSmoothWidth", ui->spinBoxSmoothWidth->value()); // Число точек для сглаживания
     // Данные выбранного сигнала
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isChoosedSignal", ui->groupBoxChoosedSignal->isChecked()); // Флаг сохранения выбранного сигнала
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isChoosedSignalCorrection", ui->checkBoxChoosedSignalCorrectionFactor->isChecked()); // Флаг коррекции
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "choosedSignalCorrectionFactor", ui->spinBoxChoosedSignalCorrectionFactor->value()); // Коэффициент коррекции
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "isFiltration", ui->checkBoxChoosedSignalFiltration->isChecked()); // Флаг фильтрации
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "lowerFreq", ui->spinBoxChoosedSignalLowerFrequency->value()); // Нижняя частота
-    pCalcTemplate_->addWindowData(WINDOW_NAME, "upperFreq", ui->spinBoxChoosedSignalUpperFrequency->value()); // Верхняя частота
+    calcTemplate_.addWindowData(WINDOW_NAME, "isChoosedSignal", ui->groupBoxChoosedSignal->isChecked()); // Флаг сохранения выбранного сигнала
+    calcTemplate_.addWindowData(WINDOW_NAME, "isChoosedSignalCorrection", ui->checkBoxChoosedSignalCorrectionFactor->isChecked()); // Флаг коррекции
+    calcTemplate_.addWindowData(WINDOW_NAME, "choosedSignalCorrectionFactor", ui->spinBoxChoosedSignalCorrectionFactor->value()); // Коэффициент коррекции
+    calcTemplate_.addWindowData(WINDOW_NAME, "isFiltration", ui->checkBoxChoosedSignalFiltration->isChecked()); // Флаг фильтрации
+    calcTemplate_.addWindowData(WINDOW_NAME, "lowerFreq", ui->spinBoxChoosedSignalLowerFrequency->value()); // Нижняя частота
+    calcTemplate_.addWindowData(WINDOW_NAME, "upperFreq", ui->spinBoxChoosedSignalUpperFrequency->value()); // Верхняя частота
 }
 
 // Проверка ширины весового окна
@@ -185,4 +182,34 @@ void SignalCharacteristicsWindow::reject(){
     this->hide(); // Простое скрытие (для удержания настроек)
 }
 
+// Применить расчетный шаблон
+void SignalCharacteristicsWindow::applyCalculationTemplate(){
+    if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
+    WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
+    // Данные аппроксимации
+    ui->groupBoxApproximation->setChecked(windowData["isApproximation"].toBool()); // Флаг аппроксимации
+    ui->spinBoxApproximationSmoothFactor->setValue(windowData["smoothFactor"].toDouble()); // Коэффициент сглаживания
+    // Данные интегрирования
+    ui->groupBoxIntegration->setChecked(windowData["isIntegration"].toBool()); // Флаг интегрирования
+    ui->spinBoxIntegrationOrder->setValue(windowData["integrationOrder"].toInt()); // Порядок интегрирования
+    ui->checkBoxIntegrationCorrection->setChecked(windowData["isIntegrationCorrection"].toBool()); // Флаг коррекции
+    ui->spinBoxIntegrationCorrectionFactor->setValue(windowData["integrationCorrectionFactor"].toDouble()); // Корректировочный коэффициент
+    // Данные спектрального разложения
+    ui->groupBoxPowerSpectralDensity->setChecked(windowData["isPowerSpectralDensity"].toBool()); // Флаг спектрального разложения
+    ui->comboBoxWeightWindowType->setCurrentIndex(windowData["windowFun"].toInt()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    ui->spinBoxWeightWindowWidth->setValue(windowData["weightWindowWidth"].toInt()); // Ширина весового окна
+    ui->spinBoxOverlapFactor->setValue(windowData["overlapFactor"].toDouble()); // Коэффициент перекрытия окон
+    ui->spinBoxSpectrumInterpolation->setValue(windowData["lengthSpectrum"].toInt()); // Число точек для интерполяции
+    ui->spinBoxSmoothWidth->setValue(windowData["windowSmoothWidth"].toInt()); // Число точек для сглаживания
+    // Данные выбранного сигнала
+    ui->groupBoxChoosedSignal->setChecked(windowData["isChoosedSignal"].toBool()); // Флаг сохранения выбранного сигнала
+    ui->checkBoxChoosedSignalCorrectionFactor ->setChecked(windowData["isChoosedSignalCorrection"].toBool()); // Флаг коррекции
+    ui->spinBoxChoosedSignalCorrectionFactor->setValue(windowData["choosedSignalCorrectionFactor"].toDouble()); // Коэффициент коррекции
+    ui->checkBoxChoosedSignalFiltration->setChecked(windowData["isFiltration"].toBool()); // Флаг фильтрации
+    ui->spinBoxChoosedSignalLowerFrequency->setValue(windowData["lowerFreq"].toDouble()); // Нижняя частота
+    ui->spinBoxChoosedSignalUpperFrequency->setValue(windowData["upperFreq"].toDouble()); // Верхняя частота
+    // Проверка данных
+    checkWeightWindowWidth(); // Проверка ширины весового окна
+    checkBandpassFrequencies(); // Проверка частот в полосе пропускания
+}
 // -------------------------------------------------------------------------------------------------------------

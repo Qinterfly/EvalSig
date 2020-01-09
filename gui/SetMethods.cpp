@@ -1,6 +1,7 @@
+#include <QMouseEvent>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include <QMouseEvent>
+#include "gui/DoubleProgressDialog.h"
 
 // ---- Методы для определения параметров программы -------------------------------------------------------------------------
 
@@ -237,6 +238,29 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
         }
     }
     return QObject::eventFilter(obj, event); // Стандартная обработка событий
+}
+
+// Применение расчетного шаблона
+void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals){
+    // Применение параметров расчета статистик
+    ui->spinBoxTimeWidth->setValue(calcTemplate_.widthWindow()); // Ширина окна
+    ui->spinBoxShiftWindow->setValue(calcTemplate_.shiftWindow()); // Смещение окна
+    QPair<int, int> const& estimationBoundaries = calcTemplate_.estimationBoundaries();
+    ui->spinBoxLeftEstimationBoundary->setValue(estimationBoundaries.first); // Левая граница расчета
+    ui->spinBoxRightEstimationBoundary->setValue(estimationBoundaries.second); // Правая граница расчета
+    setTimeWindowProperty(); // Установка параметров окна
+    setStatEstimationBoundaries(); // Установка границ расчета
+    // Применение шаблона по окнам
+    signalCharacteristicsWindow_->applyCalculationTemplate(); // Характеристики сигнала
+    // Настройка окна с прогрессом
+    int nSelectedSignals = iSelectedSignals.size(); // Число сигналов
+    int lengthSequence = calcTemplate_.lengthSequence(); // Длина последовательности
+    DoubleProgressDialog * progressDialog = new DoubleProgressDialog("Применение расчетного шаблона", this); // Создание экземпляра окна с прогрессом
+    progressDialog->setCurrentBoundaries(0, lengthSequence); // Границы текущего прогресса
+    progressDialog->setOverallBoundaries(0, nSelectedSignals); // Границы общего прогресса
+    progressDialog->show(); // Отображение окна
+    // Применение шаблона к сигналам по последовательности
+    // <...>
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

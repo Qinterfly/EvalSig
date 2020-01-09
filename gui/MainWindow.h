@@ -45,6 +45,7 @@ public slots:
     void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
     void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
     void changeDataSignal(int row, int column); // Изменение параметров сигналов
+    void applyCalculationTemplate(QVector<int> iSelectedSignals); // Применение расчетного шаблона
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
     void updateRegressionState(); // Проверка возможности построения линейной регрессии

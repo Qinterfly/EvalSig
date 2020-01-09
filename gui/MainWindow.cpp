@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statSignal_(vecDataSignal_, widthTimeWindow_, shiftWindow_, 1, 2) // Статистики
 {
     ui->setupUi(this); // Инициализация графического интерфейса
-    signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(this);
+    signalCharacteristicsWindow_ = new SignalCharacteristicsWindow(calcTemplate_, this);
     levelsWindow_ = new LevelsWindow(vecDataSignal_, this);
     associatedStatisticsWindow_ = new AssociatedStatisticsWindow(vecDataSignal_, this);
     calcTemplateWindow_ = new CalculationTemplateWindow(calcTemplate_, vecDataSignal_, this);
@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(levelsWindow_, SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_, SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
     connect(calcTemplateWindow_, SIGNAL(finished(int)), this, SLOT(calculationTemplateFinished(int))); // Сохранение расчетного шаблона
+    connect(calcTemplateWindow_, SIGNAL(apply(QVector<int>)), this, SLOT(applyCalculationTemplate(QVector<int>))); // Применение расчетного шаблона
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }

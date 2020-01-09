@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QList>
 #include "CalculationTemplateWindow.h"
 #include "ui_CalculationTemplateWindow.h"
 
@@ -18,6 +19,14 @@ CalculationTemplateWindow::CalculationTemplateWindow(CalculationTemplate & calcT
     connect(ui->pushButtonRemoveWindow, SIGNAL(clicked()), this, SLOT(removeWindow())); // Удаление действия
     connect(ui->pushButtonSave, SIGNAL(clicked()), this, SLOT(save())); // Сохранить шаблон
     connect(ui->pushButtonLoad, SIGNAL(clicked()), this, SLOT(load())); // Загрузка шаблона
+    connect(ui->pushButtonResultPath, SIGNAL(clicked()), this, SLOT(setResultPath())); // Установка пути сохранения результатов
+    connect(ui->pushButtonApply, SIGNAL(clicked()), this, SLOT(wrapApplyingTemplate())); // Применение шаблона
+    // Оценка возможности применения шаблона
+    connect(ui->pushButtonRemoveWindow, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При нажатии кнопки удалить
+    connect(ui->pushButtonLoad, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При загрузке шаблона
+    connect(ui->pushButtonRecord, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении состояния записи
+    connect(ui->listWidgetSignals, SIGNAL(itemSelectionChanged()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении состояния записи
+    connect(ui->pushButtonResultPath, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении пути сохранения результатов
 }
 
 // Деструктор
@@ -56,11 +65,23 @@ void CalculationTemplateWindow::updateSequenceOfWindows(){
             tString = "Характеристики сигнала";
         ui->listWidgetSequenceOfWindows->addItem(tString);
     }
+    ui->listWidgetSequenceOfWindows->setCurrentRow(0);
 }
 
 // Установка пути по умолчанию
 void CalculationTemplateWindow::setLastPath(QString const& lastPath){
     lastPath_ = lastPath;
+}
+
+// Определение имен сигналов для выбора
+void CalculationTemplateWindow::setSignalsName(QListWidget const& listSignals){
+    int nItem = listSignals.count();
+    ui->listWidgetSignals->clear(); // Очистка списка
+    // Добавление имен сигналов
+    for (int i = 0; i != nItem; ++i){
+        ui->listWidgetSignals->addItem(listSignals.item(i)->text());
+    }
+    ui->listWidgetSignals->setCurrentRow(0);
 }
 
 // Удалить окно
@@ -81,7 +102,7 @@ void CalculationTemplateWindow::save(){
     QString fileName = fileInfo.baseName() + "." + TEMPLATE_EXTENSION;
     calcTemplate_.setNote(ui->plainTextEditNote->toPlainText());
     int exitStatus = calcTemplate_.write(lastPath_, fileName);
-    if (!exitStatus) emit this->finished(1);
+    if (!exitStatus) emit this->finished(Code::Saved);
 }
 
 // Загрузить шаблон из файла
@@ -97,11 +118,41 @@ void CalculationTemplateWindow::load(){
     int exitStatus = calcTemplate_.read(lastPath_, fileName);
     // Заполнение полей
     if (!exitStatus){
-        emit this->finished(2);
+        emit this->finished(Code::Loaded);
         ui->lineEditPath->setText(fileFullPath); // Путь
         ui->tableInformation->setItem(0, 1, new QTableWidgetItem(QString::number(calcTemplate_.version()))); // Версия
         ui->tableInformation->setItem(1, 1, new QTableWidgetItem(calcTemplate_.date())); // Дата
         ui->tableInformation->setItem(2, 1, new QTableWidgetItem(calcTemplate_.note())); // Примечание
         updateSequenceOfWindows();
     }
+}
+
+// Установка пути для сохранения результатов
+void CalculationTemplateWindow::setResultPath(){
+    // Диалог с пользователем для выбора директории для сохранения
+    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+    // Проверка корректности выбора
+    if (saveDir.isEmpty()) return;
+    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    ui->lineEditResultPath->setText(lastPath_); // Отображение пути
+}
+
+// Проверка применимость шаблона к загруженным данным
+void CalculationTemplateWindow::checkApplicability(){
+    if (calcTemplate_.isEmpty() || ui->listWidgetSignals->currentRow() < 0 || ui->lineEditResultPath->text().isEmpty()){
+        ui->pushButtonApply->setEnabled(false);
+        return;
+    }
+    ui->pushButtonApply->setEnabled(true);
+}
+
+// Подготовка данных для применения шаблона
+void CalculationTemplateWindow::wrapApplyingTemplate() {
+    emit this->finished(Code::StartedApplying); // Сигнал о начале применения шаблона
+    QList<QListWidgetItem *> const& selectedItems = ui->listWidgetSignals->selectedItems();
+    QVector<int> iSelectedSignals(selectedItems.size());
+    int k = 0;
+    for (QListWidgetItem * item : selectedItems)
+        iSelectedSignals[k++] = ui->listWidgetSignals->row(item);
+    emit this->apply(iSelectedSignals);
 }

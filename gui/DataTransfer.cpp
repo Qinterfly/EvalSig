@@ -11,24 +11,27 @@ void MainWindow::saveSignalCharacteristicsFinished(){
 
 // Завершение сохранения поуровневого разбиения
 void MainWindow::saveLevelsFinished(){
-    ui->statusBar->showMessage("Сохранение разбиения по уровням завершилось успешно"); // Вывод информационного сообщения
+    ui->statusBar->showMessage("Сохранение разбиения по уровням завершилось успешно");
     lastPath_ = levelsWindow_->lastPath(); // Запись последнего пути
 }
 
 // Завершение сохранения относительных статистик
 void MainWindow::saveAssociatedStatisticsFinished(){
-    ui->statusBar->showMessage("Сохранение относительных статистик завершилось успешно"); // Вывод информационного сообщения
+    ui->statusBar->showMessage("Сохранение относительных статистик завершилось успешно");
     lastPath_= associatedStatisticsWindow_->lastPath();
 }
 
 // Завершение сохранения расчетного шаблона
 void MainWindow::calculationTemplateFinished(int state){
     switch (state) {
-    case 1:
+    case CalculationTemplateWindow::Code::Saved:
         ui->statusBar->showMessage("Сохранение расчетного шаблона завершилось успешно"); // Вывод информационного сообщения
         break;
-    case 2:
-        ui->statusBar->showMessage("Загрузка расчетного шаблона завершилась успешно"); // Вывод информационного сообщения
+    case CalculationTemplateWindow::Code::Loaded:
+        ui->statusBar->showMessage("Загрузка расчетного шаблона завершилась успешно");
+        break;
+    case CalculationTemplateWindow::Code::StartedApplying:
+        ui->statusBar->showMessage("Начато применение расчетного шаблона...");
         break;
     }
     lastPath_= calcTemplateWindow_->lastPath();
