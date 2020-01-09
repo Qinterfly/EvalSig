@@ -15,7 +15,7 @@ class CalculationTemplateWindow : public QDialog
 {
     Q_OBJECT
 public:
-    enum Code { Saved, Loaded, StartedApplying };
+    enum Code { Saved, Loaded, StartedApplying, FinishedApplying };
     explicit CalculationTemplateWindow(CalculationTemplate & calcTemplate, QVector<DataSignal> const& vecDataSignal, QWidget *parent = nullptr);
     ~CalculationTemplateWindow();
     QString const& lastPath() const { return lastPath_; }

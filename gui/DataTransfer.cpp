@@ -22,7 +22,7 @@ void MainWindow::saveAssociatedStatisticsFinished(){
 }
 
 // Завершение сохранения расчетного шаблона
-void MainWindow::calculationTemplateFinished(int state){
+void MainWindow::calculationTemplateProcessed(int state){
     switch (state) {
     case CalculationTemplateWindow::Code::Saved:
         ui->statusBar->showMessage("Сохранение расчетного шаблона завершилось успешно"); // Вывод информационного сообщения
@@ -32,6 +32,9 @@ void MainWindow::calculationTemplateFinished(int state){
         break;
     case CalculationTemplateWindow::Code::StartedApplying:
         ui->statusBar->showMessage("Начато применение расчетного шаблона...");
+        break;
+    case CalculationTemplateWindow::Code::FinishedApplying:
+        ui->statusBar->showMessage("Расчетный шаблон применен успешно");
         break;
     }
     lastPath_= calcTemplateWindow_->lastPath();

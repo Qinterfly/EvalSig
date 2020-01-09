@@ -57,7 +57,7 @@ public slots:
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
-    void calculationTemplateFinished(int state); // Завершение сохранения расчетного шаблона
+    void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

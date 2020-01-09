@@ -255,10 +255,8 @@ void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals){
     // Настройка окна с прогрессом
     int nSelectedSignals = iSelectedSignals.size(); // Число сигналов
     int lengthSequence = calcTemplate_.lengthSequence(); // Длина последовательности
-    QProgressDialog progressDialog = QProgressDialog("", "Отменить", 0, nSelectedSignals, this); // Создание экземпляра окна с прогрессом
-    progressDialog.setMinimumDuration(0);
-    progressDialog.setWindowModality(Qt::WindowModal);
-    progressDialog.show(); // Отображение окна
+    QProgressDialog progress = QProgressDialog("", "Отменить", 0, nSelectedSignals, this); // Создание экземпляра окна с прогрессом
+    progress.setWindowModality(Qt::WindowModal);
     // Применение шаблона к сигналам по последовательности
     QDir baseDir(lastPath_);
     for (int iSig = 0; iSig != nSelectedSignals; ++iSig){
@@ -266,18 +264,19 @@ void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals){
         baseDir.mkdir(signalName); // Создаем директорию по имени сигнала
         QString fullSignalPath = lastPath_ + signalName + QDir::separator(); // Директория сигнала
         // Обработка прогресса
-        progressDialog.setLabelText(signalName);
-        progressDialog.setValue(iSig);
-        QApplication::processEvents();
+        progress.setLabelText(signalName);
+        progress.setValue(iSig);
+        qApp->processEvents();
         for (int jSeq = 0; jSeq != lengthSequence; ++jSeq){
-            if (progressDialog.wasCanceled()) break;
+            if (progress.wasCanceled()) break;
             // Характеристики сигнала
             signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[iSelectedSignals[iSig]]); // Передача сигнала
             signalCharacteristicsWindow_->setLastPath(fullSignalPath); // Передача пути по умолчанию
             signalCharacteristicsWindow_->saveCharacteristics(false); // Сохранение результатов
         }
     }
-    progressDialog.setValue(nSelectedSignals);
+    progress.setValue(nSelectedSignals);
+    calculationTemplateProcessed(CalculationTemplateWindow::Code::FinishedApplying);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

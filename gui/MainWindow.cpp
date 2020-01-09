@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(signalCharacteristicsWindow_, SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
     connect(levelsWindow_, SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_, SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
-    connect(calcTemplateWindow_, SIGNAL(finished(int)), this, SLOT(calculationTemplateFinished(int))); // Сохранение расчетного шаблона
+    connect(calcTemplateWindow_, SIGNAL(finished(int)), this, SLOT(calculationTemplateProcessed(int))); // Сохранение расчетного шаблона
     connect(calcTemplateWindow_, SIGNAL(apply(QVector<int>)), this, SLOT(applyCalculationTemplate(QVector<int>))); // Применение расчетного шаблона
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
