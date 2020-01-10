@@ -29,8 +29,8 @@ private slots:
     void showLevels(); // Отображение уровней на графике
     void assessNumberOfLevels(); // Оценить число уровней
 private:
-    void plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение графика
-    void plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot = false); // Построение кривой
+    void plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen const& penPlot, bool isReplot = false); // Построение графика
+    void plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen const& penPlot, bool isReplot = false); // Построение кривой
     void clearAllPlot(); // Очистка всех графиков
 private:
     Ui::LevelsWindow *ui;

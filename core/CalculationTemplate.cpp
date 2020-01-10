@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QDateTime>
+#include <QVector>
 #include "core/CalculationTemplate.h"
 #include "core/FileOperate.h"
 

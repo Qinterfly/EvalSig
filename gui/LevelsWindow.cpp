@@ -254,7 +254,7 @@ void LevelsWindow::assessNumberOfLevels(){
 }
 
 // Построение графика
-void LevelsWindow::plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot){
+void LevelsWindow::plotGraph(QVector<double> const& X, QVector<double> const& Y, QPen const& penPlot, bool isReplot){
     ui->showLevelsPlot->addGraph(); // Добавление графика в конец
     ui->showLevelsPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->showLevelsPlot->graph()->setPen(penPlot); // Выставление цвета графика
@@ -264,7 +264,7 @@ void LevelsWindow::plotGraph(QVector<double> const& X, QVector<double> const& Y,
 }
 
 // Построение кривой
-void LevelsWindow::plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen penPlot, bool isReplot){
+void LevelsWindow::plotCurve(QVector<double> const& X, QVector<double> const& Y, QPen const& penPlot, bool isReplot){
     int nPoint = X.size(); // Число точек в графике
     if (nPoint != Y.size()) return;
     // Формирование вектора порядка
