@@ -16,14 +16,20 @@ void CalculationTemplate::setStatParams(QPair <int, int> const& estimationBounda
     shiftWindow_ = shiftWindow; // Смещение окна
 }
 
-// Вставка данных поля окна
-void CalculationTemplate::addWindowData(QString const& windowName, QString const& dataName, QVariant const& data){
+// Добавить новое окно
+void CalculationTemplate::addWindow(QString const& windowName){
     // Проверка существования переданного окна
-    if (!windowsData_.contains(windowName)){
+    if ( !windowsData_.contains(windowName) ){
         windowsData_.insert(windowName, WindowData());
-        if (!sequenceOfWindows_.contains(windowName))
+        // Проверка последовательности окон
+        if ( !sequenceOfWindows_.contains(windowName) )
             sequenceOfWindows_.push_back(windowName);
     }
+}
+
+// Вставка данных поля окна
+void CalculationTemplate::addWindowData(QString const& windowName, QString const& dataName, QVariant const& data){
+    addWindow(windowName);
     windowsData_[windowName].insert(dataName, data);
 }
 

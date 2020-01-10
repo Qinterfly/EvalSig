@@ -18,6 +18,7 @@ public:
     // Пользовательские методы
     void setStatParams(QPair <int, int> const& estimationBoundaries, int widthWindow, int shiftWindow); // Установка параметров статистик
     void setNote(QString const& note) { note_ = note; }; // Установка примечания
+    void addWindow(QString const& windowName); // Добавить новое окно
     void addWindowData(QString const& windowName, QString const& dataName, QVariant const& data); // Вставка данных поля окна
     void removeWindow(int index); // Удаление действия
     void clear(); // Очистка шаблона

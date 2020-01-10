@@ -252,31 +252,52 @@ void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals){
     setStatEstimationBoundaries(); // Установка границ расчета
     // Применение шаблона по окнам
     signalCharacteristicsWindow_->applyCalculationTemplate(); // Характеристики сигнала
-    // Настройка окна с прогрессом
+    // Оценка полного числа шагов расчета
     int nSelectedSignals = iSelectedSignals.size(); // Число сигналов
+    QList<QString> sequenceOfWindows = calcTemplate_.getSequenceOfWindows(); // Последовательность окон
     int lengthSequence = calcTemplate_.lengthSequence(); // Длина последовательности
-    QProgressDialog progress = QProgressDialog("", "Отменить", 0, nSelectedSignals, this); // Создание экземпляра окна с прогрессом
+    int nStepCalc = 0;
+    nStepCalc += sequenceOfWindows.contains("SignalCharacteristicsWindow") ? nSelectedSignals : 0; // Характеристики сигнала
+    nStepCalc += sequenceOfWindows.contains("Statistics") ? 1 : 0; // Статистические коэффициенты
+    // Настройка окна с прогрессом
+    QProgressDialog progress = QProgressDialog("", "Отменить", 0, nStepCalc, this); // Создание экземпляра окна с прогрессом
     progress.setWindowModality(Qt::WindowModal);
     // Применение шаблона к сигналам по последовательности
-    QDir baseDir(lastPath_);
-    for (int iSig = 0; iSig != nSelectedSignals; ++iSig){
-        QString signalName = ui->listFile->item(iSig)->text(); // Имя сигнала
-        baseDir.mkdir(signalName); // Создаем директорию по имени сигнала
-        QString fullSignalPath = lastPath_ + signalName + QDir::separator(); // Директория сигнала
-        // Обработка прогресса
-        progress.setLabelText(signalName);
-        progress.setValue(iSig);
-        qApp->processEvents();
-        for (int jSeq = 0; jSeq != lengthSequence; ++jSeq){
+    int iStepCalc = 0;
+    for (int iSeq = 0; iSeq != lengthSequence; ++iSeq){
+        QString const& seq = sequenceOfWindows[iSeq];
+        QDir baseDir(lastPath_);
+        // Характеристики сигнала
+        if ( !seq.compare("SignalCharacteristicsWindow") ){
+            for (int jSig = 0; jSig != nSelectedSignals; ++jSig){
+                int indSignal = iSelectedSignals[jSig]; // Индекс сигнала в контейнере
+                QString signalName = ui->listFile->item(indSignal)->text(); // Имя сигнала
+                baseDir.mkdir(signalName); // Создаем директорию по имени сигнала
+                QString fullSignalPath = lastPath_ + signalName + QDir::separator(); // Директория сигнала
+                // Обработка прогресса
+                if (progress.wasCanceled()) break;
+                progress.setLabelText("Характеристики сигнала: " + signalName + "...");
+                progress.setValue(iStepCalc++);
+                qApp->processEvents();
+                // Вызов расчетных методов
+                signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[indSignal]); // Передача сигнала
+                signalCharacteristicsWindow_->setLastPath(fullSignalPath); // Передача пути по умолчанию
+                signalCharacteristicsWindow_->saveCharacteristics(false); // Сохранение результатов
+            }
+        }
+        // Статистические коэффициенты
+        if ( !seq.compare("Statistics") ){
             if (progress.wasCanceled()) break;
-            // Характеристики сигнала
-            signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[iSelectedSignals[iSig]]); // Передача сигнала
-            signalCharacteristicsWindow_->setLastPath(fullSignalPath); // Передача пути по умолчанию
-            signalCharacteristicsWindow_->saveCharacteristics(false); // Сохранение результатов
+            progress.setLabelText("Статистические коэффициенты...");
+            progress.setValue(iStepCalc++);
+            qApp->processEvents();
+            int exitStatus = statSignal_.writeAllStatistics(lastPath_); // Запись статистик
+            exitStatus += statSignal_.writeAllMetrics(lastPath_, "Метрики сигналов"); // Запись метрик сигналов
         }
     }
-    progress.setValue(nSelectedSignals);
+    progress.setValue(nStepCalc);
     calculationTemplateProcessed(CalculationTemplateWindow::Code::FinishedApplying);
+    calcTemplateWindow_->hide();
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

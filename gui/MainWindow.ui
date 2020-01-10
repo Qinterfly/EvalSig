@@ -1313,7 +1313,7 @@
     <string>Сохранить статистические коэффициенты</string>
    </property>
    <property name="statusTip">
-    <string>Сохранить результаты расчета</string>
+    <string>Сохранить статистические коэффициенты</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>

@@ -60,10 +60,12 @@ void CalculationTemplateWindow::updateSequenceOfWindows(){
     ui->labelLengthSequence->setText(QString::number(calcTemplate_.lengthSequence()));
     QList<QString> const& sequenceWindows = calcTemplate_.getSequenceOfWindows();
     ui->listWidgetSequenceOfWindows->clear();
-    QString tString = "";
     for (QString const& window : sequenceWindows){
-        if (!window.compare("SignalCharacteristicsWindow"))
+        QString tString = "NoName";
+        if ( !window.compare("SignalCharacteristicsWindow") )
             tString = "Характеристики сигнала";
+        if ( !window.compare("Statistics") )
+            tString = "Статистические коэффициенты";
         ui->listWidgetSequenceOfWindows->addItem(tString);
     }
     ui->listWidgetSequenceOfWindows->setCurrentRow(0);

@@ -81,7 +81,8 @@ void MainWindow::saveCalcualtion(){
     exitStatus += statSignal_.writeAllMetrics(lastPath_, "Метрики сигналов"); // Запись метрик сигналов
     if (exitStatus == 0)
         statusBar()->showMessage("Результаты сохранены");
-
+    if ( exitStatus != 0 || !calcTemplate_.isRecord() ) return;
+    calcTemplate_.addWindow("Statistics");
 }
 
 // Сохранить разбиения по уровням
