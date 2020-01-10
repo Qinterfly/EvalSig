@@ -45,7 +45,7 @@ public slots:
     void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
     void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
     void changeDataSignal(int row, int column); // Изменение параметров сигналов
-    void applyCalculationTemplate(QVector<int> iSelectedSignals); // Применение расчетного шаблона
+    void applyCalculationTemplate(QVector<int> iSelectedSignals, int iMainSignal, int iBaseSignal, int iSupportSignal); // Применение расчетного шаблона
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
     void updateRegressionState(); // Проверка возможности построения линейной регрессии
@@ -58,6 +58,8 @@ public slots:
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
     void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
+    // Справка
+    void aboutProgram(); // Информация о программе
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

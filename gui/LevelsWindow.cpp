@@ -4,9 +4,16 @@
 #include "core/NumericalFunctions.h"
 #include "core/DivisionDataSignal.h"
 
+// ---- Разбиение на уровни ------------------------------------------------------------------------------------
+
+static QString const& WINDOW_NAME = "LevelsWindow";
+
 // Конструктор
-LevelsWindow::LevelsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
-    QDialog(parent), ui(new Ui::LevelsWindow), vecDataSignal_(vecDataSignal)
+LevelsWindow::LevelsWindow(CalculationTemplate & calcTemplate, QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::LevelsWindow),
+    calcTemplate_(calcTemplate),
+    vecDataSignal_(vecDataSignal)
 {
     ui->setupUi(this);
     // Создание соединений сигнал - слот
@@ -48,6 +55,32 @@ void LevelsWindow::setEstimationBoundaries(QPair<int, int> const& estimationBoun
     calculationInd_ = {estimationBoundaries_.first - 1, estimationBoundaries_.second - 1}; // Расчетные индексы
 }
 
+// Установка пути по умолчанию
+void LevelsWindow::setLastPath(QString const& lastPath){
+    lastPath_ = lastPath;
+}
+
+// Применить расчетный шаблон
+void LevelsWindow::applyCalculationTemplate(int indBaseSignal, int indSupportSignal){
+    if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
+    ui->comboBoxBase->setCurrentIndex(indBaseSignal); // Базовый сигнал
+    ui->comboBoxSupport->setCurrentIndex(indSupportSignal); // Опорный сигнал
+    WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
+    // Параметры разбиения
+    ui->spinBoxLevelStep->setValue(windowData["levelStep"].toDouble()); // Смещение уровней
+    ui->spinBoxOverlapFactor->setValue(windowData["overlapFactor"].toDouble()); // Перекрытие уровней
+    ui->spinBoxSmoothIntegrFactor->setValue(windowData["smoothIntegrFactor"].toDouble()); // Коррекция интегралов
+    ui->spinBoxSmoothApproxFactor->setValue(windowData["smoothApproxFactor"].toDouble()); // Сглаживание перемещений
+    ui->spinBoxTruncatePercent->setValue(windowData["truncatePercent"].toDouble()); // Усечение фрагментов
+    ui->spinBoxDepthGluing->setValue(windowData["depthGluing"].toDouble()); // Глубина склейки
+    // Данные спектрального разложения
+    ui->groupBoxPowerSpectralDensity->setChecked(windowData["isPowerSpectralDensity"].toBool()); // Флаг спектрального разложения
+    ui->comboBoxWeightWindowType->setCurrentIndex(windowData["windowFun"].toInt()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    ui->spinBoxSpectrumOverlapFactor->setValue(windowData["spectrumOverlapFactor"].toDouble()); // Коэффициент перекрытия окон
+    ui->spinBoxSpectrumInterpolation->setValue(windowData["lengthSpectrum"].toInt()); // Число точек для интерполяции
+    ui->spinBoxSmoothWidth->setValue(windowData["windowSmoothWidth"].toInt()); // Число точек для сглаживания
+}
+
 // Установка возможности сохранения
 void LevelsWindow::setSaveState(int){
     if (!ui->comboBoxBase->currentText().isEmpty()){
@@ -65,12 +98,14 @@ void LevelsWindow::setSaveState(int){
 }
 
 // Сохранение и расчет
-void LevelsWindow::save(){
+void LevelsWindow::save(bool isUserCalc){
     // Диалог с пользователем для выбора директории для сохранения
-    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
-    // Проверка корректности выбора
-    if (saveDir.isEmpty()) return;
-    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    if (isUserCalc){
+        QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+        // Проверка корректности выбора
+        if (saveDir.isEmpty()) return;
+        lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    }
     // Сигналы
     DataSignal base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
     DataSignal support; // Опорный
@@ -113,9 +148,24 @@ void LevelsWindow::save(){
     }
         // Информация об уровнях
     saveStatus += divSignal.writeInfo(lastPath_, "Информация об уровнях.txt");
-    if (saveStatus == 0) // В случае успешного сохранения
+    if (saveStatus == 0 && isUserCalc) // В случае успешного сохранения
         emit this->accepted();
     this->hide(); // Скрытие окна
+    // Заполнение расчетного шаблона
+    if ( saveStatus != 0 || !calcTemplate_.isRecord() || !isUserCalc ) return;
+    // Параметры разбиения
+    calcTemplate_.addWindowData(WINDOW_NAME, "levelStep", levelStep); // Смещение уровней
+    calcTemplate_.addWindowData(WINDOW_NAME, "overlapFactor", overlapFactor); // Перекрытие уровней
+    calcTemplate_.addWindowData(WINDOW_NAME, "smoothIntegrFactor", smoothIntegrFactor); // Коррекция интегралов
+    calcTemplate_.addWindowData(WINDOW_NAME, "smoothApproxFactor", smoothApproxFactor); // Сглаживание перемещений
+    calcTemplate_.addWindowData(WINDOW_NAME, "truncatePercent", truncatePercent); // Усечение фрагментов
+    calcTemplate_.addWindowData(WINDOW_NAME, "depthGluing", depthGluing); // Глубина склейки
+    // Данные спектрального разложения
+    calcTemplate_.addWindowData(WINDOW_NAME, "isPowerSpectralDensity", isPowerSpectralDensity); // Флаг спектрального разложения
+    calcTemplate_.addWindowData(WINDOW_NAME, "windowFun", ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    calcTemplate_.addWindowData(WINDOW_NAME, "spectrumOverlapFactor", ui->spinBoxSpectrumOverlapFactor->value()); // Коэффициент перекрытия окон
+    calcTemplate_.addWindowData(WINDOW_NAME, "lengthSpectrum", ui->spinBoxSpectrumInterpolation->value()); // Число точек для интерполяции
+    calcTemplate_.addWindowData(WINDOW_NAME, "windowSmoothWidth", ui->spinBoxSmoothWidth->value()); // Число точек для сглаживания
 }
 
 // Отображение уровней на графике
@@ -237,3 +287,4 @@ void LevelsWindow::clearAllPlot(){
     ui->showLevelsPlot->replot(); // Обновление окна построения
 }
 
+// -------------------------------------------------------------------------------------------------------------

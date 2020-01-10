@@ -419,16 +419,22 @@
    <addaction name="help"/>
   </widget>
   <widget class="QToolBar" name="projectToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>0</width>
-     <height>0</height>
+     <height>35</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
-     <height>35</height>
+     <height>16777215</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -454,16 +460,22 @@
    </property>
   </widget>
   <widget class="QToolBar" name="fileManageToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>0</width>
-     <height>0</height>
+     <height>35</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
-     <height>35</height>
+     <height>16777215</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -1170,10 +1182,22 @@
    </widget>
   </widget>
   <widget class="QToolBar" name="calculationManageToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>35</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
-     <height>35</height>
+     <height>16777215</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -1191,10 +1215,22 @@
    <addaction name="actionCalculationTemplate"/>
   </widget>
   <widget class="QToolBar" name="InteractionToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>35</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
-     <height>35</height>
+     <height>16777215</height>
     </size>
    </property>
    <property name="windowTitle">

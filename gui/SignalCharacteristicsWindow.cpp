@@ -187,7 +187,7 @@ void SignalCharacteristicsWindow::reject(){
 // Применить расчетный шаблон
 void SignalCharacteristicsWindow::applyCalculationTemplate(){
     if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
-    setEstimationBoundaries(calcTemplate_.estimationBoundaries()); // Установка расчетных границ
+    setBoundaries(); // Настройка границ изменения
     WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
     // Данные аппроксимации
     ui->groupBoxApproximation->setChecked(windowData["isApproximation"].toBool()); // Флаг аппроксимации

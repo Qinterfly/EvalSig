@@ -72,7 +72,7 @@ void DataSignal::normalize(NormalizeOption option) {
 int DataSignal::readDataFile(QString const& path, QString const& fileName, int shift){
     QString fileFullPath = path + fileName; // Полный путь к файлу
     QFile file(fileFullPath); // Инициализация файла для чтения
-    if (!checkFile(fileFullPath, "read")){ return -1; } // Обработка ошибок
+    if ( !checkFile(fileFullPath, "read") ){ return -1; } // Обработка ошибок
     file.open(QIODevice::ReadOnly | QIODevice::Text); // Открытие файла для чтения
     QTextStream inputStream(&file); // Создание потока чтения
     inputStream.setCodec("cp1251"); // Кодировка CP1251
@@ -80,6 +80,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName, int s
     property.path_ = path;                                        // Путь к файлу
     property.fileName_ = fileName;                                // Имя файла
     property.dateAndTime_ = inputStream.readLine();               // Дата и время записи сигнала
+    if ( !property.dateAndTime_.contains(":") ) return -1;        // Проверка формата файла
     property.measureObject_ = inputStream.readLine();             // Объект измерения
     property.measurePoint_ = inputStream.readLine();              // Точка установки датчика
     property.currentCount_ = inputStream.readLine();              // Текущие отсчеты

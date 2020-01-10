@@ -22,12 +22,14 @@ CalculationTemplateWindow::CalculationTemplateWindow(CalculationTemplate & calcT
     connect(ui->pushButtonResultPath, SIGNAL(clicked()), this, SLOT(setResultPath())); // Установка пути сохранения результатов
     connect(ui->pushButtonApply, SIGNAL(clicked()), this, SLOT(wrapApplyingTemplate())); // Применение шаблона
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(checkCreatingFinished(int))); // Проверка завершения создания шаблона
+    connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(checkSelectedSignals()), Qt::QueuedConnection); // Проверка выбранных сигналов
     // Оценка возможности применения шаблона
     connect(ui->pushButtonRemoveWindow, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При нажатии кнопки удалить
     connect(ui->pushButtonLoad, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При загрузке шаблона
     connect(ui->pushButtonRecord, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении состояния записи
     connect(ui->listWidgetSignals, SIGNAL(itemSelectionChanged()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении состояния записи
     connect(ui->pushButtonResultPath, SIGNAL(clicked()), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении пути сохранения результатов
+    connect(ui->comboBoxBaseSignal, SIGNAL(currentIndexChanged(int)), this, SLOT(checkApplicability()), Qt::QueuedConnection); // При изменении базового сигнала
 }
 
 // Деструктор
@@ -64,8 +66,12 @@ void CalculationTemplateWindow::updateSequenceOfWindows(){
         QString tString = "NoName";
         if ( !window.compare("SignalCharacteristicsWindow") )
             tString = "Характеристики сигнала";
-        if ( !window.compare("Statistics") )
+        if ( !window.compare("StatisticsWindow") )
             tString = "Статистические коэффициенты";
+        if ( !window.compare("AssociatedStatisticsWindow") )
+            tString = "Относительные статистики";
+        if ( !window.compare("LevelsWindow") )
+            tString = "Разбиение по уровням";
         ui->listWidgetSequenceOfWindows->addItem(tString);
     }
     ui->listWidgetSequenceOfWindows->setCurrentRow(0);
@@ -80,9 +86,19 @@ void CalculationTemplateWindow::setLastPath(QString const& lastPath){
 void CalculationTemplateWindow::setSignalsName(QListWidget const& listSignals){
     int nItem = listSignals.count();
     ui->listWidgetSignals->clear(); // Очистка списка
+    ui->comboBoxMainSignal->clear();
+    ui->comboBoxBaseSignal->clear();
+    ui->comboBoxSupportSignal->clear();
+    // Добавление пустых элементов
+    ui->comboBoxBaseSignal->addItem("");
+    ui->comboBoxSupportSignal->addItem("");
     // Добавление имен сигналов
     for (int i = 0; i != nItem; ++i){
-        ui->listWidgetSignals->addItem(listSignals.item(i)->text());
+        QString const& signalName = listSignals.item(i)->text();
+        ui->listWidgetSignals->addItem(signalName); // Список сигналов
+        ui->comboBoxMainSignal->addItem(signalName); // Основной сигнал
+        ui->comboBoxBaseSignal->addItem(signalName); // Базовый сигнал
+        ui->comboBoxSupportSignal->addItem(signalName); // Опорный сигнал
     }
     ui->listWidgetSignals->setCurrentRow(0);
 }
@@ -91,7 +107,8 @@ void CalculationTemplateWindow::setSignalsName(QListWidget const& listSignals){
 void CalculationTemplateWindow::removeWindow(){
     if (ui->listWidgetSequenceOfWindows->count() == 0) return;
     calcTemplate_.removeWindow(ui->listWidgetSequenceOfWindows->currentRow());
-    updateSequenceOfWindows();
+    updateSequenceOfWindows(); // Обновить последовательность окон
+    checkSelectedSignals(); // Проверить выбранные сигналы
 }
 
 // Сохранить шаблон
@@ -142,7 +159,10 @@ void CalculationTemplateWindow::setResultPath(){
 
 // Проверка применимость шаблона к загруженным данным
 void CalculationTemplateWindow::checkApplicability(){
-    if (calcTemplate_.isEmpty() || ui->listWidgetSignals->currentRow() < 0 || ui->lineEditResultPath->text().isEmpty()){
+    bool isBaseEmpty = false;
+    if ( ui->comboBoxBaseSignal->isEnabled() && ui->comboBoxBaseSignal->currentText().isEmpty() ) // Проверка наличия базового сигнала
+        isBaseEmpty = true;
+    if ( calcTemplate_.isEmpty() || ui->listWidgetSignals->currentRow() < 0 || ui->lineEditResultPath->text().isEmpty() || isBaseEmpty){
         ui->pushButtonApply->setEnabled(false);
         return;
     }
@@ -160,6 +180,22 @@ void CalculationTemplateWindow::checkCreatingFinished(int index){
     }
 }
 
+// Проверка выбранных сигналов
+void CalculationTemplateWindow::checkSelectedSignals(){
+    if (ui->tabWidget->currentIndex() != 2) return;
+    // Основной сигнал
+    bool isMainSignal = false;
+    if ( calcTemplate_.contains("AssociatedStatisticsWindow") )
+        isMainSignal = true;
+    ui->comboBoxMainSignal->setEnabled(isMainSignal);
+    // Базовый и опорный сигналы
+    bool isEnableLevels = false;
+    if ( calcTemplate_.contains("LevelsWindow") )
+        isEnableLevels = true;
+    ui->comboBoxBaseSignal->setEnabled(isEnableLevels);
+    ui->comboBoxSupportSignal->setEnabled(isEnableLevels);
+}
+
 // Подготовка данных для применения шаблона
 void CalculationTemplateWindow::wrapApplyingTemplate() {
     emit this->finished(Code::StartedApplying); // Сигнал о начале применения шаблона
@@ -168,5 +204,8 @@ void CalculationTemplateWindow::wrapApplyingTemplate() {
     int k = 0;
     for (QListWidgetItem * item : selectedItems)
         iSelectedSignals[k++] = ui->listWidgetSignals->row(item);
-    emit this->apply(iSelectedSignals);
+    int iMainSignal = ui->comboBoxMainSignal->isEnabled() ? ui->comboBoxMainSignal->currentIndex() : -1; // Основной сигнал
+    int iBaseSignal = ui->comboBoxBaseSignal->isEnabled() ? ui->comboBoxBaseSignal->currentIndex() : -1; // Базовый сигнал
+    int iSupportSignal = ui->comboBoxSupportSignal->isEnabled() ? ui->comboBoxSupportSignal->currentIndex() : -1; // Опорный сигнал
+    emit this->apply(iSelectedSignals, iMainSignal, iBaseSignal, iSupportSignal);
 }

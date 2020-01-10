@@ -17,8 +17,13 @@ void MainWindow::addSignal(int shiftRead){
         if (indFile == 1) // Выставление релевантного пути по первому файлу
             lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
         // Добавление сигнала в контейнеры
-        exitStatus = statSignal_.addSignal(DataSignal(lastPath_, fileName, shiftRead)); // Расчет статистик + пополнение вектора сигналов
-        if (exitStatus == 0){ // При успешном добавлении в контейнер
+        DataSignal currentSignal;
+        exitStatus += currentSignal.readDataFile(lastPath_, fileName, shiftRead); // Чтение сигнала из файла
+         // Расчет статистик + пополнение вектора сигналов
+        if (exitStatus == 0)
+            exitStatus += statSignal_.addSignal(currentSignal);
+        // При успешном добавлении в контейнер
+        if (exitStatus == 0){
             QListWidgetItem * item = new QListWidgetItem(infoName.baseName()); // Занесение в список имени без расширения
             int randColorInd = QRandomGenerator::global()->bounded(colorList_.size()); // Случайный цвет из контейнера цветов
             item->setData(Qt::DecorationRole, colorList_[randColorInd]); // Задание цвета для сигнала
@@ -82,13 +87,14 @@ void MainWindow::saveCalcualtion(){
     if (exitStatus == 0)
         statusBar()->showMessage("Результаты сохранены");
     if ( exitStatus != 0 || !calcTemplate_.isRecord() ) return;
-    calcTemplate_.addWindow("Statistics");
+    calcTemplate_.addWindow("StatisticsWindow");
 }
 
 // Сохранить разбиения по уровням
 void MainWindow::saveLevels(){
     if (ui->listFile->count() == 0) return; // Проверка на пустоту списка
     levelsWindow_->setSignalsName(*ui->listFile);
+    levelsWindow_->setLastPath(lastPath_);
     levelsWindow_->setEstimationBoundaries(statSignal_.getEstimationBoundaries());
     levelsWindow_->show(); // Отображение диалогового окна
 }

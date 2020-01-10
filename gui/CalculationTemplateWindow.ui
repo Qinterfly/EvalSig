@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
-    <height>402</height>
+    <width>321</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabCreate">
       <attribute name="title">
@@ -350,6 +350,52 @@
              <number>-1</number>
             </property>
            </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="layoutAddSignals">
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelMainSignal">
+              <property name="text">
+               <string>Основной: </string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBoxMainSignal">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelBaseSignal">
+              <property name="text">
+               <string>Базовый: </string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBoxBaseSignal">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="comboBoxSupportSignal">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="labelSupprotSignal">
+              <property name="text">
+               <string>Опорный: </string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

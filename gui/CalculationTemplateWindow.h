@@ -20,7 +20,7 @@ public:
     ~CalculationTemplateWindow();
     QString const& lastPath() const { return lastPath_; }
 signals:
-    void apply(QVector<int> iSelectedSignals); // Применение шаблона к выбранным сигналам
+    void apply(QVector<int> iSelectedSignals, int iMainSignal, int iBaseSignal, int iSupportSignal); // Применение шаблона к выбранным сигналам
 public slots:
     void updateSequenceOfWindows(); // Обновить последовательность окон
     void setLastPath(QString const& lastPath); // Установка пути по умолчанию
@@ -32,6 +32,7 @@ private slots:
     void load(); // Загрузить шаблон
     void setResultPath(); // Установка пути для сохранения результатов
     void checkApplicability(); // Проверка применимость шаблона к загруженным данным
+    void checkSelectedSignals(); // Проверка выбранных сигналов
     void checkCreatingFinished(int index); // Проверка завершения создания шаблона
     void wrapApplyingTemplate(); // Подготовка данных для применения шаблона
 private:

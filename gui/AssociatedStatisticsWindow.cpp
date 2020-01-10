@@ -4,10 +4,13 @@
 
 // ---- Интерфейс относительных статистик ----------------------------------------------------------------------
 
+static QString const& WINDOW_NAME = "AssociatedStatisticsWindow";
+
 // Конструктор
-AssociatedStatisticsWindow::AssociatedStatisticsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
+AssociatedStatisticsWindow::AssociatedStatisticsWindow(CalculationTemplate & calcTemplate, QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AssociatedStatisticsWindow),
+    calcTemplate_(calcTemplate),
     vecDataSignal_(vecDataSignal)
 {
     ui->setupUi(this);
@@ -25,6 +28,17 @@ AssociatedStatisticsWindow::AssociatedStatisticsWindow(QVector<DataSignal> const
 AssociatedStatisticsWindow::~AssociatedStatisticsWindow()
 {
     delete ui;
+}
+
+// Применить расчетный шаблон
+void AssociatedStatisticsWindow::applyCalculationTemplate(int mainIndex){
+    if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
+    ui->comboBoxIndMainSignal->setCurrentIndex(mainIndex); // Выбор основоного сигнала
+    setParamsBoundaries(); // Выставление границ параметров окна
+    WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
+    ui->spinBoxWidthWindow->setValue(windowData["widthWindow"].toInt()); // Ширина окна
+    ui->spinBoxShiftMainWindow->setValue(windowData["shiftMainWindow"].toInt()); // Смещение главного окна
+    ui->spinBoxShiftCompareWindow->setValue(windowData["shiftCompareWindow"].toInt()); // Смещение окна для сравнения
 }
 
 // Установка пути по умолчанию
@@ -84,21 +98,29 @@ void AssociatedStatisticsWindow::refreshNumberOfWindows(){
 }
 
 // Сохранение статистик
-void AssociatedStatisticsWindow::save(){
+void AssociatedStatisticsWindow::save(bool isUserCalc){
     int exitStatus = 0; // Статус завершения
     // Диалог с пользователем для выбора директории для сохранения
-    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
-    // Проверка корректности выбора
-    if (saveDir.isEmpty()) return;
-    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    if (isUserCalc){
+        QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+        // Проверка корректности выбора
+        if (saveDir.isEmpty()) return;
+        lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    }
     // Создание и расчет статистик
     AssociatedStatistics statistics(vecDataSignal_, ui->spinBoxWidthWindow->value(),  ui->spinBoxShiftMainWindow->value(),
                                     ui->spinBoxShiftCompareWindow->value(), ui->comboBoxIndMainSignal->currentIndex());
     exitStatus += statistics.computeStatistics(); // Полный расчет
     // Сохранение всех статистик
     exitStatus += statistics.writeAllStatistics(lastPath_);
-    if (!exitStatus) emit this->accepted();
+    if (!exitStatus && isUserCalc) emit this->accepted();
     this->hide(); // Скрытие окна
+    // Заполнение расчетного шаблона
+    if ( exitStatus != 0 || !calcTemplate_.isRecord() || !isUserCalc ) return;
+    // Данные
+    calcTemplate_.addWindowData(WINDOW_NAME, "widthWindow", ui->spinBoxWidthWindow->value()); // Ширина окна
+    calcTemplate_.addWindowData(WINDOW_NAME, "shiftMainWindow", ui->spinBoxShiftMainWindow->value()); // Смещение главного окна
+    calcTemplate_.addWindowData(WINDOW_NAME, "shiftCompareWindow", ui->spinBoxShiftCompareWindow->value()); // Смещение окна для сравнения
 }
 
 // -------------------------------------------------------------------------------------------------------------
