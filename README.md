@@ -8,12 +8,14 @@ Firstly several sensor signals are preprocessed. According to features of measur
 - Integration;
 - FFT with overlapping windows. The mean moving filter can be applied to average it. Also, the different window functions are available to choose (Hamming, Hann, Blackman); 
 - Band pass filter.
+
 Then each time signal can be divided into several levels by means of overlapping windows in accordance with its values. After that, the parts of the time signal which are belonged to the same level are united with each other based on their values and first derivatives. The aforementioned procedure is repeated for each downloaded signal. Finally, the following statistics between the levels which are belonged to the same signal are calculated:
 - Angle;
 - Distance;
 - Similarity;
 - Noise;
-- Regression.     
+- Regression.
+     
 In addition to that analysis it is possible to find a linkage between the levels from the different time signals. 
 
 ## Features
