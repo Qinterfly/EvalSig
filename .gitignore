@@ -7,5 +7,4 @@ profile/
 test/save
 *.txt
 *.xls
-*.png
 EvalSig.pro.*
