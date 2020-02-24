@@ -57,7 +57,7 @@ HEADERS += \
         core/Statistics.h \
         core/Macroses.h \
         gui/AssociatedStatisticsWindow.h \
-    gui/CalculationTemplateWindow.h \
+        gui/CalculationTemplateWindow.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         gui/QCPColorCurve.h \
@@ -75,7 +75,7 @@ FORMS += \
     gui/AssociatedStatisticsWindow.ui \
     gui/CalculationTemplateWindow.ui \
     gui/LevelsWindow.ui \
-        gui/MainWindow.ui \
+    gui/MainWindow.ui \
     gui/SignalCharacteristicsWindow.ui
 
 # Default rules for deployment.
