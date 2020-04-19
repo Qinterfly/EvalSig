@@ -35,10 +35,12 @@ void MainWindow::initializeCalculationParams(){
 void MainWindow::initializeShowParams(){
     setShowParams(); // Номер окна для показа
     // Список цветов
-    colorList_.reserve(20); // Выделение буффера на predefined colors
-    colorList_ << Qt::black << Qt::red << Qt::darkRed << Qt::green << Qt::darkGreen << Qt::blue;
-    colorList_ << Qt::darkBlue << Qt::cyan << Qt::darkCyan << Qt::magenta << Qt::darkMagenta;
-    colorList_ << Qt::yellow << Qt::darkYellow << Qt::darkGray;
+    colorList_.reserve(9); // Выделение буффера на predefined colors
+    colorList_ << Qt::red << Qt::green << Qt::blue  << Qt::magenta << QColor(255, 165, 0);
+    colorList_ << Qt::black << QColor(165, 42, 42) << Qt::yellow << Qt::gray;
+    // Маска доступных цветов (true == доступен)
+    availableColors_.resize(colorList_.size());
+    availableColors_.fill(true);
     // Установка фильтра событий
         // Для главного окна
     this->installEventFilter(this);

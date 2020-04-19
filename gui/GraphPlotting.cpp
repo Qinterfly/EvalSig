@@ -52,8 +52,8 @@ void MainWindow::replotGraph(int plotInd){
         ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
     }
     // Выставление пределов
-    ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->rescaleValueAxis(false);
-    plotEstimationBoundaries(); // Построение графиков расчетных границ
+    ui->comparePlot->rescaleAxes(false); // Масшатбирование границ на осях
+    plotEstimationBoundaries(false); // Построение графиков расчетных границ
     ui->comparePlot->replot(); // Обновление окна построения
 }
 
@@ -65,6 +65,9 @@ void MainWindow::plotEstimationBoundaries(bool isReplot){
     double leftBound = statSignal_.getEstimationBoundaries().first; // Левая граница
     double rightBound = statSignal_.getEstimationBoundaries().second; // Правая граница
         // По Y
+    ui->comparePlot->graph(0)->data()->clear(); // Очистка данных вспомогательных линий
+    ui->comparePlot->graph(1)->data()->clear();
+    ui->comparePlot->rescaleAxes(false); // Масшатбирование границ на осях
     QCPRange const& tYRange = ui->comparePlot->yAxis->range();
     double minY = tYRange.lower;
     double maxY = tYRange.upper;

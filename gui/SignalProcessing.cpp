@@ -25,8 +25,14 @@ void MainWindow::addSignal(int shiftRead){
         // При успешном добавлении в контейнер
         if (exitStatus == 0){
             QListWidgetItem * item = new QListWidgetItem(infoName.baseName()); // Занесение в список имени без расширения
-            int randColorInd = QRandomGenerator::global()->bounded(colorList_.size()); // Случайный цвет из контейнера цветов
-            item->setData(Qt::DecorationRole, colorList_[randColorInd]); // Задание цвета для сигнала
+            // Получение доступно цвета для графика
+            QColor colorGraph = Qt::darkGray;
+            int iColor = availableColors_.indexOf(true);
+            if ( iColor != -1 ){
+                colorGraph = colorList_[iColor];
+                availableColors_[iColor] = false;
+            }
+            item->setData(Qt::DecorationRole, colorGraph); // Задание цвета для сигнала
             ui->listFile->insertItem(ui->listFile->count(), item); // Запись элемента в список
             ui->comboBoxRegression->insertItem(ui->listFile->count(), item->text()); // Запись элемента в список регрессии
             setStatEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Правка расчетных границ
@@ -57,6 +63,8 @@ void MainWindow::removeSignal(bool isReplot){
         return;
     if (statSignal_.removeSignal(deleteInd) == 0){ // Если удаление прошло успешно
         statusBar()->showMessage("Сигнал " + ui->listFile->item(deleteInd)->text() + " успешно удален"); // Вывод сообщения в statusBar
+        int iColor = colorList_.indexOf( ui->listFile->item(deleteInd)->data(Qt::DecorationRole).value<QColor>() );
+        if (iColor != -1) availableColors_[iColor] = true; // Делаем цвет вновь доступным для выбора
         ui->listFile->takeItem(deleteInd); // Удаляем элемент из списка
         ui->comboBoxRegression->removeItem(deleteInd); // Удаляем элемент из списка регрессии
         setStatEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Правка расчетных границ

@@ -107,6 +107,7 @@ private:
     // Отображение
     int showWindow_; // Номер временного окна для показа
     QVector<QColor> colorList_; // Список цветов для отображения
+    QVector<bool> availableColors_; // Вектор доступных цветов для выбора
     QLabel * calcStatusLabel; // Информация о расчете в statusBar
     int const SECONDARY_PLOT_IND = 2; // Число вспомогательных графиков
     QCPColorScale * colorScaleRegression_; // Цветовая карта регрессии
