@@ -388,6 +388,7 @@
     <addaction name="actionAddShiftSignal"/>
     <addaction name="actionRemoveSignal"/>
     <addaction name="actionSaveSignal"/>
+    <addaction name="actionFilterSignals"/>
    </widget>
    <widget class="QMenu" name="calculation">
     <property name="title">
@@ -496,6 +497,7 @@
    <addaction name="actionAddSignal"/>
    <addaction name="actionRemoveSignal"/>
    <addaction name="actionSaveSignal"/>
+   <addaction name="actionFilterSignals"/>
   </widget>
   <widget class="QDockWidget" name="dockFileWidget">
    <property name="sizePolicy">
@@ -1487,6 +1489,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionFilterSignals">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/funnel.png</normaloff>:/images/icons/funnel.png</iconset>
+   </property>
+   <property name="text">
+    <string>Фильтрация сигналов</string>
+   </property>
+   <property name="toolTip">
+    <string>Фильтрация сигналов</string>
+   </property>
+   <property name="statusTip">
+    <string>Фильтрация сигналов</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

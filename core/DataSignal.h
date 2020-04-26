@@ -8,6 +8,7 @@
 #include "PropertyDataSignal.h"
 
 enum NormalizeOption{ FIRST, MEAN }; // Опции нормировки
+enum ExtremaOption{ MIN, MAX }; // Опции отыскания экстремума
 
 class DataSignal {
 public:
@@ -34,7 +35,8 @@ public:
     QVector<double> getData(int leftInd, int rightInd) const { return data_.mid(leftInd, rightInd - leftInd + 1); } // Получение среза сигнала
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
-    double convertCountToTime(int count) const { return count * 1.0e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
+    double convertCountToTime(int count) const { return count * 1e-6 * property.scanPeriod_; } // Перевести номер отсчета в время
+    double timeDuration() const { return convertCountToTime(size()); } // Длительность записи в секундах
     double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-2 / 2.0; } // Частота Найквиста
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName, int shift = 0); // Чтение файла с данными
@@ -68,5 +70,8 @@ double meanVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
 // Нормализация вектора
 void normalizeVec(QVector<double> & vec, NormalizeOption option, int leftInd = 0, int rightInd = -1);
+
+// Поиск сигнала с минимальной-максимальной длительности записи
+int minOrMaxByLength(QVector<DataSignal> const & vecDataSignal, ExtremaOption opt);
 
 #endif // DATASIGNAL_H

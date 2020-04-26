@@ -27,6 +27,7 @@ SOURCES += \
         core/Statistics.cpp \
         gui/AssociatedStatisticsWindow.cpp \
         gui/CalculationTemplateWindow.cpp \
+    gui/FilterSignalsWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
         gui/QCPColorCurve.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
         core/Macroses.h \
         gui/AssociatedStatisticsWindow.h \
         gui/CalculationTemplateWindow.h \
+    gui/FilterSignalsWindow.h \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         gui/QCPColorCurve.h \
@@ -74,6 +76,7 @@ HEADERS += \
 FORMS += \
     gui/AssociatedStatisticsWindow.ui \
     gui/CalculationTemplateWindow.ui \
+    gui/FilterSignalsWindow.ui \
     gui/LevelsWindow.ui \
     gui/MainWindow.ui \
     gui/SignalCharacteristicsWindow.ui

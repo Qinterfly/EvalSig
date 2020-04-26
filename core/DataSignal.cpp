@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <functional>
 #include "DataSignal.h"
 
 // ---- Временной сигнал ---------------------------------------------------------------------------------------
@@ -214,5 +215,25 @@ void normalizeVec(QVector<double> & vec, NormalizeOption option, int leftInd, in
         vec[i] -= zeroLineVal;
 }
 
+// Поиск сигнала с минимальной-максимальной длительности записи
+int minOrMaxByLength(QVector<DataSignal> const & vecDataSignal, ExtremaOption opt){
+    std::function<bool(double, double)> cmp;
+    if (opt == ExtremaOption::MAX)
+        cmp = [](double a, double b){ return a > b; };
+    else
+        cmp = [](double a, double b){ return a < b; };
+    int ind = 0;
+    int limSize = vecDataSignal[0].size();
+    int nSignals = vecDataSignal.size();
+    int tSize = 0;
+    for (int i = 1; i != nSignals; ++i){
+        tSize = vecDataSignal[i].size();
+        if ( cmp(tSize, limSize) ){
+            ind = i;
+            limSize = tSize;
+        }
+    }
+    return ind;
+}
 // -------------------------------------------------------------------------------------------------------------
 

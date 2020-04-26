@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     levelsWindow_ = new LevelsWindow(calcTemplate_, vecDataSignal_, this);
     associatedStatisticsWindow_ = new AssociatedStatisticsWindow(calcTemplate_, vecDataSignal_, this);
     calcTemplateWindow_ = new CalculationTemplateWindow(calcTemplate_, vecDataSignal_, this);
+    filterSignalsWindow_ = new FilterSignalsWindow(vecDataSignal_, this);
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
     initializeSignalPropertyList(); // Инициализация листа со свойствами сигнала
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAddSignal, SIGNAL(triggered()), this, SLOT(addSignal())); // Добавить сигнал
     connect(ui->actionRemoveSignal, SIGNAL(triggered()), this, SLOT(removeSignal())); // Удалить сигнал
     connect(ui->actionSaveSignal, SIGNAL(triggered()), this, SLOT(saveSignalCharacteristics())); // Сохранить сигнал
+    connect(ui->actionFilterSignals, SIGNAL(triggered()), this, SLOT(filterSignals())); // Фильтрация сигналов
     connect(ui->actionSaveCalculation, SIGNAL(triggered()), this, SLOT(saveCalcualtion())); // Сохранить результаты расчета
     connect(ui->actionSaveLevels, SIGNAL(triggered()), this, SLOT(saveLevels())); // Сохранить разбиения по уровням
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(setSignalProperty()), Qt::QueuedConnection); // Установка свойств сигнала

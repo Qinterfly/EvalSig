@@ -3,8 +3,6 @@
 
 // ---- Работа с графиками ---------------------------------------------------------------------------------------
 
-static const double TIME_PHYS_MULT = 1e-2; // Коэффциент перевода времени в секунды
-
 // Добавить график
 void MainWindow::addGraph(bool isReplot){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
@@ -21,11 +19,12 @@ void MainWindow::addGraph(bool isReplot){
     bool onlyEnlarge = false; // Опция одностороннего расширения пределов построения
     if (plotInd != 0) onlyEnlarge = true; // В случае multiPlot, подстраиваем под предельные значения
     ui->comparePlot->xAxis2->setVisible(true); // Отображаем дополнительную ось всегда
+    int indOfLongestSignal = minOrMaxByLength(vecDataSignal_, ExtremaOption::MAX);
     if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
-        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[indOfLongestSignal].nyquistFrequency());
         ui->comparePlot->xAxis2->setLabel("Частоты, Гц");
     } else {
-        ui->comparePlot->xAxis2->setRange(0, TIME_PHYS_MULT * vecDataSignal_[plotInd].getProperty().scanPeriod_);
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[indOfLongestSignal].timeDuration());
         ui->comparePlot->xAxis2->setLabel("Время, с");
     }
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
@@ -53,11 +52,12 @@ void MainWindow::replotGraph(int plotInd){
         XCompare[i] = i + 1;
     ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
     ui->comparePlot->xAxis2->setVisible(true); // Отображаем дополнительную ось всегда
+    int indOfLongestSignal = minOrMaxByLength(vecDataSignal_, ExtremaOption::MAX);
     if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
-        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[indOfLongestSignal].nyquistFrequency());
         ui->comparePlot->xAxis2->setLabel("Частоты, Гц");
     } else {
-        ui->comparePlot->xAxis2->setRange(0, TIME_PHYS_MULT * vecDataSignal_[plotInd].getProperty().scanPeriod_);
+        ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[indOfLongestSignal].timeDuration());
         ui->comparePlot->xAxis2->setLabel("Время, с");
     }
     // Выставление пределов

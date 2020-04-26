@@ -157,4 +157,11 @@ void MainWindow::changeCalculationTemplate(){
     calcTemplateWindow_->show();
 }
 
+// Фильтрация сигналов
+void MainWindow::filterSignals(){
+    if ( vecDataSignal_.isEmpty() ) return;
+    filterSignalsWindow_->setSignalsName(*ui->listFile); // Передача имен сигналов
+    filterSignalsWindow_->show(); // Отобразить окно фильтрации сигналов
+}
+
 // -----------------------------------------------------------------------------------------------------------------------

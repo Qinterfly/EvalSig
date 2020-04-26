@@ -9,6 +9,7 @@
 #include "gui/AssociatedStatisticsWindow.h"
 #include "core/CalculationTemplate.h"
 #include "gui/CalculationTemplateWindow.h"
+#include "gui/FilterSignalsWindow.h"
 
 enum ColorMapType { STATS, SPECTRUM, GROUP }; // Тип цветовой карты
 
@@ -35,6 +36,7 @@ public slots:
     void saveScreenshot(); // Сохранить скриншот программы
     void saveAssociatedStatistics(); // Сохранить относительные статистики
     void changeCalculationTemplate(); // Изменить расчетный шаблон
+    void filterSignals(); // Фильтрация сигналов
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
     void setColor(int row, int column); // Установка цвета сигнала
@@ -99,6 +101,7 @@ private:
     LevelsWindow * levelsWindow_; // Окно сохранение разбиения по уровням
     AssociatedStatisticsWindow * associatedStatisticsWindow_; // Окно относительных статистик
     CalculationTemplateWindow * calcTemplateWindow_; // Окно построения расчетного шаблона
+    FilterSignalsWindow * filterSignalsWindow_; // Окно фильтрации сигналов
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна
