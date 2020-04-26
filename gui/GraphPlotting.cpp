@@ -3,6 +3,8 @@
 
 // ---- Работа с графиками ---------------------------------------------------------------------------------------
 
+static const double TIME_PHYS_MULT = 1e-2; // Коэффциент перевода времени в секунды
+
 // Добавить график
 void MainWindow::addGraph(bool isReplot){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
@@ -18,9 +20,13 @@ void MainWindow::addGraph(bool isReplot){
     ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
     bool onlyEnlarge = false; // Опция одностороннего расширения пределов построения
     if (plotInd != 0) onlyEnlarge = true; // В случае multiPlot, подстраиваем под предельные значения
+    ui->comparePlot->xAxis2->setVisible(true); // Отображаем дополнительную ось всегда
     if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
-        ui->comparePlot->xAxis2->setVisible(true); //
         ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+        ui->comparePlot->xAxis2->setLabel("Частоты, Гц");
+    } else {
+        ui->comparePlot->xAxis2->setRange(0, TIME_PHYS_MULT * vecDataSignal_[plotInd].getProperty().scanPeriod_);
+        ui->comparePlot->xAxis2->setLabel("Время, с");
     }
     ui->comparePlot->rescaleAxes(onlyEnlarge); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
@@ -31,11 +37,10 @@ void MainWindow::addGraph(bool isReplot){
 void MainWindow::removeGraph(int deleteInd){
     clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     ui->comparePlot->removeGraph(SECONDARY_PLOT_IND + deleteInd); // Удаление графика
-    bool isExistSpectrum = false; // Флаг наличия графиков спектров
-    for (auto const& dataSignal : vecDataSignal_) // Проверка существования спектров в наборе графиков
-        if ( dataSignal.isSpectrum() ) { isExistSpectrum = true; break; }
-    if (!isExistSpectrum) // В случае, если спектров не осталось, скрываем частоты
+    if ( vecDataSignal_.isEmpty() ){ // В случае, если сигналов не осталось
         ui->comparePlot->xAxis2->setVisible(false);
+        ui->comparePlot->xAxis2->setRange(ui->comparePlot->xAxis->range()); // Приравнивание диапазонов осей абсцисс
+    }
     ui->comparePlot->rescaleAxes(false); // Масштабирование осей
     plotEstimationBoundaries(); // Построение графиков расчетных границ
 }
@@ -47,9 +52,13 @@ void MainWindow::replotGraph(int plotInd){
     for (int i = 0; i != YCompare.size(); ++i)
         XCompare[i] = i + 1;
     ui->comparePlot->graph(SECONDARY_PLOT_IND + plotInd)->setData(XCompare, YCompare, true); // Передача отсортированных данных
+    ui->comparePlot->xAxis2->setVisible(true); // Отображаем дополнительную ось всегда
     if ( vecDataSignal_[plotInd].isSpectrum() ){ // В случае, если сигнал спектр, отображаем частоты
-        ui->comparePlot->xAxis2->setVisible(true); //
         ui->comparePlot->xAxis2->setRange(0, vecDataSignal_[plotInd].nyquistFrequency());
+        ui->comparePlot->xAxis2->setLabel("Частоты, Гц");
+    } else {
+        ui->comparePlot->xAxis2->setRange(0, TIME_PHYS_MULT * vecDataSignal_[plotInd].getProperty().scanPeriod_);
+        ui->comparePlot->xAxis2->setLabel("Время, с");
     }
     // Выставление пределов
     ui->comparePlot->rescaleAxes(false); // Масшатбирование границ на осях

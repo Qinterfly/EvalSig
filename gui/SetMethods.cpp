@@ -191,6 +191,7 @@ void MainWindow::changeDataSignal(int row, int column){
         int tVal = item->text().toInt();
         if ( qAbs(tVal) == 0.0 ) return; // Запрет нулевого периода опроса
         vecDataSignal_[currentSignalInd].setScanPeriod(tVal);
+        replotGraph(currentSignalInd);  // Обновление графика
         break;
     }
     // Характеристика
