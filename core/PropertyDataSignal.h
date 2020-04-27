@@ -15,7 +15,7 @@ struct PropertyDataSignal {  // Контейнер для свойств
     QString sensorType_;     // Тип датчика
     double physicalFactor_;  // Физический коэффициент
     QString measureUnit_;    // Единица измерения
-    int scanPeriod_;         // Период опроса датчика
+    double scanPeriod_;         // Период опроса датчика
     QString characteristic_; // Характеристика
     int nCount_ = 0;         // Количество отсчетов
     bool isSpectrum = false; // Флаг спектра

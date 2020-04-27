@@ -66,6 +66,13 @@ void MainWindow::replotGraph(int plotInd){
     ui->comparePlot->replot(); // Обновление окна построения
 }
 
+// Обновление всех графиков
+void MainWindow::replotAllGraphs(){
+    int nSignals = vecDataSignal_.size();
+    for (int i = 0; i != nSignals; ++i)
+        replotGraph(i);
+}
+
 // Построение графиков расчетных границ
 void MainWindow::plotEstimationBoundaries(bool isReplot){
     if (ui->comparePlot->graphCount() == SECONDARY_PLOT_IND) return; // При отсутствии сигналов не отображать

@@ -60,6 +60,7 @@ public slots:
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
     void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
+    void filtrationFinished(); // Фильтрация сигналов завершена
     // Справка
     void aboutProgram(); // Информация о программе
 protected:
@@ -80,6 +81,7 @@ private:
     void addGraph(bool isReplot = false); // Добавление графика
     void removeGraph(int deleteInd); // Удаление графика
     void replotGraph(int); // Обновление графика
+    void replotAllGraphs(); // Обновление всех графиков
     void plotEstimationBoundaries(bool isReplot = false); // Построение расчетных границ
     void clearDataEstimationsBoundaries(); // Очистка данных графиков расчетных границ
     // Работа с цветовыми картами

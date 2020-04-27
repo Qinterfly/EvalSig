@@ -202,6 +202,15 @@ void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
     // Пересчет
 void Statistics::recalculate(){ fullCompute(); }
 
+    // Пересчет с проверкой
+void Statistics::checkAndRecalculate(){
+    minSizeSignals_ = calcMinSizeSignals(); // Получение новой минимальной длины сигналов
+    checkEstimationBoundaries();            // Проверка расчетных границ
+    windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Пересчет параметров окна
+    fullCompute();     // Полный пересчет
+    calcAllMetrics();  // Расчет всех метрик
+}
+
 // Выделение памяти для полей структуры
     // При расширении объекта
 template<typename T>

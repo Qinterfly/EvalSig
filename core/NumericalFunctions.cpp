@@ -141,48 +141,53 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
 }
 
 // Линейная интерполяция сигнала
-DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint){
+DataSignal interpolateLinear(DataSignal const& dataSignal, int nDivPoints, bool isInner){
     int nDataSignal = dataSignal.size(); // Длина сигнала
-    if (nDataSignal == nPoint) return dataSignal; // Обработка необходимости интерполяции
+    int nResPoints = nDivPoints; // Результирующее число точек
+    if ( isInner ) nResPoints = nDivPoints * (nDataSignal - 1) + nDataSignal; // По внутренним точкам
+    if (nDataSignal == nResPoints) return dataSignal; // Обработка необходимости интерполяции
     // Формирование новой расчетной сетки
-    QVector<double> xData(nPoint), yData(nPoint);
-    double stepXData = (nDataSignal - 1) / double(nPoint - 1);
-    for (int i = 0; i != nPoint; ++i)
+    QVector<double> xData(nResPoints), yData(nResPoints);
+    double stepXData = (nDataSignal - 1) / double(nResPoints - 1);
+    if ( isInner ) stepXData =  double(nDataSignal - 1) / (nDataSignal - 1) / (nDivPoints + 1); // Шаг с учетом внутренних точек
+    for (int i = 0; i != nResPoints; ++i)
         xData[i] = 1 + i * stepXData;
     /* Будем пользоваться тем, что переданный сигнал сформирован на равномерной сетке
     с шагом в 1. В этом случае индекс начала отрезка интерполяции может быть найден без прохода
     по соответсвующей сетке. */
     int leftInd = 0, rightInd; // Индекс начала и конца отрезка интерполяции
     // Проводим интерполяции всех точек отрезка, за исключением границ
-    for (int i = 1; i != nPoint - 1; ++i){
+    for (int i = 1; i != nResPoints - 1; ++i){
         leftInd = qFloor(xData[i]) - 1;
         rightInd = leftInd + 1;
         yData[i] = (dataSignal[rightInd] - dataSignal[leftInd]) * (xData[i] - rightInd) + dataSignal[leftInd];
     }
     // Копируем начало и конец отрезка
     yData[0] = dataSignal[0];
-    yData[nPoint - 1] = dataSignal[nDataSignal - 1];
-    return DataSignal(yData, dataSignal.getProperty());
+    yData[nResPoints - 1] = dataSignal[nDataSignal - 1];
+    // Меняем частоту дискретизации
+    PropertyDataSignal property = dataSignal.getProperty();
+    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+    return DataSignal(yData, property);
 }
 
-// Интерполяция сплайном
-DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nResPoints){
+// Интерполяция сплайном по общему числу точек
+DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nDivPoints, bool isInner){
     int nDataSignal = dataSignal.size(); // Длина сигнала
+    int nResPoints = nDivPoints; // Результирующее число точек
+    if ( isInner ) nResPoints = nDivPoints * (nDataSignal - 1) + nDataSignal; // По внутренним точкам
     if (nDataSignal == nResPoints) return dataSignal;
-    Eigen::RowVectorXd time(nDataSignal), signal(nDataSignal); // Выделяем память с запасом под исходные и конечные вектора
-    // Заполнение исходных векторов
-    double timeStep = (inputBounds.second - inputBounds.first) / (nDataSignal - 1);
-    for (int i = 0; i != nDataSignal; ++i){
-        time[i] = inputBounds.first + i * timeStep;
-        signal[i] = dataSignal[i];
-    }
-    Spline spline(time, signal); // Вычисление сплайна
+    Spline spline = getInterpolationSpline(dataSignal, inputBounds); // Вычисление сплайна
     // Заполнение результирующих векторов
     QVector<double> resData(nResPoints);
-    timeStep = (inputBounds.second - inputBounds.first) / (nResPoints - 1); // Шаг по времени по результирующей сетке
+    double timeStep = (inputBounds.second - inputBounds.first) / (nResPoints - 1); // Шаг по времени по результирующей сетке
+    if ( isInner ) timeStep =  (inputBounds.second - inputBounds.first) / (nDataSignal - 1) / (nDivPoints + 1); // Шаг с учетом внутренних точек
     for (int i = 0; i != nResPoints; ++i)
         resData[i] = spline(inputBounds.first + i * timeStep);
-    return DataSignal(resData, dataSignal.getProperty());
+    // Меняем частоту дискретизации
+    PropertyDataSignal property = dataSignal.getProperty();
+    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+    return DataSignal(resData, property);
 }
 
 // Нахождение оконных весовых коэффициентов
@@ -389,6 +394,52 @@ DataSignal movingAverageFilter(DataSignal const& dataSignal, int windowWidth){
     // Проход по полным окнам
     for (int i = windowWidth; i != nDataSignal; ++i)
         resData[i] = resData[i - 1] + (dataSignal[i] - dataSignal[i - windowWidth]) / windowWidth;
+    return DataSignal(resData, dataSignal.getProperty());
+}
+
+// Исключение выбросов из сигнала
+DataSignal excludeOutliers(DataSignal const& dataSignal, double limDiff){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    if ( limDiff == 0.0 || nDataSignal < 3 ) return dataSignal;
+    QVector<double> resData(nDataSignal); // Результирующие значения сигнала
+    // Коррекция центральных значений
+    double diff;
+    for (int i = 1; i != nDataSignal - 1; ++i){
+        diff = abs(dataSignal[i] - dataSignal[i - 1]);
+        if ( diff >= limDiff )
+            resData[i] = (dataSignal[i + 1] + dataSignal[i - 1]) / 2.0;
+        else
+            resData[i] = dataSignal[i];
+    }
+    // Вставка концевых значений
+    resData[0] = dataSignal[0];
+    resData[nDataSignal - 1] = dataSignal[nDataSignal - 1];
+    return DataSignal(resData, dataSignal.getProperty());
+}
+
+// Получение интерполяционного сплайна
+Spline getInterpolationSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    Eigen::RowVectorXd time(nDataSignal), signal(nDataSignal); // Выделяем память с запасом под исходные и конечные вектора
+    // Заполнение исходных векторов
+    double timeStep = (inputBounds.second - inputBounds.first) / (nDataSignal - 1);
+    for (int i = 0; i != nDataSignal; ++i){
+        time[i] = inputBounds.first + i * timeStep;
+        signal[i] = dataSignal[i];
+    }
+    return Spline(time, signal); // Вычисление сплайна
+}
+
+// Срез сигнала по времени
+DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    int leftInd = dataSignal.convertTimeToCount(leftTimeBound); // Левая индексная граница
+    int rightInd = dataSignal.convertTimeToCount(rightTimeBound); // Правая индексная граница
+    int nResPoints = rightInd - leftInd + 1; // Результирующее число точек
+    if (nDataSignal == nResPoints) return dataSignal;
+    QVector<double> resData(nResPoints); // Результирующий сигнал
+    for (int i = leftInd; i <= rightInd; ++i)
+        resData[i - leftInd] = dataSignal[i];
     return DataSignal(resData, dataSignal.getProperty());
 }
 

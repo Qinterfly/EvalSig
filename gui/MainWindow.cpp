@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(associatedStatisticsWindow_, SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
     connect(calcTemplateWindow_, SIGNAL(finished(int)), this, SLOT(calculationTemplateProcessed(int))); // Сохранение расчетного шаблона
     connect(calcTemplateWindow_, SIGNAL(apply(QVector<int>, int, int, int)), this, SLOT(applyCalculationTemplate(QVector<int>, int, int, int))); // Применение расчетного шаблона
+    connect(filterSignalsWindow_, SIGNAL(accepted()), this, SLOT(filtrationFinished())); // Фильтрация сигналов завершена
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAboutProgram, SIGNAL(triggered()), this, SLOT(aboutProgram()));

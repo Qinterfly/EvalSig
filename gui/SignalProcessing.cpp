@@ -152,6 +152,7 @@ void MainWindow::saveAssociatedStatistics(){
 // Изменить расчетный шаблон
 void MainWindow::changeCalculationTemplate(){
     calcTemplate_.setStatParams(statSignal_.getEstimationBoundaries(), widthTimeWindow_, shiftWindow_);
+    calcTemplateWindow_->setLastPath(lastPath_); // Передача последнего пути, выбранного пользователем
     calcTemplateWindow_->setSignalsName(*ui->listFile); // Передача имен сигналов
     calcTemplateWindow_->updateSequenceOfWindows(); // Обновление последовательности окон
     calcTemplateWindow_->show();
@@ -160,6 +161,7 @@ void MainWindow::changeCalculationTemplate(){
 // Фильтрация сигналов
 void MainWindow::filterSignals(){
     if ( vecDataSignal_.isEmpty() ) return;
+    filterSignalsWindow_->setLastPath(lastPath_); // Передача последнего пути, выбранного пользователем
     filterSignalsWindow_->setSignalsName(*ui->listFile); // Передача имен сигналов
     filterSignalsWindow_->show(); // Отобразить окно фильтрации сигналов
 }

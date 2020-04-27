@@ -4,9 +4,10 @@
 #include "core/DivisionDataSignal.h"
 #include "core/AssociatedStatistics.h"
 
+static QString const testPath = "/home/qinterfly/Library/Projects/SignalProcessing/EvalSig/test/";
+
 // Проверка временных сигналов
 void testDataSignal(){
-   QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
    DataSignal obj1(testPath, "ОП 182 1с ку.txt");
    DataSignal obj2(testPath, "ОП 182 2с ку.txt");
    DataSignal obj3(testPath, "Short1.txt", 10);
@@ -26,7 +27,6 @@ void testDataSignal(){
 // Проверка статистических характеристик
 void testStatistics() {
     int volume = 12;
-    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     // Создание по готовым сигналам
     DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
     DataSignal obj2(testPath, "Short2.txt"); // Длина == 200
@@ -61,7 +61,7 @@ void testStatistics() {
     stat.setWindowProperty(2048, 2048);
     stat.setWindowProperty(10, 1);
     // Сохранение статистик
-    Q_ASSERT(!stat.writeAllStatistics("/home/qinterfly/Library/SignalProcessing/EvalSig/test/save/"));
+    Q_ASSERT(!stat.writeAllStatistics(testPath + "save/"));
     // Удаление сигналов
     stat.removeSignal(4);
     stat.removeSignal(3);
@@ -73,7 +73,6 @@ void testStatistics() {
 
 // Проверка численных методов
 void testNumericalFunctions(){
-    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
     // Фильтрация
     DataSignal filt = bandpassFilter(obj1, HAMMING, 64, 0.5, {10, 20});
@@ -88,17 +87,25 @@ void testNumericalFunctions(){
     DataSignal approxObj = approximateSmoothSpline(obj1, 1e-4);
     Q_ASSERT(!approxObj.writeDataFile(testPath, "approxObj.txt"));
     // Линейная интерполяция
-    DataSignal linInterpObj = interpolateLinear(obj1, 400);
+    DataSignal linInterpObj = interpolateLinear(obj1, 400, false);
     Q_ASSERT(!linInterpObj.writeDataFile(testPath, "interpLinObj.txt"));
-    // Сплайн-интерполяция
-    DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000);
+    // Линейная интерполяция по внутреннему числу точек
+    DataSignal linInnerInterpObj = interpolateLinear(obj1, 100, true);
+    Q_ASSERT(!linInnerInterpObj.writeDataFile(testPath, "interpInnerLinObj.txt"));
+    // Сплайн-интерполяция по общему числу точек
+    DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000, false);
     Q_ASSERT(!splineInterpObj.writeDataFile(testPath, "interpSplineObj.txt"));
+    // Сплайн-интерполяция по внутреннему числу точек
+    DataSignal splineInnerInterpObj = interpolateSpline(obj1, {1, 200}, 48, true);
+    Q_ASSERT(!splineInnerInterpObj.writeDataFile(testPath, "interpInnerSplineObj.txt"));
+    // Исключение выбросов
+    DataSignal exclOut = excludeOutliers(obj1, 0.17);
+    Q_ASSERT(!exclOut.writeDataFile(testPath, "exclOutObj.txt"));
 }
 
 // Проверка разбиения сигнала на уровни
 void testDivisionDataSignal(){
     // #1
-    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     DataSignal obj1(testPath, "Short2.txt"); // Длина == 200
     DataSignal dispObj1 = integrate(obj1, 2, 0.5)[1]; // Нахождение перемещений по сигналу ускорения
     // Нормализация данных
@@ -130,7 +137,6 @@ void testDivisionDataSignal(){
 // Проверка неизменяемых статистических характеристик
 void testAssociatedStatistics() {
     int volume = 12;
-    QString testPath = "/home/qinterfly/Library/SignalProcessing/EvalSig/test/";
     // Создание по готовым сигналам
     DataSignal obj1(testPath, "Short1.txt"); // Длина == 200
     DataSignal obj2(testPath, "Short2.txt"); // Длина == 200

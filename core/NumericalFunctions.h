@@ -15,16 +15,19 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
     // Интегрирование
 QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, double smoothFactor); // Интегрирование
     // Интерполяция
-DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint); // Линейная интерполяция сигнала
-DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nResPoints); // Интерполяция сплайном
+DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint, bool isInner = false); // Линейная интерполяция сигнала
+DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nDivPoints, bool isInner = false); // Интерполяция сплайном
     // Вычисление плотности спектральной мощности
 DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunction windowFun, int widthWindow, double overlapFactor,
                                        int lengthSpectrum, int windowSmoothWidth); // Вычисление спектральной мощности сигнала
     // Фильтрация
 DataSignal bandpassFilter(DataSignal const& dataSignal, WindowFunction windowFun, int widthWindow, double overlapFactor, QPair<double, double> const& freqSegment); // Фильтрация сигнала по частотам
 DataSignal movingAverageFilter(DataSignal const& dataSignal, int windowLength); // Фильтрация сигнала скользящим средним
+DataSignal excludeOutliers(DataSignal const& dataSignal, double limDiff); // Исключение выбросов из сигнала
     // Корректировка
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала
+    // Срез
+DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound); // Срез сигнала по времени
 
 // Вспомогательные
 int previousPow2(int number); // Ближайшая предыдущая степень двойки
@@ -45,5 +48,6 @@ private:
     const long order_; // Порядок сплайна
     Spline1d spline_; // Сплайн
 };
+Spline getInterpolationSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds); // Получение интерполяционного сплайна
 
 #endif // SIGNALPROCESSING_H

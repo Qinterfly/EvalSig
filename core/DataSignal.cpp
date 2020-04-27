@@ -89,7 +89,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName, int s
     property.sensorType_ = inputStream.readLine();                // Тип датчика
     property.physicalFactor_ = inputStream.readLine().toDouble(); // Физический коэффициент
     property.measureUnit_ = inputStream.readLine();               // Единица измерения
-    property.scanPeriod_ = inputStream.readLine().toInt();        // Период опроса датчика
+    property.scanPeriod_ = inputStream.readLine().toDouble();        // Период опроса датчика
     property.characteristic_ = inputStream.readLine();            // Характеристика
     property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
     property.isSpectrum = property.fileName_.contains("Спектр") || property.characteristic_.contains("Спектр");  // Является ли сигнал спектром       

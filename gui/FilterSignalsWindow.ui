@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>451</height>
+    <width>343</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="font">
@@ -236,12 +236,12 @@
           </property>
           <item>
            <property name="text">
-            <string>Сплайн</string>
+            <string>Линейная</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Линейная</string>
+            <string>Сплайн</string>
            </property>
           </item>
          </widget>
@@ -265,9 +265,9 @@
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="layoutFilter">
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="spacerFilter">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -280,7 +280,10 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="buttonFilter">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Выполнить</string>
        </property>
