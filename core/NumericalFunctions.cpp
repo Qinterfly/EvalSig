@@ -443,6 +443,18 @@ DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, doubl
     return DataSignal(resData, dataSignal.getProperty());
 }
 
+// Линейный фильтр
+DataSignal linearFilter(DataSignal const& dataSignal){
+    int nDataSignal = dataSignal.size(); // Длина сигнала
+    double deltaX = nDataSignal - 1; // Коэффициент по X
+    double y0 = dataSignal[0]; // Начальное значение ординаты
+    double deltaY = dataSignal[nDataSignal - 1] - y0; // Коэффициент по Y
+    QVector<double> resData(nDataSignal);
+    for (int i = 0; i != nDataSignal; ++i)
+        resData[i] = dataSignal[i] - deltaY / deltaX * i + y0;
+    return DataSignal(resData, dataSignal.getProperty());
+}
+
 // ---- Вспомогательные ----------------------------------------------------------------------------------------
 
 // Ближайшая предыдущая степень двойки

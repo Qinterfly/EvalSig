@@ -243,6 +243,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
 
 // Применение расчетного шаблона
 void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals, int iMainSignal, int iBaseSignal, int iSupportSignal){
+    int exitStatus = 0;
     // Применение параметров расчета статистик
     ui->spinBoxTimeWidth->setValue(calcTemplate_.widthWindow()); // Ширина окна
     ui->spinBoxShiftWindow->setValue(calcTemplate_.shiftWindow()); // Смещение окна
@@ -305,7 +306,7 @@ void MainWindow::applyCalculationTemplate(QVector<int> iSelectedSignals, int iMa
             progress.setLabelText("Статистические коэффициенты...");
             progress.setValue(iStepCalc++);
             qApp->processEvents();
-            int exitStatus = statSignal_.writeAllStatistics(path); // Запись статистик
+            exitStatus += statSignal_.writeAllStatistics(path); // Запись статистик
             exitStatus += statSignal_.writeAllMetrics(path, "Метрики сигналов"); // Запись метрик сигналов
         }
         // Относительные статистики

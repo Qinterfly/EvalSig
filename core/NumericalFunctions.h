@@ -24,6 +24,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunct
 DataSignal bandpassFilter(DataSignal const& dataSignal, WindowFunction windowFun, int widthWindow, double overlapFactor, QPair<double, double> const& freqSegment); // Фильтрация сигнала по частотам
 DataSignal movingAverageFilter(DataSignal const& dataSignal, int windowLength); // Фильтрация сигнала скользящим средним
 DataSignal excludeOutliers(DataSignal const& dataSignal, double limDiff); // Исключение выбросов из сигнала
+DataSignal linearFilter(DataSignal const& dataSignal); // Линейный фильтр
     // Корректировка
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала
     // Срез

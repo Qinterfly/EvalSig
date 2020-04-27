@@ -5,6 +5,8 @@
 #include <QListWidget>
 #include "core/DataSignal.h"
 
+enum InterpolationType { LINEAR, SPLINE }; // Метод интерполяции
+
 namespace Ui {
 class FilterSignalsWindow;
 }
@@ -23,9 +25,10 @@ private:
     void setTimeLimits(); // Задание временных границ
     void showEvent(QShowEvent * event) override; // При отображении виджета
 private slots:
-    void checkStatePerform(); // Проверка возможности расчета
+    void checkStateFilter(); // Проверка возможности расчета
     void checkTimeBoundaries(); // Проверка временных границ
     void filterSignals(); // Фильтрация сигналов
+    void setOutlierState(); // Установка состояние выбора предельного значения выбросов
 private:
     Ui::FilterSignalsWindow *ui;
     QVector<DataSignal> & vecDataSignal_; // Вектор с исходными сигналами

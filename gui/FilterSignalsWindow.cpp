@@ -13,10 +13,11 @@ FilterSignalsWindow::FilterSignalsWindow(QVector<DataSignal> & vecDataSignal, QW
 {
     ui->setupUi(this);
     // Создание соединений сигнал - слот
-    connect(ui->listSignals, SIGNAL(itemSelectionChanged()), this, SLOT(checkStatePerform()), Qt::QueuedConnection); // Проверка возможности расчета
+    connect(ui->listSignals, SIGNAL(itemSelectionChanged()), this, SLOT(checkStateFilter()), Qt::QueuedConnection); // Проверка возможности расчета
     connect(ui->spinBoxLeftTimeBoundary, SIGNAL(editingFinished()), this, SLOT(checkTimeBoundaries())); // Проверка левой временной границы
     connect(ui->spinBoxRightTimeBoundary, SIGNAL(editingFinished()), this, SLOT(checkTimeBoundaries())); // Проверка правой временной границы
     connect(ui->buttonFilter, SIGNAL(clicked()), this, SLOT(filterSignals())); // Фильтрация сигналов
+    connect(ui->checkBoxOutlier, SIGNAL(stateChanged(int)), this, SLOT(setOutlierState())); // Установка состояние выбора предельного значения выбросов
 }
 
 // Деструктор
@@ -57,7 +58,7 @@ void FilterSignalsWindow::showEvent(QShowEvent * event){
 }
 
 // Проверка возможности расчета
-void FilterSignalsWindow::checkStatePerform(){
+void FilterSignalsWindow::checkStateFilter(){
     if ( !ui->listSignals->selectedItems().isEmpty() )
         ui->buttonFilter->setEnabled(true);
     else
@@ -75,12 +76,24 @@ void FilterSignalsWindow::checkTimeBoundaries(){
     }
 }
 
+// Установка состояние выбора предельного значения выбросов
+void FilterSignalsWindow::setOutlierState(){
+    ui->spinBoxOutlier->setEnabled(ui->checkBoxOutlier->isChecked());
+}
+
 // Фильтрация сигналов
 void FilterSignalsWindow::filterSignals(){
     // Параметры фильтрации
         // Временные границы
     double leftTimeBoundary = ui->spinBoxLeftTimeBoundary->value();
     double rightTimeBoundary = ui->spinBoxRightTimeBoundary->value();
+        // Исключение выбросов
+    bool isExcludeOutliers = ui->checkBoxOutlier->isChecked();
+    double limOutlier = ui->spinBoxOutlier->value();
+        // Линейный фильтр
+    bool isLinearFilter = ui->checkBoxLinearFilter->isChecked();
+        // Интерполяция
+    int nInnerPoints = ui->spinBoxInnerIntervals->value() - 1;
     // Последовательная обработка выбранных сигналов
     QModelIndexList const& selectedIndexes = ui->listSignals->selectionModel()->selectedIndexes();
     int nSelected = selectedIndexes.size(); // Число выбранных сигналов
@@ -89,7 +102,22 @@ void FilterSignalsWindow::filterSignals(){
         iSignal = selectedIndexes[i].row();
         // Срез сигнала по времени
         vecDataSignal_[iSignal] = sliceByTime(vecDataSignal_[iSignal], leftTimeBoundary, rightTimeBoundary);
+        // Исключение выбросов
+        if (isExcludeOutliers)
+            vecDataSignal_[iSignal] = excludeOutliers(vecDataSignal_[iSignal], limOutlier);
+        // Линейный фильтр
+        if (isLinearFilter)
+            vecDataSignal_[iSignal] = linearFilter(vecDataSignal_[iSignal]);
+        // Интерполяция
+        switch ( ui->comboBoxInterpolationType->currentIndex() ){
+        case InterpolationType::LINEAR:
+            vecDataSignal_[iSignal] = interpolateLinear(vecDataSignal_[iSignal], nInnerPoints, true);
+            break;
+        case InterpolationType::SPLINE:
+            vecDataSignal_[iSignal] = interpolateSpline(vecDataSignal_[iSignal], {0, vecDataSignal_[iSignal].timeDuration()} , nInnerPoints, true);
+            break;
+        }
     }
-    accepted(); // Сигнал завершения фильтрации
+    emit accepted(); // Сигнал завершения фильтрации
     hide(); // Скрытие окна
 }
