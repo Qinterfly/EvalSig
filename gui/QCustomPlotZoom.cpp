@@ -18,6 +18,7 @@ QCustomPlotZoom::~QCustomPlotZoom()
 // При нажатии кнопки мыши
 void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
 {
+    showCoordTag(event); // Отображение курсорной подсказки
     // Выделение области
     if (event->button() == Qt::LeftButton)
     {
@@ -38,7 +39,6 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
         isZoomed_ = false; // Сброс флага масштабированного изображения
         replot(); // Обновление графика
     }
-    showCoordTag(event); // Отображение курсорной подсказки
     QCustomPlot::mousePressEvent(event);
 }
 

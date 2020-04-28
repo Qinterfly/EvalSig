@@ -96,10 +96,12 @@ void FilterSignalsWindow::filterSignals(){
     int nInnerPoints = ui->spinBoxInnerIntervals->value() - 1;
     // Последовательная обработка выбранных сигналов
     QModelIndexList const& selectedIndexes = ui->listSignals->selectionModel()->selectedIndexes();
+    QString saveFileName; // Сохранненое имя файла
     int nSelected = selectedIndexes.size(); // Число выбранных сигналов
     int iSignal = -1; // Индекс выбранного сигнала
     for (int i = 0; i != nSelected; ++i){
         iSignal = selectedIndexes[i].row();
+        saveFileName = vecDataSignal_[iSignal].getName();
         // Срез сигнала по времени
         vecDataSignal_[iSignal] = sliceByTime(vecDataSignal_[iSignal], leftTimeBoundary, rightTimeBoundary);
         // Исключение выбросов
@@ -117,6 +119,7 @@ void FilterSignalsWindow::filterSignals(){
             vecDataSignal_[iSignal] = interpolateSpline(vecDataSignal_[iSignal], {0, vecDataSignal_[iSignal].timeDuration()} , nInnerPoints, true);
             break;
         }
+        vecDataSignal_[iSignal].setFileName(saveFileName); // Назначаем имя файла
     }
     emit accepted(); // Сигнал завершения фильтрации
     hide(); // Скрытие окна
