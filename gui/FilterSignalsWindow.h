@@ -1,6 +1,7 @@
 #ifndef FILTERSIGNALSWINDOW_H
 #define FILTERSIGNALSWINDOW_H
 
+#include <set>
 #include <QDialog>
 #include <QListWidget>
 #include "core/DataSignal.h"
@@ -29,10 +30,13 @@ private slots:
     void checkTimeBoundaries(); // Проверка временных границ
     void filterSignals(); // Фильтрация сигналов
     void setOutlierState(); // Установка состояние выбора предельного значения выбросов
+    void setScanPeriod(int newVal); // Установить период опроса
 private:
     Ui::FilterSignalsWindow *ui;
     QVector<DataSignal> & vecDataSignal_; // Вектор с исходными сигналами
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
+    std::set<int> availableScanPeriods_; // Набор доступных для выбора периодов опроса
+    int lastScanPeriod_; // Последний Период опроса
 };
 
 

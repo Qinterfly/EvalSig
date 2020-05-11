@@ -36,7 +36,7 @@ public:
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
     double convertCountToTime(int count) const { return count * TIME_PHYS_MULT * property.scanPeriod_; } // Перевести номер отсчета в время
-    int convertTimeToCount(double time) const { return time <= timeDuration() ? time / property.scanPeriod_ / TIME_PHYS_MULT : size() - 1; } // Перевести время в номер отсчета
+    int convertTimeToCount(double time) const { return time < timeDuration() ? time / property.scanPeriod_ / TIME_PHYS_MULT : size() - 1; } // Перевести время в номер отсчета
     double timeDuration() const { return convertCountToTime(size()); } // Длительность записи в секундах
     double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-2 / 2.0; } // Частота Найквиста
     // Файловые методы
@@ -56,7 +56,8 @@ public:
 private:
     PropertyDataSignal property; // Свойства сигнала
     QVector<double> data_;       // Временной сигнал
-    double const TIME_PHYS_MULT = 1.0e-6; // Физический множитель времени
+public:
+    static double const TIME_PHYS_MULT; // Физический множитель времени
 };
 
 // Вспомогательные функции

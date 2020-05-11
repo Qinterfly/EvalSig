@@ -118,7 +118,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         double sum = 0; // Сумма всех элементов до i-1 -го включительно (по образу)
         // Суммирование
         for (int i = 0; i != nDataSignal; ++i){
-            sum += dataImage[i];
+            sum += dataImage[i] / nDataSignal;
             resYData[i] = sum;
         }
         // Корректировка
@@ -444,14 +444,26 @@ DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, doubl
 }
 
 // Линейный фильтр
-DataSignal linearFilter(DataSignal const& dataSignal){
+DataSignal linearFilter(DataSignal const& dataSignal, int leftMeanNumber, int rightMeanNumber){
     int nDataSignal = dataSignal.size(); // Длина сигнала
-    double deltaX = nDataSignal - 1; // Коэффициент по X
-    double y0 = dataSignal[0]; // Начальное значение ординаты
-    double deltaY = dataSignal[nDataSignal - 1] - y0; // Коэффициент по Y
+    // Находим осреднение слева
+    double leftMeanVal = 0;
+    for (int i = 0; i != leftMeanNumber; ++i)
+        leftMeanVal += dataSignal[i];
+    leftMeanVal /= leftMeanNumber;
+    // Находим осреднение справа
+    double rightMeanVal = 0;
+    for (int i = 0; i != rightMeanNumber; ++i)
+        rightMeanVal += dataSignal[nDataSignal - i - 1];
+    rightMeanVal /= rightMeanNumber;
+    // Строим прямую
+    double x1 = leftMeanNumber / 2;
+    double x2 = nDataSignal - 1 - rightMeanNumber / 2;
+    double deltaX = x2 - x1; // Коэффициент по X
+    double deltaY = rightMeanVal - leftMeanVal; // Коэффициент по Y
     QVector<double> resData(nDataSignal);
     for (int i = 0; i != nDataSignal; ++i)
-        resData[i] = dataSignal[i] - deltaY / deltaX * i + y0;
+        resData[i] = dataSignal[i] - deltaY / deltaX * (i - x1) - leftMeanVal;
     return DataSignal(resData, dataSignal.getProperty());
 }
 
@@ -466,6 +478,24 @@ int previousPow2(int number){
         ++pow2; // Приращение искомой степени
     }
     return pow2;
+}
+
+// Поиск всех делителей
+std::set<int> findDivisors(int number, int upperLim){
+    if (number <= 0) return std::set<int>();
+    if (upperLim == -1) upperLim = number;
+    std::set<int> res;
+    int sqrRoot = (int) qSqrt(number) + 1;
+    int nIter = qMin(sqrRoot, upperLim);
+    int k = 0;
+    for (int i = 1; i != nIter; ++i){
+        if ( number % i == 0 ){
+            res.insert(i);
+            k = number / i;
+            if ( k <= upperLim ) res.insert(k);
+        }
+    }
+    return res;
 }
 
 // Вектор с nPoint равномерно распределенных значений [leftBound, rightBound]

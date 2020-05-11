@@ -25,8 +25,8 @@ public:
     void setTruncatePercent (double truncatePercent);                   // Задание процента усечения коротких фрагментов
     void setDepthGluing(double depthGluing);                            // Задание процента глубины склейки правой границы
     // Справочные методы
-    int numberOfLevels() const { return nLevels_; } // Получить число уровней
-    bool isEmpty() const { return nLevels_ == 0; }  // Проверка на пустоту
+    int numberOfLevels() const { return nLevels_; }    // Получить число уровней
+    bool isEmpty() const { return nLevels_ == 0; }     // Проверка на пустоту
     DataSignal getSupport() const { return support_; } // Получить опорный сигнал
     DataSignal getApproxSupport() const { return approxSupport_; } // Получить аппроксимированный опорный сигнал
     // Файловые методы

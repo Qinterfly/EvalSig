@@ -144,13 +144,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLabel" name="labelOutlierMeasure">
-          <property name="text">
-           <string>(м / c2)</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -159,6 +152,51 @@
          <widget class="QCheckBox" name="checkBoxLinearFilter">
           <property name="text">
            <string>Линейный</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxLeftLinearBoundary">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100000</number>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxRightLinearBoundary">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100000</number>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <number>100</number>
           </property>
          </widget>
         </item>
@@ -172,13 +210,19 @@
      <property name="title">
       <string>Интерполяция</string>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <layout class="QHBoxLayout" name="layoutNumberInnerIntervals">
         <item>
          <widget class="QLabel" name="labelNumberInnerIntervals">
           <property name="text">
-           <string>Число межточечных интервалов: </string>
+           <string>Период опроса сигнала: </string>
           </property>
          </widget>
         </item>
@@ -196,15 +240,18 @@
          </spacer>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBoxInnerIntervals">
+         <widget class="QSpinBox" name="spinBoxScanPeriod">
           <property name="minimum">
            <number>1</number>
           </property>
           <property name="maximum">
-           <number>10000</number>
+           <number>100000</number>
           </property>
           <property name="stepType">
            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <number>1</number>
           </property>
          </widget>
         </item>

@@ -6,6 +6,8 @@
 
 // ---- Временной сигнал ---------------------------------------------------------------------------------------
 
+double const DataSignal::TIME_PHYS_MULT = 1e-6; // Физический множитель времени
+
 // Конструктор от пути и имени файла
 DataSignal::DataSignal(QString const& path, QString const& fileName, int shift){ readDataFile(path, fileName, shift); }
 DataSignal::DataSignal(QVector<double> const& someData, PropertyDataSignal const& someProperty):
@@ -89,7 +91,7 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName, int s
     property.sensorType_ = inputStream.readLine();                // Тип датчика
     property.physicalFactor_ = inputStream.readLine().toDouble(); // Физический коэффициент
     property.measureUnit_ = inputStream.readLine();               // Единица измерения
-    property.scanPeriod_ = inputStream.readLine().toDouble();        // Период опроса датчика
+    property.scanPeriod_ = inputStream.readLine().toInt();        // Период опроса датчика
     property.characteristic_ = inputStream.readLine();            // Характеристика
     property.nCount_ = inputStream.readLine().toInt();            // Количество отсчетов
     property.isSpectrum = property.fileName_.contains("Спектр") || property.characteristic_.contains("Спектр");  // Является ли сигнал спектром       

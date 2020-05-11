@@ -207,6 +207,7 @@ void Statistics::checkAndRecalculate(){
     minSizeSignals_ = calcMinSizeSignals(); // Получение новой минимальной длины сигналов
     checkEstimationBoundaries();            // Проверка расчетных границ
     windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Пересчет параметров окна
+    allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute();     // Полный пересчет
     calcAllMetrics();  // Расчет всех метрик
 }
