@@ -124,7 +124,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         double sum = 0; // Сумма всех элементов до i-1 -го включительно (по образу)
         // Суммирование
         for (int i = 0; i != nDataSignal; ++i){
-            sum += dataImage[i];
+            sum += dataImage[i] / nDataSignal;
             resYData[i] = sum;
         }
         // Корректировка
