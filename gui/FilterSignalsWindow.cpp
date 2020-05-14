@@ -155,7 +155,7 @@ void FilterSignalsWindow::filterSignals(){
                 vecDataSignal_[iSignal] = interpolateLinear(vecDataSignal_[iSignal], nPoints, false);
                 break;
             case InterpolationType::SPLINE:
-                vecDataSignal_[iSignal] = interpolateSpline(vecDataSignal_[iSignal], {0, vecDataSignal_[iSignal].timeDuration()} , nPoints, false);
+                vecDataSignal_[iSignal] = approximateSmoothSpline(vecDataSignal_[iSignal], 1.0, nPoints);
                 break;
             }
         }

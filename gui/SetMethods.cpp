@@ -101,6 +101,11 @@ void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidge
 void MainWindow::setStatEstimationBoundaries(){
     // Получение новых границ расчета
     int newLeftBound = ui->spinBoxLeftEstimationBoundary->value(), newRightBound = ui->spinBoxRightEstimationBoundary->value();
+    // Задание максимальной правой границы
+    if ( newRightBound < 1 ){
+        newRightBound = !statSignal_.isEmpty() ? statSignal_.maxSizeSignals() : ui->spinBoxRightEstimationBoundary->maximum();
+        ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
+    }
     // Проверка допустимости новых значений
     if (newLeftBound >= newRightBound){ // Левая граница превышает или равна правой
         std::swap(newLeftBound, newRightBound);
@@ -116,6 +121,9 @@ void MainWindow::setStatEstimationBoundaries(){
     setBoundariesShowParams(); // Выставление граничных значений параметров
     plotEstimationBoundaries(true); // Построение граничных линий
     updateStatusBar(); // Обновление информационной строки
+    // Отображение временных границ в подсказках
+    ui->spinBoxLeftEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(newLeftBound)) + " c");
+    ui->spinBoxRightEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(newRightBound)) + " c");
 }
 
     // Статистики -> поля
@@ -133,6 +141,9 @@ void MainWindow::setStatEstimationBoundaries(QPair<int, int> const& estimationBo
     setBoundariesShowParams(); // Выставление граничных значений параметров
     plotEstimationBoundaries(true); // Построение граничных линий
     updateStatusBar(); // Обновление информационной строки
+    // Отображение временных границ в подсказках
+    ui->spinBoxLeftEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(newLeftBound)) + " c");
+    ui->spinBoxRightEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(newRightBound)) + " c");
 }
 
 // Изменение параметров сигнала

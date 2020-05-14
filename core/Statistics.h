@@ -16,10 +16,10 @@ public:
     int size() const { return nSize_; } // Текущий размер матрицы статистик
     bool isEmpty() const { return !size(); } // Проверка на пустоту
     int minSizeSignals() const { return minSizeSignals_; } // Минимальная длина сигнала из группы
+    int maxSizeSignals() const { return calcMaxSizeSignals(); }; // Максимальная длина сигнала из группы
     int getNumberOfWindows() const { return windowProperty.nWindows_; } // Получить число временных окон (без учета среднего)
     QPair<int, int> const& getEstimationBoundaries() const { return estimationBoundaries_; } // Получение границ расчета
     void recalculate(); // Пересчет
-    void checkAndRecalculate(); // Пересчет с проверкой
         // Статистические характеристики
     ArrayRegressionParams const& getRegressionParams() const { return regressionParams_; } // Получение регрессионных параметров
     ArrayStatCharacters const& getDistanceScatter() const { return distanceScatter_; }     // Получение дистанций рассеяния
@@ -35,7 +35,7 @@ public:
     int addSignal(DataSignal const& dataSignal); // Добавление сигнала
     int removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
-    void setEstimationBoundaries(int leftBound, int rightBound); // Выставление расчетных границ
+    void setEstimationBoundaries(int leftBound, int rightBound, bool isNeedCheck = false); // Выставление расчетных границ
     int writeAllStatistics(QString const& dirName) const; // Сохранение всех статистик
     int writeSignalList(QString const& path, QString const& fileName) const; // Запись списка сигналов
     int writeAllMetrics(QString const& dirName, QString const& fileName) const; // Сохранение метрик по всем сигналам
@@ -51,7 +51,9 @@ private:
     // Методы проверки
     void checkEstimationBoundaries(); // Проверка корректности расчетных границ
     // Расчет статистических характеристик
+    int calcExtSizeSignals(std::function<bool(int, int)> compare) const; // Нахождение экстремального размера сигнала из группы
     int calcMinSizeSignals() const; // Получение минимальной длины сигнала
+    int calcMaxSizeSignals() const; // Получение максимальной длины сигнала
     void fullCompute(); // Полный расчет характеристик
     void partialCompute(); // Частичный расчет характеристик
         // Тело цикла пересчета для дистанций, амплитуд и регрессионных параметров

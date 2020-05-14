@@ -29,7 +29,7 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
         xData.resize(nPoint);
         yData.resize(nPoint);
         // Новая координатная сетка
-        double stepXData = (nDataSignal - 1.0) / double(nPoint - 1);
+        double stepXData = (nDataSignal - 1.0) / double(nPoint - 1.0);
         for (int i = 0; i != nPoint; ++i)
             xData[i] = 1 + i * stepXData;
     }
@@ -38,7 +38,10 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
     QVector<double> resYData(nPoint);
     for (int i = 0; i != nPoint; ++i)
         resYData[i] = yData[i];
-    return DataSignal(resYData, dataSignal.getProperty());
+    // Меняем частоту дискретизации
+    PropertyDataSignal property = dataSignal.getProperty();
+    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+    return DataSignal(resYData, property);
 }
 
 // Аппроксимация по методу наименьших квадратов
@@ -90,7 +93,10 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
             tVal += XVec[s] * qPow(xData[i], s);
         yData[i] = tVal;
     }
-    return DataSignal(yData, dataSignal.getProperty());
+    // Меняем частоту дискретизации
+    PropertyDataSignal property = dataSignal.getProperty();
+    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+    return DataSignal(yData, property);
 }
 
 // Интегрирование сигнала
@@ -118,7 +124,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         double sum = 0; // Сумма всех элементов до i-1 -го включительно (по образу)
         // Суммирование
         for (int i = 0; i != nDataSignal; ++i){
-            sum += dataImage[i] / nDataSignal;
+            sum += dataImage[i];
             resYData[i] = sum;
         }
         // Корректировка
@@ -176,7 +182,7 @@ DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double>
     int nDataSignal = dataSignal.size(); // Длина сигнала
     int nResPoints = nDivPoints; // Результирующее число точек
     if ( isInner ) nResPoints = nDivPoints * (nDataSignal - 1) + nDataSignal; // По внутренним точкам
-    if (nDataSignal == nResPoints) return dataSignal;
+    if ( nDataSignal == nResPoints || nResPoints == 0 ) return dataSignal;
     Spline spline = getInterpolationSpline(dataSignal, inputBounds); // Вычисление сплайна
     // Заполнение результирующих векторов
     QVector<double> resData(nResPoints);
@@ -509,7 +515,7 @@ QVector<double> linspace(double leftBound, double rightBound, int nPoint){
 
 // Интерполяция сплайнами
 Spline::Spline(Eigen::VectorXd const &vecX, Eigen::VectorXd const &vecY) : xMin_(vecX.minCoeff()), xMax_(vecX.maxCoeff()),
-                                                                     order_(std::min<long>(vecX.rows() - 1, 3))
+                                                                           order_(std::min<long>(vecX.rows() - 1, 3))
 {
     long nVec = vecX.size();
     Eigen::VectorXd vecXS(nVec);

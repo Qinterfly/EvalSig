@@ -124,7 +124,7 @@ void QCustomPlotZoom::showCoordTag(QMouseEvent * event){
         QString textTag = QString("(%1, %2)").arg(QString::number(x, 'g', 4)).arg(QString::number(y, 'g', 4));
         cursorPos = QPoint(keyAxis->coordToPixel(x) + SHIFT_TAG_X, yAxis->coordToPixel(y) + SHIFT_TAG_Y);
         cursorPos = mapToGlobal(cursorPos); // Координаты курсора в системе координат экрана
-        QToolTip::showText(cursorPos, textTag);
+        QToolTip::showText(cursorPos, textTag, this, rect(), 1000);
     }
 }
 

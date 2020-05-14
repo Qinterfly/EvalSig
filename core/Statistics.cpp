@@ -188,11 +188,16 @@ void Statistics::setWindowProperty(int widthTimeWindow, int shiftTimeWindow){
 }
 
     // Выставление расчетных границ
-void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
+void Statistics::setEstimationBoundaries(int leftBound, int rightBound, bool isNeedCheck){
     // Проверка необходимости изменения
     if (leftBound == estimationBoundaries_.first && rightBound == estimationBoundaries_.second)
         return;
     estimationBoundaries_ = {leftBound, rightBound}; // Установка границ
+    // Проверка корректности границ
+    if (isNeedCheck){
+        minSizeSignals_ = calcMinSizeSignals(); // Получение новой минимальной длины сигналов
+        checkEstimationBoundaries();            // Проверка расчетных границ
+    }
     windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Расчет новых параметров временного окна
     allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
     fullCompute(); // Полный пересчет
@@ -201,16 +206,6 @@ void Statistics::setEstimationBoundaries(int leftBound, int rightBound){
 
     // Пересчет
 void Statistics::recalculate(){ fullCompute(); }
-
-    // Пересчет с проверкой
-void Statistics::checkAndRecalculate(){
-    minSizeSignals_ = calcMinSizeSignals(); // Получение новой минимальной длины сигналов
-    checkEstimationBoundaries();            // Проверка расчетных границ
-    windowProperty.calcWindowParams(estimationBoundaries_, minSizeSignals_); // Пересчет параметров окна
-    allocateAllFields(0, nSize_); // Выделение памяти для хранения полей
-    fullCompute();     // Полный пересчет
-    calcAllMetrics();  // Расчет всех метрик
-}
 
 // Выделение памяти для полей структуры
     // При расширении объекта
@@ -265,14 +260,22 @@ void Statistics::checkEstimationBoundaries(){
         estimationBoundaries_.second = minSizeSignals_;
 }
 
-// Нахождение минимального размера сигнала из группы
-int Statistics::calcMinSizeSignals() const {
+// Нахождение экстремального размера сигнала из группы
+int Statistics::calcExtSizeSignals(std::function<bool(int, int)> compare) const {
     if (pVecDataSignal->isEmpty()) return 0; // Проверка на пустоту
     QVector<DataSignal>::const_iterator iter = pVecDataSignal->constBegin();
-    int tempMinSize = iter->size(); ++iter;
+    int tempSize = iter->size(); ++iter;
     for ( ; iter != pVecDataSignal->constEnd(); ++iter)
-        if (iter->size() < tempMinSize) tempMinSize = iter->size();
-    return tempMinSize;
+        if ( compare(iter->size(), tempSize) ) tempSize = iter->size();
+    return tempSize;
+}
+ // Получение минимальной длины сигнала
+int Statistics::calcMinSizeSignals() const{
+    return calcExtSizeSignals([](int a, int b){ return a < b; });
+}
+// Получение максимальной длины сигнала
+int Statistics::calcMaxSizeSignals() const{
+   return calcExtSizeSignals([](int a, int b){ return a > b; });
 }
 
 // Полный расчет статистик

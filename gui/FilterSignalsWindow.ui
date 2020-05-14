@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>434</height>
+    <height>437</height>
    </rect>
   </property>
   <property name="font">
@@ -286,12 +286,12 @@
           </property>
           <item>
            <property name="text">
-            <string>Линейная</string>
+            <string>Сплайн</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Сплайн</string>
+            <string>Линейная</string>
            </property>
           </item>
          </widget>

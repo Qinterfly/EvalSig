@@ -42,14 +42,13 @@ void MainWindow::calculationTemplateProcessed(int state){
 
 // Фильтрация сигналов завершена
 void MainWindow::filtrationFinished(){
-    statSignal_.checkAndRecalculate(); // Пересчет статистик
-    setStatEstimationBoundaries();     // Правка расчетных границ
-    replotAllGraphs();                 // Обновление всех графиков
-    plotAllColorMap();                 // Построение цветовых карт
-    setSignalProperty();               // Обновление свойств сигнала
+    statSignal_.setEstimationBoundaries(1, statSignal_.maxSizeSignals(), true); // Пересчет статистик
+    setStatEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Правка расчетных границ для отображения
+    replotAllGraphs();   // Обновление всех графиков
+    plotAllColorMap();   // Построение цветовых карт
+    setSignalProperty(); // Обновление свойств сигнала
     ui->statusBar->showMessage("Фильтрация сигналов завершена");
     lastPath_ = filterSignalsWindow_->lastPath(); // Запись последнего пути
-    setSignalProperty();               // Обновление свойств сигнала
 }
 
 // Информация о программе
