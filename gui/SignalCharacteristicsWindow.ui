@@ -49,7 +49,7 @@
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="spinBoxApproximationSmoothFactor">
         <property name="decimals">
-         <number>6</number>
+         <number>8</number>
         </property>
         <property name="maximum">
          <double>1.000000000000000</double>
