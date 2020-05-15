@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
+    <width>360</width>
     <height>437</height>
    </rect>
   </property>
@@ -27,7 +27,7 @@
      <item>
       <widget class="QLabel" name="labelTimeBoundaries">
        <property name="text">
-        <string>Границы по времени: </string>
+        <string>Границы по времени, c: </string>
        </property>
       </widget>
      </item>
@@ -281,17 +281,20 @@
         </item>
         <item>
          <widget class="QComboBox" name="comboBoxInterpolationType">
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
           <property name="sizeAdjustPolicy">
            <enum>QComboBox::AdjustToContents</enum>
           </property>
           <item>
            <property name="text">
-            <string>Сплайн</string>
+            <string>Линейная</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Линейная</string>
+            <string>Сплайн</string>
            </property>
           </item>
          </widget>

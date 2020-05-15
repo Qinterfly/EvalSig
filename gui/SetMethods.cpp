@@ -203,6 +203,9 @@ void MainWindow::changeDataSignal(int row, int column){
         if ( qAbs(tVal) == 0.0 ) return; // Запрет нулевого периода опроса
         vecDataSignal_[currentSignalInd].setScanPeriod(tVal);
         replotGraph(currentSignalInd);  // Обновление графика
+        // Отображение временных границ в подсказках
+        ui->spinBoxLeftEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(ui->spinBoxLeftEstimationBoundary->value())) + " c");
+        ui->spinBoxRightEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(ui->spinBoxLeftEstimationBoundary->value())) + " c");
         break;
     }
     // Характеристика

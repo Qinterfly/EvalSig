@@ -38,7 +38,7 @@ public:
     double convertCountToTime(int count) const { return count * TIME_PHYS_MULT * property.scanPeriod_; } // Перевести номер отсчета в время
     int convertTimeToCount(double time) const { return time < timeDuration() ? time / property.scanPeriod_ / TIME_PHYS_MULT : size() - 1; } // Перевести время в номер отсчета
     double timeDuration() const { return convertCountToTime(size()); } // Длительность записи в секундах
-    double nyquistFrequency() const { return property.scanPeriod_ * 1.0e-2 / 2.0; } // Частота Найквиста
+    double nyquistFrequency() const { return 1.0 / (2.0 * property.scanPeriod_ * TIME_PHYS_MULT); } // Частота Найквиста
     // Файловые методы
     int readDataFile(QString const& path, QString const& fileName, int shift = 0); // Чтение файла с данными
     int writeDataFile(QString const& path, QString const& fileName, int leftInd = 0, int rightInd = -1) const; // Запись временного сигнала на выбранном участке

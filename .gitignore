@@ -4,7 +4,9 @@ doc/
 release/
 exec/
 profile/
-test/save
+test/input
+test/output
+articles/
 *.txt
 *.xls
 *.m

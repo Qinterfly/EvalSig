@@ -9,7 +9,7 @@
 // ---- Функции обработки временных сигналов -------------------------------------------------------------------
 
 // Аппроксимация сглаживающими сплайнами
-DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint)
+DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint, bool isUpdateScanPeriod)
 {
     // Число точек аппроксимации nPoint:
     // <= 0 -- аппроксимация по длине сигнала nDataSignal
@@ -40,12 +40,13 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
         resYData[i] = yData[i];
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
-    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+    if (isUpdateScanPeriod)
+        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
     return DataSignal(resYData, property);
 }
 
 // Аппроксимация по методу наименьших квадратов
-DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint){
+DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint, bool isUpdateScanPeriod){
     int nDataSignal = dataSignal.size(); // Длина сигнала
     if (nPoint <= 0) nPoint = nDataSignal; // Обработка исключения по числу разбиений
     QVector<double> xData(nDataSignal); // Вектор отсчетов
@@ -95,7 +96,8 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
     }
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
-    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+    if (isUpdateScanPeriod)
+        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
     return DataSignal(yData, property);
 }
 
@@ -124,7 +126,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
         double sum = 0; // Сумма всех элементов до i-1 -го включительно (по образу)
         // Суммирование
         for (int i = 0; i != nDataSignal; ++i){
-            sum += dataImage[i] / nDataSignal;
+            sum += dataImage[i];
             resYData[i] = sum;
         }
         // Корректировка
@@ -147,7 +149,7 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
 }
 
 // Линейная интерполяция сигнала
-DataSignal interpolateLinear(DataSignal const& dataSignal, int nDivPoints, bool isInner){
+DataSignal interpolateLinear(DataSignal const& dataSignal, int nDivPoints, bool isInner, bool isUpdateScanPeriod){
     int nDataSignal = dataSignal.size(); // Длина сигнала
     int nResPoints = nDivPoints; // Результирующее число точек
     if ( isInner ) nResPoints = nDivPoints * (nDataSignal - 1) + nDataSignal; // По внутренним точкам
@@ -171,14 +173,15 @@ DataSignal interpolateLinear(DataSignal const& dataSignal, int nDivPoints, bool 
     // Копируем начало и конец отрезка
     yData[0] = dataSignal[0];
     yData[nResPoints - 1] = dataSignal[nDataSignal - 1];
-    // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
-    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+    // Меняем частоту дискретизации
+    if (isUpdateScanPeriod)
+        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
     return DataSignal(yData, property);
 }
 
 // Интерполяция сплайном по общему числу точек
-DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nDivPoints, bool isInner){
+DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nDivPoints, bool isInner, bool isUpdateScanPeriod){
     int nDataSignal = dataSignal.size(); // Длина сигнала
     int nResPoints = nDivPoints; // Результирующее число точек
     if ( isInner ) nResPoints = nDivPoints * (nDataSignal - 1) + nDataSignal; // По внутренним точкам
@@ -192,7 +195,8 @@ DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double>
         resData[i] = spline(inputBounds.first + i * timeStep);
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
-    property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+    if (isUpdateScanPeriod)
+        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
     return DataSignal(resData, property);
 }
 
@@ -291,7 +295,7 @@ DataSignal computePowerSpectralDensity(DataSignal const& dataSignal, WindowFunct
     tProperty.physicalFactor_ = 1.0 / nWindows; // Безразмерные величины
     tProperty.isSpectrum = true; // Спектр
     tProperty.characteristic_ += " Спектр";
-    DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), lengthSpectrum); // Линейная интерполяция
+    DataSignal powerSignal = interpolateLinear(DataSignal(power, tProperty), lengthSpectrum, false, false); // Линейная интерполяция
     if (windowSmoothWidth != 0) // Пропуск сглаживания при нулевой ширине окна
         powerSignal = movingAverageFilter(powerSignal, windowSmoothWidth); // Сглаживание скользящим средним
     return powerSignal;
