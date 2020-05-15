@@ -82,7 +82,7 @@ void testNumericalFunctions(){
     DataSignal psd = computePowerSpectralDensity(obj1, HAMMING, 64, 0.5, 512, 3);
     Q_ASSERT(!psd.writeDataFile(testOutputPath, "psdObj.txt"));
     // Интегрирование
-    QVector<DataSignal> integrVecObj = integrate(obj1, 1, -1);
+    QVector<DataSignal> integrVecObj = integrateTrapz(obj1, 1, -1);
     Q_ASSERT(!integrVecObj[0].writeDataFile(testOutputPath, "integrObj.txt"));
     // Аппроксимация
     DataSignal approxObj = approximateSmoothSpline(obj1, 1e-4);
@@ -108,7 +108,7 @@ void testNumericalFunctions(){
 void testDivisionDataSignal(){
     // #1
     DataSignal obj1(testInputPath, "Short2.txt"); // Длина == 200
-    DataSignal dispObj1 = integrate(obj1, 2, 0.5)[1]; // Нахождение перемещений по сигналу ускорения
+    DataSignal dispObj1 = integrateTrapz(obj1, 2, 0.5)[1]; // Нахождение перемещений по сигналу ускорения
     // Нормализация данных
     obj1.normalize(FIRST);
     dispObj1.normalize(FIRST);
@@ -122,7 +122,7 @@ void testDivisionDataSignal(){
     Q_ASSERT(!divSignal1.writeApproxSupport(testOutputPath, "approxDispOp182.txt"));
     // #2
     DataSignal obj2(testOutputPath, "ОП 182 1с ку.txt"); // Длина == 30061
-    DataSignal dispObj2 = integrate(obj2, 2, 1e-7)[1]; // Нахождение перемещений по сигналу ускорения
+    DataSignal dispObj2 = integrateTrapz(obj2, 2, 1e-7)[1]; // Нахождение перемещений по сигналу ускорения
     // Нормализация данных
     obj2.normalize(FIRST);
     dispObj2.normalize(FIRST);

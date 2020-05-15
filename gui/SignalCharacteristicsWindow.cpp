@@ -95,7 +95,7 @@ void SignalCharacteristicsWindow::saveCharacteristics(bool isUserCalc){
         // Проверка необходимости коррекции
         if (ui->checkBoxIntegrationCorrection->isChecked())
             correctionFactor = ui->spinBoxIntegrationCorrectionFactor->value();
-        QVector<DataSignal> integrVecDataSignal = integrate(resDataSignal, integrationOrder, correctionFactor); // Интегрирование сигнала
+        QVector<DataSignal> integrVecDataSignal = integrateTrapz(resDataSignal, integrationOrder, correctionFactor); // Интегрирование сигнала
         // Сохранение результатов интегрирования
         for (int i = 0; i != integrVecDataSignal.size(); ++i)
             saveStatus += integrVecDataSignal[i].writeDataFile(lastPath_, signalName + "-Интегр_" + QString::number(i + 1) + ".txt");

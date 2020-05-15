@@ -118,7 +118,7 @@ void LevelsWindow::save(bool isUserCalc){
     double depthGluing = ui->spinBoxDepthGluing->value();
     // Получение перемещения
     if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrate(base, 2, smoothIntegrFactor)[1];
+        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
     else
         support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
     // Нормализация данных
@@ -181,7 +181,7 @@ void LevelsWindow::showLevels(){
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
     // Получение опорного
     if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrate(base, 2, smoothIntegrFactor)[1];
+        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
     else
         support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
     support.normalize(FIRST); // Опорного
@@ -244,7 +244,7 @@ void LevelsWindow::assessNumberOfLevels(){
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
     // Получение опорного
     if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrate(base, 2, smoothIntegrFactor)[1];
+        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
     else
         support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
     support.normalize(FIRST); // Опорного

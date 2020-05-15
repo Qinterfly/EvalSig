@@ -101,8 +101,8 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
     return DataSignal(yData, property);
 }
 
-// Интегрирование сигнала
-QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, double smoothFactor = -1){
+// Интегрирование сигнала по правилу трапеций с коррекций
+QVector<DataSignal> integrateTrapz(DataSignal const& dataSignal, int orderIntegral, double smoothFactor = -1){
     QVector<DataSignal> resVecDataSignal; // Результирующий вектор интегрированного временного сигнала
     if (orderIntegral == 0){ // При нулевом порядке
         resVecDataSignal.push_back(dataSignal);
@@ -122,11 +122,13 @@ QVector<DataSignal> integrate(DataSignal const& dataSignal, int orderIntegral, d
     QVector<double> resYData(nDataSignal); // Результирующий вектор
     // Интегрирование order-го порядка
     QVector<double> dataImage(dataSignal.getData()); // Образ данных для суммирования
+    double timeStep = dataSignal.timeStep(); // Шаг по времени
     while (orderIntegral--){
-        double sum = 0; // Сумма всех элементов до i-1 -го включительно (по образу)
+        double sum = 0; // Сумма по образу
+        resYData[0] = 0.0;
         // Суммирование
-        for (int i = 0; i != nDataSignal; ++i){
-            sum += dataImage[i];
+        for (int i = 1; i != nDataSignal; ++i){
+            sum += timeStep * (dataImage[i] + dataImage[i - 1]) / 2.0;
             resYData[i] = sum;
         }
         // Корректировка
