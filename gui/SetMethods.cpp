@@ -105,6 +105,7 @@ void MainWindow::setStatEstimationBoundaries(){
     if ( newRightBound < 1 ){
         newRightBound = !statSignal_.isEmpty() ? statSignal_.maxSizeSignals() : ui->spinBoxRightEstimationBoundary->maximum();
         ui->spinBoxRightEstimationBoundary->setValue(newRightBound);
+        ui->spinBoxRightEstimationBoundary->selectAll();
     }
     // Проверка допустимости новых значений
     if (newLeftBound >= newRightBound){ // Левая граница превышает или равна правой
