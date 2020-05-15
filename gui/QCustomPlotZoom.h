@@ -15,6 +15,7 @@ struct QCustomPlotZoom : public QCustomPlot {
 public:
     QCustomPlotZoom(QWidget * parent = nullptr);
     ~QCustomPlotZoom() override;
+    void setZoomEnabled(bool enabled); // Переключение возможности масштабирования
 private slots:
     void mousePressEvent(QMouseEvent * event) override; // При нажатии кнопки мыши
     void mouseMoveEvent(QMouseEvent * event) override; // При сдвиге мыши
@@ -29,6 +30,7 @@ private:
     QCPRange rangeXAxis2_; // Диапазон по дополнительной горизонтальной оси
     QCPRange rangeYAxis2_; // Диапазон по дополнительной вертикальной оси
     StateCoordTag stateCoordTag_ = SHOW_ADDITIONAL; // По умолчанию скрывать подписи точек
+    bool isZoomEnabled_ = true; // Флаг доступности масштабирования
 };
 
 #endif // QCUSTOMPLOTZOOM_H

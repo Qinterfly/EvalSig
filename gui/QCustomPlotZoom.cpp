@@ -15,10 +15,16 @@ QCustomPlotZoom::~QCustomPlotZoom()
     delete rubberBand_;
 }
 
+// Переключение возможности масштабирования
+void QCustomPlotZoom::setZoomEnabled(bool enabled) {
+    isZoomEnabled_ = enabled;
+}
+
 // При нажатии кнопки мыши
 void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
 {
     showCoordTag(event); // Отображение курсорной подсказки
+    if ( !isZoomEnabled_ ) return;
     // Выделение области
     if (event->button() == Qt::LeftButton)
     {
