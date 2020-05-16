@@ -108,6 +108,7 @@ void MainWindow::initializeAllColorMap(){
     // Цветовые карты и цветовые шкалы
     for (int plotInd = 0; plotInd != nCMapPlot; ++plotInd){
         vecTablePlot_[plotInd]->setZoomEnabled(false); // Отключение масштабирования карт
+        vecTablePlot_[plotInd]->setInteractions(QCP::iRangeZoom); // Прокрутка градиента
         vecTablePlot_[plotInd]->axisRect()->setupFullAxesBox(true); // Отображение осей по всем сторонам
         vecColorMap_[plotInd] = new QCPColorMap(vecTablePlot_[plotInd]->xAxis, vecTablePlot_[plotInd]->yAxis); // Инициализация цветовой карты
         vecColorScale_[plotInd] = new QCPColorScale(vecTablePlot_[plotInd]); // Инициализация шкалы
