@@ -103,12 +103,18 @@ void FilterSignalsWindow::setOutlierState(){
 // Установить период опроса
 void FilterSignalsWindow::setScanPeriod(int newVal){
     ui->spinBoxScanPeriod->blockSignals(true);
-    if (newVal > lastScanPeriod_){
-        lastScanPeriod_ = *availableScanPeriods_.upper_bound(newVal);
+    bool isFound = availableScanPeriods_.find(newVal) != availableScanPeriods_.end(); // Флаг наличия выбранного периода опроса в списке доступных
+    if ( !isFound ){
+        if (newVal > lastScanPeriod_){
+            lastScanPeriod_ = *availableScanPeriods_.upper_bound(newVal);
+        } else {
+            auto it = availableScanPeriods_.lower_bound(newVal);
+            if ( it != availableScanPeriods_.cbegin() )
+                --it;
+            lastScanPeriod_ = *it;
+        }
     } else {
-        auto it = availableScanPeriods_.lower_bound(newVal);
-        if (it != availableScanPeriods_.cbegin()) --it;
-        lastScanPeriod_ = *it;
+        lastScanPeriod_ = newVal;
     }
     ui->spinBoxScanPeriod->setValue(lastScanPeriod_);
     ui->spinBoxScanPeriod->blockSignals(false);
