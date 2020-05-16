@@ -36,7 +36,7 @@ public:
     int removeSignal(int deleteInd); // Удаление сигнала
     void setWindowProperty(int widthTimeWindow, int shiftTimeWindow); // Изменение свойств окна
     void setEstimationBoundaries(int leftBound, int rightBound, bool isNeedCheck = false); // Выставление расчетных границ
-    int writeAllStatistics(QString const& dirName) const; // Сохранение всех статистик
+    int writeAllStatistics(QString const& dirName, bool isShifted = false) const; // Сохранение всех статистик
     int writeSignalList(QString const& path, QString const& fileName) const; // Запись списка сигналов
     int writeAllMetrics(QString const& dirName, QString const& fileName) const; // Сохранение метрик по всем сигналам
 private:
@@ -62,7 +62,7 @@ private:
     void calcSimilarity(int i, int j);
     // Сохранение выбранной статистики
     template<typename T>
-    int writeStatistic(T const& stat, QString const& dirName, QString const& statName) const; // ArrayRegressionParams и ArrayStatCharacters
+    int writeStatistic(T const& stat, QString const& dirName, QString const& statName, bool isShifted = false) const; // ArrayRegressionParams и ArrayStatCharacters
     int writeMeanStatistics(QString const& dirName, QString const& fileName) const; // Сохранение средних значений статистик
     // Вспомогательные функции получения оконного распределения статистики
     QVector<double> getWindowStatisticData(ArrayRegressionParams const& stat, int i, int j) const; // ArrayRegressionParams

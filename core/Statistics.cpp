@@ -71,7 +71,7 @@ int Statistics::removeSignal(int deleteInd){
     return 0;
 }
     // Сохранение всех статистик
-int Statistics::writeAllStatistics(QString const& dirName) const {
+int Statistics::writeAllStatistics(QString const& dirName, bool isShifted) const {
     if (isEmpty()) return -1; // Проверка на пустоту статистик
     QDir dir(dirName); // Инициализация директории c добавлением разделителя
     if (!dir.exists()) // Проверка существования директории
@@ -86,11 +86,11 @@ int Statistics::writeAllStatistics(QString const& dirName) const {
         dir.mkdir(statName);
     // Сохранение статистик по всем окнам
     int exitStatus = 0; // Код возврата
-    exitStatus += writeStatistic(regressionParams_, dirName, vecStatName[0]); // Угловые коэффициенты
-    exitStatus += writeStatistic(distanceScatter_, dirName, vecStatName[1]);  // Дистанция рассеяния
-    exitStatus += writeStatistic(similarityCoeffs_, dirName, vecStatName[2]); // Коэффициенты подобия
-    exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3]); // Амплитуды рассеяния
-    exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4]); // Коэффициенты шума
+    exitStatus += writeStatistic(regressionParams_, dirName, vecStatName[0], isShifted); // Угловые коэффициенты
+    exitStatus += writeStatistic(distanceScatter_, dirName, vecStatName[1], isShifted);  // Дистанция рассеяния
+    exitStatus += writeStatistic(similarityCoeffs_, dirName, vecStatName[2], isShifted); // Коэффициенты подобия
+    exitStatus += writeStatistic(amplitudeScatter_, dirName, vecStatName[3], isShifted); // Амплитуды рассеяния
+    exitStatus += writeStatistic(noiseCoeffs_, dirName, vecStatName[4], isShifted); // Коэффициенты шума
     // Сохранение средних значений всех статистик
     exitStatus += writeMeanStatistics(dirName, "Средние значения статистик");
     return exitStatus;
@@ -98,17 +98,48 @@ int Statistics::writeAllStatistics(QString const& dirName) const {
 
     // Сохранение выбранной статистики
 template<typename T>
-int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName) const {
+int Statistics::writeStatistic(T const& stat, QString const& dirName, QString const& statName, bool isShifted) const {
     QString path = dirName + statName + QDir::separator(); // Полный путь до статистики
     QVector<double> tData; // Контейнер статистик для выбранной пары сигналов
+    int nData = windowProperty.nWindows_; // Конечная длина данных
+    if ( isShifted )
+        nData += windowProperty.width_ - 1; // При сдвиге добавляем ширину окна, за исключением начала
+    tData.resize(nData);
+    // Определяем сдвиги
+    int leftShift = 0; // Сдвиг левого конца
+    int rightShift = 0; // Сдвиг правого конца
+    if ( isShifted && windowProperty.nWindows_ > 1 ) {
+        if ( (windowProperty.width_ - 1) % 2 == 0 ){
+            leftShift = (windowProperty.width_ - 1) / 2;
+            rightShift = leftShift;
+        } else {
+            leftShift = windowProperty.width_ / 2;
+            rightShift = windowProperty.width_ - leftShift - 1;
+        }
+    }
     int exitStatus = 0; // Код возврата
+    double tempVal = 0; // Временное значение для копирования
     for (int i = 0; i != nSize_; ++i){ // По числу сигналов
         // Добавление статистики по всем окнам в контейнер
         PropertyDataSignal tProperty = (*pVecDataSignal)[i].getProperty(); // Получение свойств первого сигнала
         tProperty.physicalFactor_ = 1; // Безразмерные коэффициенты
         for (int j = 0; j != nSize_; ++j){
-            tData = getWindowStatisticData(stat, i, j); // Получение временных данных
-            tProperty.nCount_ = tData.size(); // Запись длины сигнала
+            QVector<double> const& vecStat = getWindowStatisticData(stat, i, j); // Ссылка на статистики
+            // Проверка необходимости смещения выгрузки статистик
+            if ( isShifted ){
+                // Копирование левого конца
+                tempVal = vecStat[0];
+                for (int k = 0; k != leftShift; ++k)
+                    tData[k] = tempVal;
+                // Копирование правого конца
+                tempVal = vecStat[windowProperty.nWindows_ - 1];
+                for (int k = nData - rightShift; k != nData; ++k)
+                    tData[k] = tempVal;
+            }
+            // Копирование статистик
+            for (int k = 0; k != windowProperty.nWindows_; ++k)
+                tData[k + leftShift] = vecStat[k];
+            tProperty.nCount_ = nData; // Запись длины сигнала
             tProperty.measurePoint_ = statName; // Имя статистики
             DataSignal tDataSignal(tData, tProperty); // Создание временного сигнала
             QString fileName = QString::number(i + 1) + "-" + QString::number(j + 1) + ".txt"; // Определение имени временного сигнала
