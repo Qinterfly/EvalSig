@@ -97,7 +97,6 @@ void FilterSignalsWindow::keyPressEvent(QKeyEvent * event)
     QDialog::keyPressEvent(event);
 }
 
-
 // Проверка возможности расчета
 void FilterSignalsWindow::checkStateFilter(){
     const int limDivisors = ui->spinBoxScanPeriod->maximum();

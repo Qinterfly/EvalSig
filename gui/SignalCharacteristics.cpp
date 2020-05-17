@@ -50,10 +50,9 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     for (int i = 0; i != nData; ++i)
         XData[i] = i * freqStep;
      // Построение спектра
-    if ( ui->spectrumPlot->graphCount() == 0 )
-        ui->spectrumPlot->addGraph();
-    else
-        ui->spectrumPlot->graph()->data()->clear();
+    if ( ui->spectrumPlot->graphCount() != 0 )
+        ui->spectrumPlot->clearPlottables();
+    ui->spectrumPlot->addGraph();
     ui->spectrumPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->spectrumPlot->graph()->setPen(QPen(Qt::red)) ; // Выставление цвета графика
     ui->spectrumPlot->graph()->setData(XData, YData, true); // Передача отсортированных данных
@@ -98,10 +97,9 @@ void MainWindow::calculateAndPlotIntegral(bool isPlot){
     for (int i = 0; i != nData; ++i)
         XData[i] = i + 1;
     // Построение интеграла
-    if ( ui->integralPlot->graphCount() == 0 )
-        ui->integralPlot->addGraph();
-    else
-        ui->integralPlot->graph()->data()->clear();
+    if ( ui->integralPlot->graphCount() != 0 )
+        ui->integralPlot->clearPlottables();
+    ui->integralPlot->addGraph();
     ui->integralPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
     ui->integralPlot->graph()->setPen(QPen(Qt::red)) ; // Выставление цвета графика
     ui->integralPlot->graph()->setData(XData, YData, true); // Передача отсортированных данных
@@ -149,7 +147,7 @@ void MainWindow::calculateAndPlotAnalysis(bool isPlot){
         XData[i] = i + 1;
     // Очистка предыдущих построений
     if ( ui->analysisPlot->graphCount() != 0 ){
-        ui->analysisPlot->clearGraphs();
+        ui->analysisPlot->clearPlottables();
     }
     // Построение основного сигнала
     ui->analysisPlot->addGraph();
