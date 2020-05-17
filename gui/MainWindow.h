@@ -69,6 +69,7 @@ public slots:
     void calculateAndPlotSpectrum(bool isPlot = true); // Спектра
     void calculateAndPlotIntegral(bool isPlot = true); // Интеграла
     void calculateAndPlotAnalysis(bool isPlot = true); // Анализа
+    // Установка параметров характеристик сигналов
     void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов
     void checkSpectrumWeightWindowWidth(); // Проверка ширины весового окна спектра
     void checkIntegralWeightWindowWidth(); // Проверка ширины весового окна интеграла

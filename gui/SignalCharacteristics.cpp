@@ -42,7 +42,6 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
         return;
     // Формирование данных для построения
     double nyquistFrequency = vecDataSignal_[iSelectedSignal].nyquistFrequency(); // Частота Найквиста, Гц
-    QVariant colorSignal = ui->listFile->item(iSelectedSignal)->data(Qt::DecorationRole); // Получения цвета графика
     QVector<double> const& YData = mapSignalCharacteristics_[iSelectedTab].getData(); // Вектор значений
     int nData = YData.size(); // Длина сигнала
     QVector<double> XData(nData); // Вектор отсчетов
@@ -90,7 +89,6 @@ void MainWindow::calculateAndPlotIntegral(bool isPlot){
     if ( !isPlot )
         return;
     // Формирование данных для построения
-    QVariant colorSignal = ui->listFile->item(iSelectedSignal)->data(Qt::DecorationRole); // Получения цвета графика
     QVector<double> const& YData = mapSignalCharacteristics_[iSelectedTab].getData(); // Вектор значений
     int nData = YData.size(); // Длина сигнала
     QVector<double> XData(nData); // Вектор отсчетов
@@ -139,7 +137,6 @@ void MainWindow::calculateAndPlotAnalysis(bool isPlot){
     if ( !isPlot )
         return;
     // Формирование данных для построения
-    QVariant colorSignal = ui->listFile->item(iSelectedSignal)->data(Qt::DecorationRole); // Получения цвета графика
     QVector<double> const& YData = mapSignalCharacteristics_[iSelectedTab].getData(); // Вектор значений
     int nData = YData.size(); // Длина сигнала
     QVector<double> XData(nData); // Вектор отсчетов
