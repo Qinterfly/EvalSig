@@ -31,6 +31,8 @@ SOURCES += \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
         gui/QCPColorCurve.cpp \
+    gui/RegressionPlotting.cpp \
+    gui/SignalCharacteristics.cpp \
         gui/SignalProcessing.cpp \
         gui/Main.cpp \
         test/Tests.cpp \

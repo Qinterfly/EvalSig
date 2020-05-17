@@ -45,6 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSaveAssociatedStatistics, SIGNAL(triggered()), this, SLOT(saveAssociatedStatistics())); // Сохранить относительные статистики
     connect(ui->actionAddShiftSignal, SIGNAL(triggered()), this, SLOT(addShiftSignal())); // Добавление сигнала со смещением
     connect(ui->actionCalculationTemplate, SIGNAL(triggered()), this, SLOT(changeCalculationTemplate())); // Добавление сигнала со смещением
+    // Характеристики сигналов
+    connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateSettingsOfCharacterstics()), Qt::QueuedConnection); // Проверяем возможность расчета
+    connect(ui->checkBoxSpectrumFiltration, SIGNAL(stateChanged(int)), this, SLOT(setSpectrumFiltration())); // Установка фильтрации спектра
+    connect(ui->spinBoxSpectrumLowerFrequency, SIGNAL(editingFinished()), this, SLOT(checkSpectrumFiltrationFrequencies())); // Проверка частот фильтрации по нижней
+    connect(ui->spinBoxSpectrumUpperFrequency, SIGNAL(editingFinished()), this, SLOT(checkSpectrumFiltrationFrequencies())); // Проверка частот фильтрации по верхней
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

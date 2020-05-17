@@ -65,7 +65,16 @@ void MainWindow::initializeAllPlot(){
     }
     // -- regressionPlot --
     ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
-    // Создание цветовой карты
+    // -- spectrumPlot, integrationPlot, analysisPlot --
+        // Кнопки расчета
+    mapCalculationButtons_.insert(1, ui->pushButtonSpectrumCalculate);
+    mapCalculationButtons_.insert(2, ui->pushButtonIntegralCalculate);
+    mapCalculationButtons_.insert(3, ui->pushButtonAnalysisCalculate);
+        // Кнопки сохранения
+    mapSaveButtons_.insert(1, ui->pushButtonSpectrumSave);
+    mapSaveButtons_.insert(2, ui->pushButtonIntegralSave);
+    mapSaveButtons_.insert(3, ui->pushButtonAnalysisSave);
+    // Настройка регрессии
     colorScaleRegression_ = new QCPColorScale(ui->regressionPlot);
     ui->regressionPlot->plotLayout()->addElement(0, 1, colorScaleRegression_); // Добавление шкалы справа
     colorScaleRegression_->setType(QCPAxis::atRight); // Метки к шкале справа
@@ -95,7 +104,7 @@ void MainWindow::initializeAllColorMap(){
     vecTablePlot_[2] = ui->similarityPlot;
     vecTablePlot_[3] = ui->amplitudePlot;
     vecTablePlot_[4] = ui->noisePlot;
-    vecTablePlot_[5] = ui->spectrumPlot;
+    vecTablePlot_[5] = ui->compareSpectrumPlot;
     vecTablePlot_[6] = ui->groupPlot;
         // Типы цветовых карт
     vecColorMapType_[0] = STATS;

@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -90,6 +90,624 @@
             </property>
             <property name="styleSheet">
              <string notr="true"/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabSpectrum">
+         <attribute name="title">
+          <string>Спектр</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <layout class="QGridLayout" name="layoutSpectrumCharacteristics">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBoxSpectrumWeightWindowType">
+              <property name="currentText">
+               <string>Хэмминга</string>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>Хэмминга</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ханна</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Блэкмана</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelSpectrumWeightWindowWidth">
+              <property name="text">
+               <string>Ширина окна:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="spinBoxSpectrumOverlapFactor">
+              <property name="decimals">
+               <number>6</number>
+              </property>
+              <property name="maximum">
+               <double>0.999000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <double>0.500000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="labelSpectrumSmoothWidth">
+              <property name="text">
+               <string>Ширина сглаживания:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBoxSpectrumWeightWindowWidth">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>16384</number>
+              </property>
+              <property name="value">
+               <number>512</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QSpinBox" name="spinBoxSpectrumSmoothWidth">
+              <property name="maximum">
+               <number>2048</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <number>3</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="labelSpectrumOverlapFactor">
+              <property name="text">
+               <string>Перекрытие окон:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelSpectrumWeightWindowType">
+              <property name="text">
+               <string>Тип окна:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="5">
+             <widget class="QDoubleSpinBox" name="spinBoxSpectrumUpperFrequency">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.001000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>22.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelSpectrumInterpolation">
+              <property name="text">
+               <string>Линейная интерполяция:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QSpinBox" name="spinBoxSpectrumInterpolation">
+              <property name="minimum">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <number>10000</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <number>1024</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <spacer name="innerSpacerSpectrum">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="6">
+             <spacer name="outerSpacerSpectrum">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="4">
+             <widget class="QDoubleSpinBox" name="spinBoxSpectrumLowerFrequency">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <double>500.000000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QCheckBox" name="checkBoxSpectrumFiltration">
+              <property name="text">
+               <string>Фильтр частот, Гц:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCustomPlotZoom" name="spectrumPlot" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="layoutSpectrumCalculateAndSave">
+            <item>
+             <spacer name="horizontalSpacerCalculationAndSave">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonSpectrumSave">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonSpectrumCalculate">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Расчет</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabIntegral">
+         <attribute name="title">
+          <string>Интеграл</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <layout class="QGridLayout" name="layoutIntegralCharacteristics">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBoxIntegralDomain">
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>Временная</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Частотная</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="8">
+             <widget class="QDoubleSpinBox" name="spinBoxIntegralCorrection">
+              <property name="decimals">
+               <number>6</number>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <double>0.000001000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="labelIntegralWeigthtWindowWidth">
+              <property name="text">
+               <string>Ширина окна:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="8">
+             <widget class="QDoubleSpinBox" name="spinBoxIntegralOverlapFactor">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <double>0.999000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <double>0.500000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QSpinBox" name="spinBoxIntegralOrder">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="7">
+             <widget class="QCheckBox" name="checkBoxIntegralCorrection">
+              <property name="text">
+               <string>Коррекция</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBoxIntegralWeightWindowType">
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>Хэмминга</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ханна</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Блэкмана</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <spacer name="innerSpacerIntegral1">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="4">
+             <widget class="QSpinBox" name="spinBoxIntegralWeightWindowWidth">
+              <property name="maximum">
+               <number>16384</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::DefaultStepType</enum>
+              </property>
+              <property name="value">
+               <number>512</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelIntegralOrder">
+              <property name="text">
+               <string>Порядок:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelIntegralWeightWindowType">
+              <property name="text">
+               <string>Тип окна:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="7">
+             <widget class="QLabel" name="labelIntegralOverlapFactor">
+              <property name="text">
+               <string>Перекрытие:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelIntegralDomain">
+              <property name="text">
+               <string>Область:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="9">
+             <spacer name="outerSpacerIntegral">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="5">
+             <spacer name="innerSpacerIntegral2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCustomPlotZoom" name="integralPlot" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="layoutIntegralCalculateAndSave">
+            <item>
+             <spacer name="spacerIntegralCalculateAndSave">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonIntegralSave">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonIntegralCalculate">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Расчет</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabAnalysis">
+         <attribute name="title">
+          <string>Анализ</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="layoutAnalysisCharacteristics">
+            <item>
+             <widget class="QLabel" name="labelAnalysisType">
+              <property name="text">
+               <string>Тип анализа:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxAnalysisType">
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>Аппроксимация</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Коррекция</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerAnalysisFixed">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelAnalysisSmoothFactor">
+              <property name="text">
+               <string>Сглаживание:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="spinBoxAnalysisSmoothFactor">
+              <property name="decimals">
+               <number>6</number>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <double>0.000001000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerAnalysisFlexible">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonAnalysisSave">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonAnalysisCalculate">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Расчет</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCustomPlotZoom" name="analysisPlot" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
            </widget>
           </item>
@@ -211,10 +829,16 @@
           </item>
           <item>
            <widget class="QCustomPlotZoom" name="regressionPlot" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>500</height>
+              <height>0</height>
              </size>
             </property>
            </widget>
@@ -331,9 +955,9 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tabSpectrumPlot">
+        <widget class="QWidget" name="tabCompareSpectrumPlot">
          <attribute name="title">
-          <string>Спектры</string>
+          <string>Сравнение спектров</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
           <property name="leftMargin">
@@ -349,7 +973,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QCustomPlotZoom" name="spectrumPlot" native="true"/>
+           <widget class="QCustomPlotZoom" name="compareSpectrumPlot" native="true"/>
           </item>
          </layout>
         </widget>

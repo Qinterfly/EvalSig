@@ -50,11 +50,9 @@ public slots:
     void applyCalculationTemplate(QVector<int> iSelectedSignals, int iMainSignal, int iBaseSignal, int iSupportSignal); // Применение расчетного шаблона
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
-    void updateRegressionState(); // Проверка возможности построения линейной регрессии
-    void plotRegression(); // Построение линейной регрессии
-    void clearRegression(); // Очистка линейной регрессии
     // Методы очистки
     void clearProject(); // Очистка проекта
+    void clearSignalCharacteristics(); // Очистка обработанных сигналов
     // Обмен данными между окнами
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
@@ -62,7 +60,18 @@ public slots:
     void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
     void filtrationFinished(); // Фильтрация сигналов завершена
     // Справка
-    void aboutProgram(); // Информация о программе
+    void aboutProgram(); // Информация о
+    // Регрессия
+    void updateRegressionState(); // Проверка возможности построения линейной регрессии
+    void plotRegression(); // Построение линейной регрессии
+    void clearRegression(); // Очистка линейной регрессии
+    // Расчет и построение характеристик сигналов
+    void calculateAndPlotSpectrum(); // Спектра
+    void calculateAndPlotIntegral(); // Интеграла
+    void calculateAndPlotAnalysis(); // Анализа
+    void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов
+    void setSpectrumFiltration(); // Установка фильтрации спектра
+    void checkSpectrumFiltrationFrequencies(); // Проверка частот фильтрации
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:
@@ -123,6 +132,10 @@ private:
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
     // Расчетный шаблон
     CalculationTemplate calcTemplate_;
+    // Сигналы, полученные после применения численных методов
+    QMap<int, DataSignal> mapSignalCharacteristics_;          // Данные
+    QMap<int, QPointer<QPushButton>> mapCalculationButtons_;  // Расчетные кнопки
+    QMap<int, QPointer<QPushButton>> mapSaveButtons_;         // Кнопки для сохранения
 };
 
 #endif // MAINWINDOW_H

@@ -99,4 +99,11 @@ void MainWindow::clearDataEstimationsBoundaries(){
         ui->comparePlot->graph(plotInd)->data()->clear();
 }
 
+
+
+
+
+
+
+
 // ------------------------------------------------------------------------------------------------------------------
