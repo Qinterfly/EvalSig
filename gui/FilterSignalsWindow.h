@@ -23,14 +23,18 @@ public:
     void setLastPath(QString const& lastPath); // Установка пути по умолчанию
     QString const& lastPath() { return lastPath_; } // Получение пути по умолчанию
 private:
-    void setTimeLimits(); // Задание временных границ
+    void setBoundaries(); // Задание границ данных
     void showEvent(QShowEvent * event) override; // При отображении виджета
+    void keyPressEvent(QKeyEvent * event) override; // При нажатии клавиш
 private slots:
     void checkStateFilter(); // Проверка возможности расчета
     void checkTimeBoundaries(); // Проверка временных границ
     void filterSignals(); // Фильтрация сигналов
     void setOutlierState(); // Установка состояние выбора предельного значения выбросов
+    void setLinearFilterState(); // Установить состояния линейного фильтра
     void setScanPeriod(int newVal); // Установить период опроса
+    void checkBandpassFrequencies(); // Проверка пользовательских частот для фильтрации
+    void checkWeightWindowWidth(); // Проверка ширины весового окна
 private:
     Ui::FilterSignalsWindow *ui;
     QVector<DataSignal> & vecDataSignal_; // Вектор с исходными сигналами

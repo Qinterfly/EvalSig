@@ -6,7 +6,8 @@
 // Конструктор
 QCustomPlotZoom::QCustomPlotZoom(QWidget * parent)
     : QCustomPlot(parent),
-    rubberBand_(new QRubberBand(QRubberBand::Rectangle, this))
+    rubberBand_(new QRubberBand(QRubberBand::Rectangle, this)),
+    keyXAxis_(xAxis), keyYAxis_(yAxis)
 { }
 
 // Деструктор
@@ -20,6 +21,12 @@ void QCustomPlotZoom::setZoomEnabled(bool enabled) {
     isZoomEnabled_ = enabled;
 }
 
+// Установка осей для масштабирования
+void QCustomPlotZoom::setKeyAxes(QPair<int, int> indexes){
+    indexes.first == 1 ? keyXAxis_ = xAxis : keyXAxis_ = xAxis2;
+    indexes.second == 1 ? keyYAxis_ = yAxis : keyYAxis_ = yAxis2;
+}
+
 // При нажатии кнопки мыши
 void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
 {
@@ -30,8 +37,8 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
     {
         origin_ = event->pos(); // Положение левого верхнего угла
         if ( !isZoomed_ ){ // Если масштабирование первое
-            rangeXAxis2_ = xAxis2->range(); // Диапазон по дополнительной горизонтальной оси
-            rangeYAxis2_ = yAxis2->range(); // Диапазон по дополнительной вертикальной оси
+            rangeXAxis_ = keyXAxis_->range(); // Диапазон по горизонтальной оси
+            rangeYAxis_ = keyYAxis_->range(); // Диапазон по вертикальной оси
             isZoomed_ = true; // Изображение смаштабировано
         }
         rubberBand_->setGeometry(QRect(origin_, QSize())); // Формирование области выделения
@@ -40,8 +47,8 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
     // Снятие выделения области
     if (event->button() == Qt::RightButton){
         rescaleAxes(); // Сброс выделения
-        xAxis2->setRange(rangeXAxis2_); // Возврат к диапазонам до масштабирования по X2
-        yAxis2->setRange(rangeYAxis2_); // Возврат к диапазонам до масштабирования по Y2
+        keyXAxis_->setRange(rangeXAxis_); // Возврат к диапазонам до масштабирования по X
+        keyYAxis_->setRange(rangeYAxis_); // Возврат к диапазонам до масштабирования по Y
         isZoomed_ = false; // Сброс флага масштабированного изображения
         replot(); // Обновление графика
     }
@@ -110,25 +117,12 @@ void QCustomPlotZoom::showCoordTag(QMouseEvent * event){
     // Параметры отображения подсказки
     bool isShownTag = true;
     QPoint cursorPos = event->pos();
-    QCPAxis const * keyAxis = nullptr;
-    // Получение координат в зависимости от типа отображаемого значения
-    switch ( stateCoordTag_ ) {
-    case SHOW_MAIN:
-        keyAxis = xAxis;
-        break;
-    case SHOW_ADDITIONAL:
-        keyAxis = xAxis2;
-        break;
-    case HIDE:
-        isShownTag = false;
-        break;
-    }
     // Отображение подсказки с координатами
     if ( isShownTag ){
-        double x = keyAxis->pixelToCoord(cursorPos.x());
-        double y = yAxis->pixelToCoord(cursorPos.y());
+        double x = keyXAxis_->pixelToCoord(cursorPos.x());
+        double y = keyYAxis_->pixelToCoord(cursorPos.y());
         QString textTag = QString("(%1, %2)").arg(QString::number(x, 'g', 4)).arg(QString::number(y, 'g', 4));
-        cursorPos = QPoint(keyAxis->coordToPixel(x) + SHIFT_TAG_X, yAxis->coordToPixel(y) + SHIFT_TAG_Y);
+        cursorPos = QPoint(keyXAxis_->coordToPixel(x) + SHIFT_TAG_X, keyYAxis_->coordToPixel(y) + SHIFT_TAG_Y);
         cursorPos = mapToGlobal(cursorPos); // Координаты курсора в системе координат экрана
         QToolTip::showText(cursorPos, textTag, this, rect(), 1000);
     }

@@ -63,9 +63,11 @@ void MainWindow::initializeAllPlot(){
         ui->comparePlot->graph(plotInd)->setPen(Qt::NoPen);
         ui->comparePlot->graph(plotInd)->setBrush(brushCompare);
     }
-    // -- regressionPlot --
-    ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
-    // -- spectrumPlot, integrationPlot, analysisPlot --
+    ui->comparePlot->setKeyAxes({2, 1}); // Выбор ключевых осей
+    // -- spectrumPlot, integralPlot, analysisPlot --
+        // Выбор ключевых осей
+    ui->integralPlot->setKeyAxes({2, 1});
+    ui->analysisPlot->setKeyAxes({2, 1});
         // Кнопки расчета
     mapCalculationButtons_.insert(1, ui->pushButtonSpectrumCalculate);
     mapCalculationButtons_.insert(2, ui->pushButtonIntegralCalculate);
@@ -74,7 +76,14 @@ void MainWindow::initializeAllPlot(){
     mapSaveButtons_.insert(1, ui->pushButtonSpectrumSave);
     mapSaveButtons_.insert(2, ui->pushButtonIntegralSave);
     mapSaveButtons_.insert(3, ui->pushButtonAnalysisSave);
-    // Настройка регрессии
+        // Подписи осей
+    ui->spectrumPlot->xAxis->setLabel("Частота, Гц");
+    ui->spectrumPlot->yAxis->setLabel("Амплитуда");
+    ui->integralPlot->xAxis2->setLabel("Время, c");
+    ui->analysisPlot->xAxis2->setLabel("Время, c");
+    // -- regressionPlot --
+    ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
+        // Настройка регрессии
     colorScaleRegression_ = new QCPColorScale(ui->regressionPlot);
     ui->regressionPlot->plotLayout()->addElement(0, 1, colorScaleRegression_); // Добавление шкалы справа
     colorScaleRegression_->setType(QCPAxis::atRight); // Метки к шкале справа

@@ -8,14 +8,13 @@ class QRubberBand;
 class QMouseEvent;
 class QWidget;
 
-enum StateCoordTag { HIDE, SHOW_MAIN, SHOW_ADDITIONAL }; // Опции отображения курсорной подсказки
-
 struct QCustomPlotZoom : public QCustomPlot {
     Q_OBJECT
 public:
     QCustomPlotZoom(QWidget * parent = nullptr);
     ~QCustomPlotZoom() override;
     void setZoomEnabled(bool enabled); // Переключение возможности масштабирования
+    void setKeyAxes(QPair<int, int> indexes); // Установка осей для масштабирования
 private slots:
     void mousePressEvent(QMouseEvent * event) override; // При нажатии кнопки мыши
     void mouseMoveEvent(QMouseEvent * event) override; // При сдвиге мыши
@@ -27,10 +26,12 @@ private:
     QRubberBand * rubberBand_;
     QPoint origin_; // Положение левого верхнего угла прямоугольника
     bool isZoomed_ = false; // Флаг масштабированного изображения
-    QCPRange rangeXAxis2_; // Диапазон по дополнительной горизонтальной оси
-    QCPRange rangeYAxis2_; // Диапазон по дополнительной вертикальной оси
-    StateCoordTag stateCoordTag_ = SHOW_ADDITIONAL; // По умолчанию скрывать подписи точек
+    QCPRange rangeXAxis_; // Диапазон по дополнительной горизонтальной оси
+    QCPRange rangeYAxis_; // Диапазон по дополнительной вертикальной оси
     bool isZoomEnabled_ = true; // Флаг доступности масштабирования
+    // Указатели на главные оси
+    QCPAxis * keyXAxis_; // Абсцис
+    QCPAxis * keyYAxis_; // Ординат
 };
 
 #endif // QCUSTOMPLOTZOOM_H

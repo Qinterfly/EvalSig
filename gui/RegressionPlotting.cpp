@@ -46,11 +46,12 @@ void MainWindow::plotRegression() {
                    compareSignal.getData(calculationInd.first, calculationInd.second), colors);
     curve->removeFromLegend(); // Исключение точек из легенды
     // Построение линейной регрессии
-    ui->regressionPlot->addGraph();
-    ui->regressionPlot->graph(0)->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
-    ui->regressionPlot->graph(0)->setPen(QPen(Qt::blue, 2)) ; // Выставление цвета графика
-    ui->regressionPlot->graph(0)->setData(limBaseSignal, valRegression, true); // Передача отсортированных данных
-    ui->regressionPlot->graph(0)->setName(regressionName); // Передача имени графика
+    if ( ui->regressionPlot->graphCount() == 0 ) // Добавление графика
+        ui->regressionPlot->addGraph();
+    ui->regressionPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
+    ui->regressionPlot->graph()->setPen(QPen(Qt::blue, 2)) ; // Выставление цвета графика
+    ui->regressionPlot->graph()->setData(limBaseSignal, valRegression, true); // Передача отсортированных данных
+    ui->regressionPlot->graph()->setName(regressionName); // Передача имени графика
     // Подпись осей
     ui->regressionPlot->xAxis->setLabel(ui->listFile->item(indexBaseSignal)->text());
     ui->regressionPlot->yAxis->setLabel(ui->listFile->item(indexCompareSignal)->text());

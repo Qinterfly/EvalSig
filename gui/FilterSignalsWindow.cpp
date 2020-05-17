@@ -1,4 +1,6 @@
 #include <QMessageBox>
+#include <QKeyEvent>
+#include <qmath.h>
 #include "FilterSignalsWindow.h"
 #include "ui_FilterSignalsWindow.h"
 #include "core/NumericalFunctions.h"
@@ -19,7 +21,11 @@ FilterSignalsWindow::FilterSignalsWindow(QVector<DataSignal> & vecDataSignal, QW
     connect(ui->spinBoxRightTimeBoundary, SIGNAL(editingFinished()), this, SLOT(checkTimeBoundaries())); // Проверка правой временной границы
     connect(ui->buttonFilter, SIGNAL(clicked()), this, SLOT(filterSignals())); // Фильтрация сигналов
     connect(ui->checkBoxOutlier, SIGNAL(stateChanged(int)), this, SLOT(setOutlierState())); // Установка состояние выбора предельного значения выбросов
+    connect(ui->checkBoxLinearFilter, SIGNAL(stateChanged(int)), this, SLOT(setLinearFilterState())); // Установить состояния линейного фильтра
     connect(ui->spinBoxScanPeriod, SIGNAL(valueChanged(int)), this, SLOT(setScanPeriod(int))); // Установить период опроса
+    connect(ui->spinBoxLowerFrequency, SIGNAL(editingFinished()), this, SLOT(checkBandpassFrequencies())); // При изменении нижней частоты
+    connect(ui->spinBoxUpperFrequency, SIGNAL(editingFinished()), this, SLOT(checkBandpassFrequencies())); // При изменении верхней частоты
+    connect(ui->spinBoxWeightWindowWidth, SIGNAL(editingFinished()), this, SLOT(checkWeightWindowWidth())); // При изменении ширины весового окна
 }
 
 // Деструктор
@@ -44,20 +50,53 @@ void FilterSignalsWindow::setLastPath(QString const& lastPath){
     lastPath_ = lastPath;
 }
 
-// Задание временных границ
-void FilterSignalsWindow::setTimeLimits(){
+// Задание границ данных
+void FilterSignalsWindow::setBoundaries(){
     int indOfShortestSignal = minOrMaxByLength(vecDataSignal_, ExtremaOption::MIN); // Находим индекс самого короткого сигнала
     // Задание максимального времени
     ui->spinBoxRightTimeBoundary->setMaximum(vecDataSignal_[indOfShortestSignal].timeDuration()); // По левой границе
     ui->spinBoxLeftTimeBoundary->setMaximum(ui->spinBoxRightTimeBoundary->maximum()); // По правой границе
     ui->spinBoxRightTimeBoundary->setValue(ui->spinBoxRightTimeBoundary->maximum()); // Ставим время усечения по умолчанию равным максимальному
+    // Настройка нижней и верхней частот пропускания
+    double maxFreq = vecDataSignal_[0].nyquistFrequency(); // Максимально возможная частота в спектре
+    ui->spinBoxLowerFrequency->setMaximum(maxFreq); // Нижняя частота
+    ui->spinBoxUpperFrequency->setMaximum(maxFreq); // Верхняя частота
+}
+
+// Проверка пользовательских частот для фильтрации
+void FilterSignalsWindow::checkBandpassFrequencies(){
+    double lowerFreq = ui->spinBoxLowerFrequency->value(); // Нижняя частота
+    double upperFreq = ui->spinBoxUpperFrequency->value(); // Верхняя частота
+    // Проверка превышения нижней частоты значения верхней
+    if ( lowerFreq > upperFreq ){
+        ui->spinBoxLowerFrequency->setValue(upperFreq);
+        ui->spinBoxUpperFrequency->setValue(lowerFreq);
+    }
+}
+
+// Проверка ширины весового окна
+void FilterSignalsWindow::checkWeightWindowWidth(){
+    int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Текущая ширина окна
+    int weightWindowWidth2 = static_cast<int>(qPow(2, previousPow2(weightWindowWidth))); // Ближайшая ширина окна, кратная двум
+    // Установка ширины окна, кратной двум
+    if (weightWindowWidth != weightWindowWidth2)
+        ui->spinBoxWeightWindowWidth->setValue(weightWindowWidth2);
 }
 
 // При отображении виджета
 void FilterSignalsWindow::showEvent(QShowEvent * event){
-    setTimeLimits(); // Задание временных границ
+    setBoundaries(); // Задание границ данных
     QWidget::showEvent(event);
 }
+
+// При нажатии клавиш
+void FilterSignalsWindow::keyPressEvent(QKeyEvent * event)
+{
+    if ( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+        return;
+    QDialog::keyPressEvent(event);
+}
+
 
 // Проверка возможности расчета
 void FilterSignalsWindow::checkStateFilter(){
@@ -98,6 +137,13 @@ void FilterSignalsWindow::checkTimeBoundaries(){
 // Установка состояние выбора предельного значения выбросов
 void FilterSignalsWindow::setOutlierState(){
     ui->spinBoxOutlier->setEnabled(ui->checkBoxOutlier->isChecked());
+}
+
+// Установить состояния линейного фильтра
+void FilterSignalsWindow::setLinearFilterState(){
+    bool state = ui->checkBoxLinearFilter->isChecked();
+    ui->spinBoxLeftLinearBoundary->setEnabled(state);
+    ui->spinBoxRightLinearBoundary->setEnabled(state);
 }
 
 // Установить период опроса
@@ -142,6 +188,13 @@ void FilterSignalsWindow::filterSignals(){
     bool isLinearFilter = ui->checkBoxLinearFilter->isChecked();
     int leftLinearBoundary = ui->spinBoxLeftLinearBoundary->value();
     int rightLinearBoundary = ui->spinBoxRightLinearBoundary->value();
+        // Частотный фильтр
+    bool isBandpassFilter = ui->groupBoxBandpassFilter->isChecked();
+    WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
+    double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
+    double lowerFreq = ui->spinBoxLowerFrequency->value(); // Нижняя частота
+    double upperFreq = ui->spinBoxUpperFrequency->value(); // Верхняя частота
         // Интерполяция
     bool isInterpolate = ui->groupBoxInterpolation->isChecked();
     int nPoints = vecDataSignal_[0].timeDuration() / DataSignal::TIME_PHYS_MULT / ui->spinBoxScanPeriod->value(); // Всегда целое
@@ -170,6 +223,9 @@ void FilterSignalsWindow::filterSignals(){
         // Линейный фильтр
         if (isLinearFilter)
             vecDataSignal_[iSignal] = linearFilter(vecDataSignal_[iSignal], leftLinearBoundary, rightLinearBoundary);
+        // Частотный фильтр
+        if (isBandpassFilter)
+             vecDataSignal_[iSignal] = bandpassFilter(vecDataSignal_[iSignal], windowFun, weightWindowWidth, overlapFactor, {lowerFreq, upperFreq});
         // Назначаем имя файла
         vecDataSignal_[iSignal].setFileName(saveFileName);
     }

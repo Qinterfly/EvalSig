@@ -60,18 +60,19 @@ public slots:
     void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
     void filtrationFinished(); // Фильтрация сигналов завершена
     // Справка
-    void aboutProgram(); // Информация о
+    void aboutProgram(); // Информация о программе
     // Регрессия
     void updateRegressionState(); // Проверка возможности построения линейной регрессии
     void plotRegression(); // Построение линейной регрессии
     void clearRegression(); // Очистка линейной регрессии
     // Расчет и построение характеристик сигналов
-    void calculateAndPlotSpectrum(); // Спектра
-    void calculateAndPlotIntegral(); // Интеграла
-    void calculateAndPlotAnalysis(); // Анализа
+    void calculateAndPlotSpectrum(bool isPlot = true); // Спектра
+    void calculateAndPlotIntegral(bool isPlot = true); // Интеграла
+    void calculateAndPlotAnalysis(bool isPlot = true); // Анализа
     void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов
-    void setSpectrumFiltration(); // Установка фильтрации спектра
-    void checkSpectrumFiltrationFrequencies(); // Проверка частот фильтрации
+    void checkSpectrumWeightWindowWidth(); // Проверка ширины весового окна спектра
+    void checkIntegralWeightWindowWidth(); // Проверка ширины весового окна интеграла
+    void setEnabledIntegralCorrection(); // Установка состояния коррекции интеграла
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

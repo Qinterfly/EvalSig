@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>437</height>
+    <width>356</width>
+    <height>739</height>
    </rect>
   </property>
   <property name="font">
@@ -98,9 +98,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBoxFilters">
+    <widget class="QGroupBox" name="groupBoxTimeFilters">
      <property name="title">
-      <string>Фильтры</string>
+      <string>Фильтры во временной области</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
@@ -170,6 +170,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="spinBoxLeftLinearBoundary">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -186,6 +189,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="spinBoxRightLinearBoundary">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -197,6 +203,218 @@
           </property>
           <property name="value">
            <number>100</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxBandpassFilter">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Фильтр в частотной области</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <item>
+       <layout class="QGridLayout" name="layoutSpectrumSettings">
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelWeightWindowWidth">
+          <property name="text">
+           <string>Ширина окна:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelOverlapFactor">
+          <property name="text">
+           <string>Перекрытие окон:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelWeightWindowType">
+          <property name="text">
+           <string>Тип весового окна:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="comboBoxWeightWindowType">
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <item>
+           <property name="text">
+            <string>Хэмминга</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Ханна</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Блэкмана</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QSpinBox" name="spinBoxWeightWindowWidth">
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>16384</number>
+          </property>
+          <property name="value">
+           <number>512</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelSpectrumInterpolation">
+          <property name="text">
+           <string>Линейная интерполяция:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QSpinBox" name="spinBoxSpectrumInterpolation">
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>100000</number>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="displayIntegerBase">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelSmoothWidth">
+          <property name="text">
+           <string>Ширина сглаживания:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QSpinBox" name="spinBoxSmoothWidth">
+          <property name="maximum">
+           <number>2048</number>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <number>3</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
+          <property name="decimals">
+           <number>6</number>
+          </property>
+          <property name="maximum">
+           <double>0.999999000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="spaceBandpassFilter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Preferred</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="layoutBandpassSettings">
+        <item>
+         <widget class="QLabel" name="labelBandpassFrequencies">
+          <property name="text">
+           <string>Границы, Гц</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacerBandpassFrequencies">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxLowerFrequency">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="maximum">
+           <double>10000.000000000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxUpperFrequency">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>0.001000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10000.000000000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <double>22.000000000000000</double>
           </property>
          </widget>
         </item>

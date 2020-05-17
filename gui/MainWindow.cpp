@@ -47,9 +47,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCalculationTemplate, SIGNAL(triggered()), this, SLOT(changeCalculationTemplate())); // Добавление сигнала со смещением
     // Характеристики сигналов
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateSettingsOfCharacterstics()), Qt::QueuedConnection); // Проверяем возможность расчета
-    connect(ui->checkBoxSpectrumFiltration, SIGNAL(stateChanged(int)), this, SLOT(setSpectrumFiltration())); // Установка фильтрации спектра
-    connect(ui->spinBoxSpectrumLowerFrequency, SIGNAL(editingFinished()), this, SLOT(checkSpectrumFiltrationFrequencies())); // Проверка частот фильтрации по нижней
-    connect(ui->spinBoxSpectrumUpperFrequency, SIGNAL(editingFinished()), this, SLOT(checkSpectrumFiltrationFrequencies())); // Проверка частот фильтрации по верхней
+    connect(ui->spinBoxSpectrumWeightWindowWidth, SIGNAL(editingFinished()), this, SLOT(checkSpectrumWeightWindowWidth())); // При изменении ширины весового окна спектра
+    connect(ui->spinBoxIntegralWeightWindowWidth, SIGNAL(editingFinished()), this, SLOT(checkIntegralWeightWindowWidth())); // При изменении ширины весового окна интеграла
+    connect(ui->pushButtonSpectrumCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotSpectrum())); // Расчет и построение спектра
+    connect(ui->pushButtonIntegralCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotIntegral())); // Расчет и построение интеграла
+    connect(ui->pushButtonAnalysisCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotAnalysis())); // Расчет и построение анализа
+    connect(ui->checkBoxIntegralCorrection, SIGNAL(stateChanged(int)), this, SLOT(setEnabledIntegralCorrection())); // Установка состояния коррекции интеграла
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
