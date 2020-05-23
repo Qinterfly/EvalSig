@@ -510,6 +510,10 @@ QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderI
     // Контейнеры результатов
     resultData.resize(nInputData); // Изменение размеров контейнера с результирующими данными
     QVector<DataSignal> vecResultData; // Вектор с результатом
+    // Интеграл от весового окна
+    double weightWindowIntegral = 0.0;
+    for (int i = 1; i != weightWindowWidth; ++i)
+        weightWindowIntegral += (weightWindow[i] + weightWindow[i - 1]) / 2.0;
     // FFT-IFFT
     double tempVal = 0.0;
     double timeStep = dataSignal.timeStep();
@@ -544,7 +548,7 @@ QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderI
         }
         // Нормировка результатов расчета
         for (double &res : resultData)
-            res *= timeStep / stepWindow / 2.0;
+            res *= timeStep / (2.0 * weightWindowIntegral);
         // Формирование выходного сигнала
         PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
         vecResultData.push_back(DataSignal(resultData, tProperty)); // Вставка результата в контейнер

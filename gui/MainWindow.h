@@ -69,12 +69,14 @@ public slots:
     void calculateAndPlotSpectrum(bool isPlot = true); // Спектра
     void calculateAndPlotIntegral(bool isPlot = true); // Интеграла
     void calculateAndPlotAnalysis(bool isPlot = true); // Анализа
+    void saveCharacteristic(int indSelected = -1); // Сохранение характеристик сигналов
     // Установка параметров характеристик сигналов
     void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов
     void checkSpectrumWeightWindowWidth(); // Проверка ширины весового окна спектра
     void checkIntegralWeightWindowWidth(); // Проверка ширины весового окна интеграла
     void setEnabledIntegralCorrection(); // Установка состояния коррекции интеграла
-    void setEnabledIntegralDomain(); // Установка состяния параметров интегрирования
+    void setEnabledIntegralDomain(); // Установка состояния параметров интегрирования
+
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

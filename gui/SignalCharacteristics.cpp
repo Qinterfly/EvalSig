@@ -4,6 +4,9 @@
 
 // ---- Характеристики сигнала ---------------------------------------------------------------------------------
 
+// Вспомогательные функции
+void checkWeightWindowWidth(QPointer<QSpinBox> spinBoxWeightWindowWidth); // Проверка ширины весового окна по указателю
+
 // Очистка обработанных сигналов
 void MainWindow::clearSignalCharacteristics(){
     mapSignalCharacteristics_.clear(); // Очистка данных сигналов
@@ -37,6 +40,7 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     int windowSmoothWidth = ui->spinBoxSpectrumSmoothWidth->value(); // Число точек для сглаживания
     // Вычисление спектра сигнала
     mapSignalCharacteristics_.insert(iSelectedTab, computePowerSpectralDensity(vecDataSignal_[iSelectedSignal], windowFun, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth));
+    mapSignalCharacteristics_[iSelectedTab].setFileName(vecDataSignal_[iSelectedSignal].getName()); // Запоминаем имя исходного сигнала
     // Включение возможности сохранения
     ui->pushButtonSpectrumSave->setEnabled(true);
     // Проверка необходимости построения
@@ -90,6 +94,7 @@ void MainWindow::calculateAndPlotIntegral(bool isPlot){
         mapSignalCharacteristics_.insert(iSelectedTab, integrateFreqDomain(vecDataSignal_[iSelectedSignal], integralOrder, windowFun, weightWindowWidth, overlapFactor)[integralOrder - 1]); // Интегрирование сигнала
         break;
     }
+    mapSignalCharacteristics_[iSelectedTab].setFileName(vecDataSignal_[iSelectedSignal].getName()); // Запоминаем имя исходного сигнала
     // Включение возможности сохранения
     ui->pushButtonIntegralSave->setEnabled(true);
     // Проверка необходимости построения
@@ -140,6 +145,7 @@ void MainWindow::calculateAndPlotAnalysis(bool isPlot){
         analysisName += "-Скоррект.";
         break;
     }
+    mapSignalCharacteristics_[iSelectedTab].setFileName(vecDataSignal_[iSelectedSignal].getName()); // Запоминаем имя исходного сигнала
     // Включение возможности сохранения
     ui->pushButtonAnalysisSave->setEnabled(true);
     // Проверка необходимости построения
@@ -193,15 +199,6 @@ void MainWindow::updateSettingsOfCharacterstics(){
     }
 }
 
-// Проверка ширины весового окна по указателю
-void checkWeightWindowWidth(QPointer<QSpinBox> spinBoxWeightWindowWidth){
-    int weightWindowWidth = spinBoxWeightWindowWidth->value(); // Текущая ширина окна
-    int weightWindowWidth2 = static_cast<int>(qPow(2, previousPow2(weightWindowWidth))); // Ближайшая ширина окна, кратная двум
-    // Установка ширины окна, кратной двум
-    if (weightWindowWidth != weightWindowWidth2)
-        spinBoxWeightWindowWidth->setValue(weightWindowWidth2);
-}
-
 // Проверка ширины весового окна спектра
 void MainWindow::checkSpectrumWeightWindowWidth(){
     checkWeightWindowWidth(ui->spinBoxSpectrumWeightWindowWidth);
@@ -217,7 +214,7 @@ void MainWindow::setEnabledIntegralCorrection(){
     ui->spinBoxIntegralCorrectionFactor->setEnabled(ui->checkBoxIntegralCorrection->isChecked());
 }
 
-// Установка состяния параметров интегрирования
+// Установка состояния параметров интегрирования
 void MainWindow::setEnabledIntegralDomain(){
     bool isTimeDomain = ui->comboBoxIntegralDomain->currentIndex() == 0;
     bool isFrequencyDomain = !isTimeDomain;
@@ -230,5 +227,59 @@ void MainWindow::setEnabledIntegralDomain(){
     ui->checkBoxIntegralCorrection->setEnabled(isTimeDomain);
 }
 
+// Сохранение характеристик сигналов
+void MainWindow::saveCharacteristic(int indSelected){
+    static QString const ext = ".txt";
+    static QString const hintExt = "Text files (*" + ext + ")";
+    bool isUserCalc = false;
+    // Если объект не выбран программно, то выбираем текущий пользовательский
+    if (indSelected < 0){
+        indSelected = ui->showModeWidget->currentIndex();
+        isUserCalc = true;
+    }
+    QString saveCaption;
+    QString postfix;
+    switch (indSelected) {
+    case 1: // Спектр
+        saveCaption = "Сохранить спектр";
+        postfix = "-Спектр";
+        break;
+    case 2: // Интеграл
+        saveCaption = "Сохранить интеграл";
+        postfix = "-Интеграл";
+        break;
+    case 3:
+        saveCaption = "Сохранить анализ";
+        postfix = "-Анализ";
+        break;
+    }
+    // Формирование имени файла
+    DataSignal const& dataSignal = mapSignalCharacteristics_[indSelected];
+    QString fileName = QFileInfo(dataSignal.getName()).completeBaseName() + postfix + ext;
+        // Организация диалога с пользователем
+    if (isUserCalc){
+        QString fullFilePath = QFileDialog::getSaveFileName(this, saveCaption, lastPath_ + fileName, hintExt);
+        if (fullFilePath.isEmpty()) return;
+        QFileInfo infoName(fullFilePath); // Создание информационного объекта
+        fileName = infoName.fileName(); // Имя файла
+        if ( !fileName.contains(ext) ) // Добавление расширения
+            fileName += ext;
+        lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
+    }
+     // Сохранение файла
+    if (!dataSignal.writeDataFile(lastPath_, fileName) && isUserCalc)
+        ui->statusBar->showMessage("Сохранение характеристики выполнено успешно");
+}
+
+// ---- Вспомогательные ----------------------------------------------------------------------------------------
+
+// Проверка ширины весового окна по указателю
+void checkWeightWindowWidth(QPointer<QSpinBox> spinBoxWeightWindowWidth){
+    int weightWindowWidth = spinBoxWeightWindowWidth->value(); // Текущая ширина окна
+    int weightWindowWidth2 = static_cast<int>(qPow(2, previousPow2(weightWindowWidth))); // Ближайшая ширина окна, кратная двум
+    // Установка ширины окна, кратной двум
+    if (weightWindowWidth != weightWindowWidth2)
+        spinBoxWeightWindowWidth->setValue(weightWindowWidth2);
+}
 
 // -------------------------------------------------------------------------------------------------------------
