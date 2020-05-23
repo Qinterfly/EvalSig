@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonIntegralCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotIntegral())); // Расчет и построение интеграла
     connect(ui->pushButtonAnalysisCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotAnalysis())); // Расчет и построение анализа
     connect(ui->checkBoxIntegralCorrection, SIGNAL(stateChanged(int)), this, SLOT(setEnabledIntegralCorrection())); // Установка состояния коррекции интеграла
+    connect(ui->comboBoxIntegralDomain, SIGNAL(currentIndexChanged(int)), this, SLOT(setEnabledIntegralDomain())); // Установка состяния параметров интегрирования
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

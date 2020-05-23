@@ -479,6 +479,87 @@ DataSignal linearFilter(DataSignal const& dataSignal, int leftMeanNumber, int ri
     return DataSignal(resData, dataSignal.getProperty());
 }
 
+// Интегрирование сигнала в частотной области
+QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderIntegral, WindowFunction windowFun, int weightWindowWidth, double overlapFactor){
+    int nInputData = dataSignal.size(); // Длина временных данных
+    // Входные-выходные данные
+    QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
+    normalizeVec(inputData, MEAN); // (!) Нормализация исходных данных
+    QVector<double> resultData; // Результирующие отфильтрованные данные
+    // Объекты, необходимые для выполнения преобразования
+    double * currentData; // Значения сигнала для текущего окна
+    fftw_complex * currentFFTResult; // Результат преобразования для текущего окна
+    fftw_plan planForward, planInverse; // Планы для преобразования Фурье
+    // Выделение памяти для используемых объектов
+    currentData      = (double *) fftw_malloc(sizeof(double) * weightWindowWidth);
+    currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * weightWindowWidth);
+    // Создание плана расчета
+    planForward = fftw_plan_dft_r2c_1d(weightWindowWidth, currentData, currentFFTResult, FFTW_MEASURE); // Прямое преобразование
+    planInverse = fftw_plan_dft_c2r_1d(weightWindowWidth, currentFFTResult, currentData, FFTW_MEASURE); // Обратное преобразования
+    // Настройка весового окна
+    QVector<double> weightWindow = computeWeightWindow(windowFun, weightWindowWidth);
+    int stepWindow = qCeil(weightWindowWidth * (1 - overlapFactor)); // Шаг сдвига окна
+    int leftBound = 0, rightBound; // Границы окна
+    int outWindowWidth = weightWindowWidth / 2 + 1; // Реальный размер окна с учетом симметрии
+    int nWindows = 0; // Число окон
+    // Расчет частот
+    QVector<double> integrationMult(weightWindowWidth);
+    double stepFreq = dataSignal.nyquistFrequency() / (outWindowWidth - 1);
+    for (int i = 0; i != weightWindowWidth; ++i)
+        integrationMult[i] = 1 / (2 * M_PI * stepFreq);
+    // Контейнеры результатов
+    resultData.resize(nInputData); // Изменение размеров контейнера с результирующими данными
+    QVector<DataSignal> vecResultData; // Вектор с результатом
+    // FFT-IFFT
+    double tempVal = 0.0;
+    double timeStep = dataSignal.timeStep();
+    while (orderIntegral--) {
+        while (leftBound < nInputData){
+            rightBound = leftBound + weightWindowWidth; // Правая граница весового окна
+            // Если полное окно не укладывается до конца сигнала
+            if (rightBound > nInputData)
+                break;
+            // Применение оконного преобразования к временным данным
+            for (int i = 0; i != weightWindowWidth; ++i)
+                currentData[i] = inputData[leftBound + i] * weightWindow[i];
+            fftw_execute(planForward); // Выполнение прямого преобразования Фурье
+            // Выполнение преобразования z_ = z / (i * w)
+            for (int i = 0; i < outWindowWidth; ++i){
+                // Делим на частоту
+                tempVal = integrationMult[i];
+                currentFFTResult[i][0] /= tempVal;
+                currentFFTResult[i][1] /= tempVal;
+                // Делим на мнинмую единицу
+                std::swap(currentFFTResult[i][0], currentFFTResult[i][1]);
+                currentFFTResult[i][1] *= -1;
+            }
+            fftw_execute(planInverse); // Выполнение обратного преобразования Фурье
+            // Применение оконного преобразования к результату обратного преобразования и вставка с перекрытием
+            for (int i = 0; i != weightWindowWidth; ++i){
+                currentData[i] *= weightWindow[i]; // Домножение на весовое окно
+                resultData[leftBound + i] += currentData[i]; // Вставка с перекрытием
+            }
+            ++nWindows; // Приращение числа окон
+            leftBound += stepWindow; // Сдвиг левой границы окна
+        }
+        // Нормировка результатов расчета
+        for (double &res : resultData)
+            res *= timeStep / stepWindow / 2.0;
+        // Формирование выходного сигнала
+        PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
+        vecResultData.push_back(DataSignal(resultData, tProperty)); // Вставка результата в контейнер
+        // Сохранение результата для следующей итерации
+        inputData = resultData;
+        normalizeVec(inputData, MEAN); // (!) Нормализация исходных данных
+    }
+    // Освобождение ресурсов, использованных для преобразования
+    fftw_destroy_plan(planForward);
+    fftw_destroy_plan(planInverse);
+    fftw_free(currentData);
+    fftw_free(currentFFTResult);
+    return vecResultData;
+}
+
 // ---- Вспомогательные ----------------------------------------------------------------------------------------
 
 // Ближайшая предыдущая степень двойки

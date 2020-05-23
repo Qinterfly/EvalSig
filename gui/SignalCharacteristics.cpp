@@ -37,6 +37,8 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     int windowSmoothWidth = ui->spinBoxSpectrumSmoothWidth->value(); // Число точек для сглаживания
     // Вычисление спектра сигнала
     mapSignalCharacteristics_.insert(iSelectedTab, computePowerSpectralDensity(vecDataSignal_[iSelectedSignal], windowFun, weightWindowWidth, overlapFactor, lengthSpectrum, windowSmoothWidth));
+    // Включение возможности сохранения
+    ui->pushButtonSpectrumSave->setEnabled(true);
     // Проверка необходимости построения
     if ( !isPlot )
         return;
@@ -71,6 +73,9 @@ void MainWindow::calculateAndPlotIntegral(bool isPlot){
     // Параметры интегрирования
     int integralOrder = ui->spinBoxIntegralOrder->value(); // Порядок интегрирования
     double correctionFactor = -1; // Корректировочный коэффициент
+    WindowFunction windowFun = WindowFunction(ui->comboBoxIntegralWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
+    int weightWindowWidth = ui->spinBoxIntegralWeightWindowWidth->value(); // Ширина весового окна
+    double overlapFactor = ui->spinBoxIntegralOverlapFactor->value(); // Коэффициент перекрытия окон
     // Проверка необходимости коррекции
     if (ui->checkBoxIntegralCorrection->isChecked())
         correctionFactor = ui->spinBoxIntegralCorrectionFactor->value();
@@ -80,11 +85,13 @@ void MainWindow::calculateAndPlotIntegral(bool isPlot){
     case 0:
         mapSignalCharacteristics_.insert(iSelectedTab, integrateTrapz(vecDataSignal_[iSelectedSignal], integralOrder, correctionFactor)[integralOrder - 1]); // Интегрирование сигнала
         break;
-        // В частотной области TODO
+        // В частотной области
     case 1:
-        mapSignalCharacteristics_.insert(iSelectedTab, integrateTrapz(vecDataSignal_[iSelectedSignal], integralOrder, correctionFactor)[integralOrder - 1]); // Интегрирование сигнала
+        mapSignalCharacteristics_.insert(iSelectedTab, integrateFreqDomain(vecDataSignal_[iSelectedSignal], integralOrder, windowFun, weightWindowWidth, overlapFactor)[integralOrder - 1]); // Интегрирование сигнала
         break;
     }
+    // Включение возможности сохранения
+    ui->pushButtonIntegralSave->setEnabled(true);
     // Проверка необходимости построения
     if ( !isPlot )
         return;
@@ -133,6 +140,8 @@ void MainWindow::calculateAndPlotAnalysis(bool isPlot){
         analysisName += "-Скоррект.";
         break;
     }
+    // Включение возможности сохранения
+    ui->pushButtonAnalysisSave->setEnabled(true);
     // Проверка необходимости построения
     if ( !isPlot )
         return;
@@ -206,6 +215,19 @@ void MainWindow::checkIntegralWeightWindowWidth(){
 // Установка состояния коррекции интеграла
 void MainWindow::setEnabledIntegralCorrection(){
     ui->spinBoxIntegralCorrectionFactor->setEnabled(ui->checkBoxIntegralCorrection->isChecked());
+}
+
+// Установка состяния параметров интегрирования
+void MainWindow::setEnabledIntegralDomain(){
+    bool isTimeDomain = ui->comboBoxIntegralDomain->currentIndex() == 0;
+    bool isFrequencyDomain = !isTimeDomain;
+    // В частотной области
+    ui->spinBoxIntegralOverlapFactor->setEnabled(isFrequencyDomain);
+    ui->spinBoxIntegralWeightWindowWidth->setEnabled(isFrequencyDomain);
+    ui->comboBoxIntegralWeightWindowType->setEnabled(isFrequencyDomain);
+    // Во временной области
+    ui->spinBoxIntegralCorrectionFactor->setEnabled(isTimeDomain);
+    ui->checkBoxIntegralCorrection->setEnabled(isTimeDomain);
 }
 
 

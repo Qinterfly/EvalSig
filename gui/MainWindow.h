@@ -74,6 +74,7 @@ public slots:
     void checkSpectrumWeightWindowWidth(); // Проверка ширины весового окна спектра
     void checkIntegralWeightWindowWidth(); // Проверка ширины весового окна интеграла
     void setEnabledIntegralCorrection(); // Установка состояния коррекции интеграла
+    void setEnabledIntegralDomain(); // Установка состяния параметров интегрирования
 protected:
     bool eventFilter(QObject * obj, QEvent * event) override; // Переопределение событий программы
 private:

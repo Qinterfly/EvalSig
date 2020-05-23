@@ -17,7 +17,8 @@ LevelsWindow::LevelsWindow(CalculationTemplate & calcTemplate, QVector<DataSigna
 {
     ui->setupUi(this);
     // Создание соединений сигнал - слот
-    connect(ui->comboBoxBase, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения
+    connect(ui->comboBoxBase, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения по базовому
+    connect(ui->comboBoxSupport, SIGNAL(currentIndexChanged(int)), this, SLOT(setSaveState(int))); // Установка возможности сохранения по опорному
     connect(ui->pushButtonSaveLevels, SIGNAL(clicked()), this, SLOT(save())); // Сохранение результатов
     connect(ui->pushButtonShowLevels, SIGNAL(clicked()), this, SLOT(showLevels())); // Отображение уровней на графике
     connect(ui->pushButtonAssessNumberOfLevels, SIGNAL(clicked()), this, SLOT(assessNumberOfLevels())); // Оценить число уровней
@@ -69,7 +70,6 @@ void LevelsWindow::applyCalculationTemplate(int indBaseSignal, int indSupportSig
     // Параметры разбиения
     ui->spinBoxLevelStep->setValue(windowData["levelStep"].toDouble()); // Смещение уровней
     ui->spinBoxOverlapFactor->setValue(windowData["overlapFactor"].toDouble()); // Перекрытие уровней
-    ui->spinBoxSmoothIntegrFactor->setValue(windowData["smoothIntegrFactor"].toDouble()); // Коррекция интегралов
     ui->spinBoxSmoothApproxFactor->setValue(windowData["smoothApproxFactor"].toDouble()); // Сглаживание перемещений
     ui->spinBoxTruncatePercent->setValue(windowData["truncatePercent"].toDouble()); // Усечение фрагментов
     ui->spinBoxDepthGluing->setValue(windowData["depthGluing"].toDouble()); // Глубина склейки
@@ -83,12 +83,11 @@ void LevelsWindow::applyCalculationTemplate(int indBaseSignal, int indSupportSig
 
 // Установка возможности сохранения
 void LevelsWindow::setSaveState(int){
-    if (!ui->comboBoxBase->currentText().isEmpty()){
+    if ( !ui->comboBoxBase->currentText().isEmpty() && !ui->comboBoxSupport->currentText().isEmpty() ){
         ui->pushButtonSaveLevels->setEnabled(true);
         ui->pushButtonShowLevels->setEnabled(true);
         ui->pushButtonAssessNumberOfLevels->setEnabled(true);
-    }
-    else {
+    } else {
         ui->pushButtonSaveLevels->setEnabled(false);
         ui->pushButtonShowLevels->setEnabled(false);
         ui->pushButtonAssessNumberOfLevels->setEnabled(false);
@@ -108,19 +107,13 @@ void LevelsWindow::save(bool isUserCalc){
     }
     // Сигналы
     DataSignal base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
-    DataSignal support; // Опорный
+    DataSignal support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1]; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
     double overlapFactor = ui->spinBoxOverlapFactor->value();
-    double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
     double truncatePercent = ui->spinBoxTruncatePercent->value();
     double depthGluing = ui->spinBoxDepthGluing->value();
-    // Получение перемещения
-    if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
-    else
-        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
     // Нормализация данных
     base.normalize(FIRST); // Базового
     support.normalize(FIRST); // Опорного
@@ -156,7 +149,6 @@ void LevelsWindow::save(bool isUserCalc){
     // Параметры разбиения
     calcTemplate_.addWindowData(WINDOW_NAME, "levelStep", levelStep); // Смещение уровней
     calcTemplate_.addWindowData(WINDOW_NAME, "overlapFactor", overlapFactor); // Перекрытие уровней
-    calcTemplate_.addWindowData(WINDOW_NAME, "smoothIntegrFactor", smoothIntegrFactor); // Коррекция интегралов
     calcTemplate_.addWindowData(WINDOW_NAME, "smoothApproxFactor", smoothApproxFactor); // Сглаживание перемещений
     calcTemplate_.addWindowData(WINDOW_NAME, "truncatePercent", truncatePercent); // Усечение фрагментов
     calcTemplate_.addWindowData(WINDOW_NAME, "depthGluing", depthGluing); // Глубина склейки
@@ -172,19 +164,12 @@ void LevelsWindow::save(bool isUserCalc){
 void LevelsWindow::showLevels(){
     static const double SHIFT_XMAX = 0.05; // Смещение максимума по оси абсцисс
     // Сигналы
-    DataSignal const& base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
-    DataSignal support; // Опорный
+    DataSignal support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1]; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
     double overlapFactor = ui->spinBoxOverlapFactor->value();
-    double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
-    // Получение опорного
-    if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
-    else
-        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
-    support.normalize(FIRST); // Опорного
+    support.normalize(FIRST); // Нормировка опорного
     DataSignal approxSupport = approximateSmoothSpline(support, smoothApproxFactor); // Аппроксимация опорного
     // Подготовка контейнеров результирующих значений
     QVector<double> lowBoundLevels = {0}, upperBoundLevels = {0}; // Нижние и верхние границы уровней
@@ -236,18 +221,12 @@ void LevelsWindow::showLevels(){
 // Оценить число уровней
 void LevelsWindow::assessNumberOfLevels(){
     DataSignal const& base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
-    DataSignal support; // Опорный
+    DataSignal support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1]; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();
     double overlapFactor = ui->spinBoxOverlapFactor->value();
-    double smoothIntegrFactor = ui->spinBoxSmoothIntegrFactor->value();
     double smoothApproxFactor = ui->spinBoxSmoothApproxFactor->value();
-    // Получение опорного
-    if (ui->comboBoxSupport->currentText().isEmpty())
-        support = integrateTrapz(base, 2, smoothIntegrFactor)[1];
-    else
-        support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1];
-    support.normalize(FIRST); // Опорного
+    support.normalize(FIRST); // Нормировка опорного
     DataSignal approxSupport = approximateSmoothSpline(support, smoothApproxFactor); // Аппроксимация опорного
     int nLevels = DivisionDataSignal::assessNumberOfLevels(approxSupport, calculationInd_, overlapFactor, levelStep); // Оценка числа уровней
     ui->groupBoxParams->setTitle("Параметры разбиения [ n = " + QString::number(nLevels) + " ]");

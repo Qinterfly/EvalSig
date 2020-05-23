@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
-    <height>574</height>
+    <width>912</width>
+    <height>545</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -142,67 +142,7 @@
         <string>Параметры разбиения</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="6" column="0">
-         <widget class="QLabel" name="labelDepthGluing">
-          <property name="text">
-           <string>Глубина склейки:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="maximum">
-           <double>0.999900000000000</double>
-          </property>
-          <property name="stepType">
-           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-          </property>
-          <property name="value">
-           <double>0.500000000000000</double>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxSmoothApproxFactor">
-          <property name="decimals">
-           <number>6</number>
-          </property>
-          <property name="maximum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="stepType">
-           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-          </property>
-          <property name="value">
-           <double>0.000100000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelOverlapFactor">
-          <property name="text">
-           <string>Перекрытие уровней: </string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="labelSmoothIntegrFactor">
-          <property name="text">
-           <string>Коррекция интегралов: </string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="labelLevelStep">
-          <property name="text">
-           <string>Смещение уровней:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxTruncatePercent">
           <property name="decimals">
            <number>4</number>
@@ -218,53 +158,21 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxLevelStep">
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="maximum">
-           <double>100000.000000000000000</double>
-          </property>
-          <property name="stepType">
-           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-          </property>
-          <property name="value">
-           <double>10.000000000000000</double>
-          </property>
-         </widget>
-        </item>
         <item row="5" column="0">
-         <widget class="QLabel" name="labelTruncatePercent">
+         <widget class="QLabel" name="labelDepthGluing">
           <property name="text">
-           <string>Усечение фрагментов :</string>
+           <string>Глубина склейки:</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="labelSmoothApproxFactor">
           <property name="text">
            <string>Сглаживание перемещений: </string>
           </property>
          </widget>
         </item>
-        <item row="3" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxSmoothIntegrFactor">
-          <property name="decimals">
-           <number>6</number>
-          </property>
-          <property name="maximum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="stepType">
-           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-          </property>
-          <property name="value">
-           <double>0.000001000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="2">
+        <item row="5" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxDepthGluing">
           <property name="decimals">
            <number>4</number>
@@ -277,6 +185,42 @@
           </property>
           <property name="value">
            <double>0.100000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <spacer name="horizontalSpacerDepthGluing">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelLevelStep">
+          <property name="text">
+           <string>Смещение уровней:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxSmoothApproxFactor">
+          <property name="decimals">
+           <number>6</number>
+          </property>
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <double>0.000100000000000</double>
           </property>
          </widget>
         </item>
@@ -307,19 +251,6 @@
          </spacer>
         </item>
         <item row="3" column="1">
-         <spacer name="horizontalSpacerSmoothIntegrFactor">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="4" column="1">
          <spacer name="horizontalSpacerSmoothApproxFactor">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -332,21 +263,54 @@
           </property>
          </spacer>
         </item>
-        <item row="5" column="1">
-         <spacer name="horizontalSpacerTruncatePercent">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelOverlapFactor">
+          <property name="text">
+           <string>Перекрытие уровней: </string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="6" column="1">
-         <spacer name="horizontalSpacerDepthGluing">
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelTruncatePercent">
+          <property name="text">
+           <string>Усечение фрагментов :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxLevelStep">
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="maximum">
+           <double>100000.000000000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <double>10.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxOverlapFactor">
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="maximum">
+           <double>0.999900000000000</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+          <property name="value">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <spacer name="horizontalSpacerTruncatePercent">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>

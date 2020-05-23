@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -393,8 +393,14 @@
             </item>
             <item row="0" column="7">
              <widget class="QCheckBox" name="checkBoxIntegralCorrection">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Коррекция</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
               </property>
              </widget>
             </item>

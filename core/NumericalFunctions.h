@@ -15,6 +15,7 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
 DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint = -1, bool isUpdateScanPeriod = true); // Аппроксимация по методу наименьших квадратов
     // Интегрирование
 QVector<DataSignal> integrateTrapz(DataSignal const& dataSignal, int orderIntegral, double smoothFactor); // Интегрирование сигнала по правилу трапеций с коррекций
+QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderIntegral, WindowFunction windowFun, int weightWindowWidth, double overlapFactor); // Интегрирование сигнала в частотной области
     // Интерполяция
 DataSignal interpolateLinear(DataSignal const& dataSignal, int nPoint, bool isInner = false, bool isUpdateScanPeriod = true); // Линейная интерполяция сигнала
 DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double> inputBounds, int nDivPoints, bool isInner = false, bool isUpdateScanPeriod = true); // Интерполяция сплайном
