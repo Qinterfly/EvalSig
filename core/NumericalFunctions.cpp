@@ -622,20 +622,20 @@ double Spline::scaleValue(double x) const {
 }
 
 // Наивный поиск локальных экстремумов
-QVector<double> FindPeaksDirect(QVector<double> const& data, int minDistance, std::function<bool(double, double)> compare){
+QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance, std::function<bool(double, double)> compare){
     static int const RESERVE_SIZE = 32;
     int nData = data.size();    // Длина сигнала
     int distance = minDistance; // Число отсчетов до предыдущего экстремума
     double previous = 1.0;      // Предыдущее значение производной
     double current = 0.0;       // Текущее значение производной
-    QVector<double> resVec;     // Результирующий вектор корней
+    QVector<int> resVec;        // Результирующий вектор корней
     resVec.reserve(RESERVE_SIZE);
     for (int i = 1; i != nData; ++i){
         current = data[i] - data[i - 1];
         // Если знак производной поменялся
         if ( current * previous < 0 && distance >= minDistance && compare(current, 0.0) ){
             distance = 0;
-            resVec.push_back( (data[i] + data[i - 1]) / 2.0 );
+            resVec.push_back(i);
         }
         previous = current;
         ++distance; // Приращение числа отсчетов между экстремумами
