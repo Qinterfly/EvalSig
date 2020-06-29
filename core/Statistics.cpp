@@ -199,7 +199,7 @@ int Statistics::writeSignalList(QString const& path, QString const& fileName) co
     outputStream.setCodec("cp1251"); // Кодировка CP1251
     int iSignal = 0;
     for (DataSignal const& signal : *pVecDataSignal){
-        outputStream << QString::number(++iSignal) << ": " << signal.getName() << endl;
+        outputStream << QString::number(++iSignal) << ": " << signal.getName() << Qt::endl;
     }
     file.close(); // Закрытие файла
     return 0;

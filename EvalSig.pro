@@ -35,7 +35,6 @@ SOURCES += \
         gui/SignalCharacteristics.cpp \
         gui/SignalProcessing.cpp \
         gui/Main.cpp \
-        test/Tests.cpp \
         gui/InitializeMethods.cpp \
         gui/SetMethods.cpp \
         gui/ClearMethods.cpp \
@@ -48,7 +47,8 @@ SOURCES += \
         gui/SignalCharacteristicsWindow.cpp \
         gui/DataTransfer.cpp \
         gui/QCustomPlotZoom.cpp \
-     include/csaps.cpp
+        include/csaps.cpp \
+        test/Tests.cpp
 
 
 HEADERS += \
@@ -65,7 +65,6 @@ HEADERS += \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         gui/QCPColorCurve.h \
-        test/Tests.h \
         core/FileOperate.h \
         core/PropertyDataSignal.h \
         core/TimeWindowProperty.h \
@@ -73,7 +72,8 @@ HEADERS += \
         gui/SignalCharacteristicsWindow.h \
         gui/QCustomPlotZoom.h \
         include/csaps.h \
-    include/fftw3.h
+        include/fftw3.h \
+        test/Tests.h
 
 FORMS += \
     gui/AssociatedStatisticsWindow.ui \
@@ -92,7 +92,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 win32:RC_ICONS += $$PWD/gui/icons/app-icon.ico
 
 RESOURCES += \
-    gui/resource.qrc
+          gui/resource.qrc
 
 # Include
 INCLUDEPATH += $$PWD/include

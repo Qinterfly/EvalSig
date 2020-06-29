@@ -622,20 +622,24 @@ double Spline::scaleValue(double x) const {
 }
 
 // Наивный поиск локальных экстремумов
-QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance, std::function<bool(double, double)> compare){
+QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance, double thresholdFrac, std::function<bool(double, double)> compare){
     static int const RESERVE_SIZE = 32;
-    int nData = data.size();    // Длина сигнала
+    int nData = data.size(); // Длина сигнала
     int distance = minDistance; // Число отсчетов до предыдущего экстремума
-    double previous = 1.0;      // Предыдущее значение производной
-    double current = 0.0;       // Текущее значение производной
-    QVector<int> resVec;        // Результирующий вектор корней
+    double previous = data[1] - data[0]; // Предыдущее значение производной
+    double current = 0.0; // Текущее значение производной
+    QPair<double, double> minMaxData = minMaxVec(data); // Минимум и максимум сигнала
+    double thresholdVal = qAbs(thresholdFrac * qMax(qAbs(minMaxData.first), qAbs(minMaxData.second))); // Срез пиков ниже этого значения
+    // Результирующий вектор корней
+    QVector<int> resVec;
     resVec.reserve(RESERVE_SIZE);
-    for (int i = 1; i != nData; ++i){
+    // Поиск
+    for (int i = 2; i != nData; ++i){
         current = data[i] - data[i - 1];
         // Если знак производной поменялся
-        if ( current * previous < 0 && distance >= minDistance && compare(current, 0.0) ){
+        if ( current * previous < 0 && distance >= minDistance && compare(current, 0.0) && qAbs(data[i - 1]) > thresholdVal ){
             distance = 0;
-            resVec.push_back(i);
+            resVec.push_back(i - 1);
         }
         previous = current;
         ++distance; // Приращение числа отсчетов между экстремумами

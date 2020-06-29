@@ -586,20 +586,20 @@ int DivisionDataSignal::writeInfo(QString const& dirName, QString const& fileNam
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
     // Запись информации об уровнях
-    outputStream << "Base: " << base_.getName() << endl;
-    outputStream << "Support: " << support_.getName() << endl;
+    outputStream << "Base: " << base_.getName() << Qt::endl;
+    outputStream << "Support: " << support_.getName() << Qt::endl;
     outputStream << "Calculation boundaries: " << QString::number(calculationInd_.first + 1);
-    outputStream << " - " << QString::number(calculationInd_.second + 1) << endl;
-    outputStream << "Number of levels: " << QString::number(nLevels_) << endl;
-    outputStream << "--------------- Control parameters ----------------------" << endl;
-    outputStream << "Step: " << QString::number(levelStep_) << endl;
-    outputStream << "Overlap factor: " << QString::number(overlapFactor_) << endl;
-    outputStream << "Truncate percent: " << QString::number(truncatePercent_) << endl;
-    outputStream << "Depth gluing percent: " << QString::number(depthGluing_) << endl;
-    outputStream << "-------------- Boundaries of levels ---------------------" << endl;
+    outputStream << " - " << QString::number(calculationInd_.second + 1) << Qt::endl;
+    outputStream << "Number of levels: " << QString::number(nLevels_) << Qt::endl;
+    outputStream << "--------------- Control parameters ----------------------" << Qt::endl;
+    outputStream << "Step: " << QString::number(levelStep_) << Qt::endl;
+    outputStream << "Overlap factor: " << QString::number(overlapFactor_) << Qt::endl;
+    outputStream << "Truncate percent: " << QString::number(truncatePercent_) << Qt::endl;
+    outputStream << "Depth gluing percent: " << QString::number(depthGluing_) << Qt::endl;
+    outputStream << "-------------- Boundaries of levels ---------------------" << Qt::endl;
     for (int i = 0; i != nLevels_; ++i) {
         outputStream << QString::number(indLevels_[i]) << ": " << QString::number(lowBoundLevels_[i]) << ", ";
-        outputStream << QString::number(upperBoundLevels_[i]) << endl;
+        outputStream << QString::number(upperBoundLevels_[i]) << Qt::endl;
     }
     file.close(); // Закрытие файла
     return 0;

@@ -36,7 +36,7 @@ DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, doubl
 int previousPow2(int number); // Ближайшая предыдущая степень двойки
 std::set<int> findDivisors(int number, int upperLim = -1); // Поиск всех делителей
 QVector<double> linspace(double leftBound, double rightBound, int nPoint); // Вектор с nPoint равномерно распределенных значений [leftBound, rightBound]
-QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance = 1, std::function<bool(double, double)> compare = std::less<bool>()); // Наивный поиск локальных экстремумов
+QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance = 1, double thresholdFrac = 1.0E-3, std::function<bool(double, double)> compare = std::less<>()); // Наивный поиск локальных экстремумов
     // Интерполяция сплайнами
 struct Spline {
 public:

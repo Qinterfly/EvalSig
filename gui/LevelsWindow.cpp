@@ -220,7 +220,6 @@ void LevelsWindow::showLevels(){
 
 // Оценить число уровней
 void LevelsWindow::assessNumberOfLevels(){
-    DataSignal const& base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
     DataSignal support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1]; // Опорный
     // Параметры
     double levelStep = ui->spinBoxLevelStep->value();

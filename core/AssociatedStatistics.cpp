@@ -209,10 +209,10 @@ int AssociatedStatistics::writeInfo(QString const& dirName, QString const& fileN
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec(QTextCodec::codecForLocale()); // Кодировка по системе
     // Запись информации о расчете
-    outputStream << "Name of main signal: " << vecDataSignal_[indMainSignal_].getName() << endl;
-    outputStream << "Width of window: " << widthWindow_ << endl;
-    outputStream << "Shift of main window: " << shiftMainWindow_ << endl;
-    outputStream << "Shift of comparing window: " << shiftCompareWindow_ << endl;
+    outputStream << "Name of main signal: " << vecDataSignal_[indMainSignal_].getName() << Qt::endl;
+    outputStream << "Width of window: " << widthWindow_ << Qt::endl;
+    outputStream << "Shift of main window: " << shiftMainWindow_ << Qt::endl;
+    outputStream << "Shift of comparing window: " << shiftCompareWindow_ << Qt::endl;
     file.close(); // Закрытие файла
     return 0;
 }

@@ -1,10 +1,24 @@
 #include <QApplication>
 #include "MainWindow.h"
 
-int main(int argc, char * argv[])
-{
-    QApplication app(argc, argv);
-    MainWindow win;
-    win.show();
-    return app.exec();
-}
+// #define testApp
+
+#ifdef testApp
+    #include "test/Tests.h"
+    int main()
+    {
+        Tests::numericalFunctions();
+        Tests::dataSignal();
+        Tests::statistics();
+        Tests::divisionDataSignal();
+        Tests::associatedStatistics();
+    }
+#else
+    int main(int argc, char * argv[])
+    {
+        QApplication app(argc, argv);
+        MainWindow win;
+        win.show();
+        return app.exec();
+    }
+#endif

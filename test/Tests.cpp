@@ -8,7 +8,7 @@ static QString const testInputPath = "/home/qinterfly/Library/Projects/SignalPro
 static QString const testOutputPath = "/home/qinterfly/Library/Projects/SignalProcessing/EvalSig/test/output/";
 
 // Проверка временных сигналов
-void testDataSignal(){
+void Tests::dataSignal(){
    DataSignal obj1(testInputPath, "ОП 182 1с ку.txt");
    DataSignal obj2(testInputPath, "ОП 182 2с ку.txt");
    DataSignal obj3(testInputPath, "Short1.txt", 10);
@@ -26,7 +26,7 @@ void testDataSignal(){
 }
 
 // Проверка статистических характеристик
-void testStatistics() {
+void Tests::statistics() {
     int volume = 12;
     // Создание по готовым сигналам
     DataSignal obj1(testInputPath, "Short1.txt"); // Длина == 200
@@ -73,7 +73,7 @@ void testStatistics() {
 }
 
 // Проверка численных методов
-void testNumericalFunctions(){
+void Tests::numericalFunctions(){
     DataSignal obj1(testInputPath, "Short2.txt"); // Длина == 200
     // Фильтрация
     DataSignal filt = bandpassFilter(obj1, HAMMING, 64, 0.5, {10, 20});
@@ -102,10 +102,11 @@ void testNumericalFunctions(){
     // Исключение выбросов
     DataSignal exclOut = excludeOutliers(obj1, 0.17);
     Q_ASSERT(!exclOut.writeDataFile(testOutputPath, "exclOutObj.txt"));
+    qDebug();
 }
 
 // Проверка разбиения сигнала на уровни
-void testDivisionDataSignal(){
+void Tests::divisionDataSignal(){
     // #1
     DataSignal obj1(testInputPath, "Short2.txt"); // Длина == 200
     DataSignal dispObj1 = integrateTrapz(obj1, 2, 0.5)[1]; // Нахождение перемещений по сигналу ускорения
@@ -133,10 +134,11 @@ void testDivisionDataSignal(){
     Q_ASSERT(!divSignal2.writeAll(testOutputPath + "saveLevels/"));
     Q_ASSERT(!divSignal2.writeSupport(testOutputPath, "dispOp182.txt"));
     Q_ASSERT(!divSignal2.writeApproxSupport(testOutputPath, "approxDispOp182.txt"));
+    qDebug();
 }
 
 // Проверка неизменяемых статистических характеристик
-void testAssociatedStatistics() {
+void Tests::associatedStatistics() {
     int volume = 12;
     // Создание по готовым сигналам
     DataSignal obj1(testInputPath, "Short1.txt"); // Длина == 200
@@ -154,4 +156,5 @@ void testAssociatedStatistics() {
     AssociatedStatistics stat(vecDataSignals, 80, 25, 10, 0); // Создание объекта статистик
     Q_ASSERT(!stat.computeStatistics());
     Q_ASSERT(!stat.writeAllStatistics(testOutputPath + "AssociatedStat/"));
+    qDebug();
 }

@@ -54,7 +54,13 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     double freqStep = (nyquistFrequency) / (nData - 1); // Частотный шаг
     for (int i = 0; i != nData; ++i)
         XData[i] = i * freqStep;
-     // Построение спектра
+    // Нахождение локальных максимумов
+    QVector<int> indPeaks = FindPeaksDirect(YData, 3, 1.0E-4);
+    int nPeaks = indPeaks.size();
+    QVector<double> valPeaks(nPeaks);
+    for (int i = 0; i != nPeaks; ++i)
+        valPeaks[i] = XData[indPeaks[i]];
+    // Построение спектра
     if ( ui->spectrumPlot->graphCount() != 0 )
         ui->spectrumPlot->clearPlottables();
     ui->spectrumPlot->addGraph();

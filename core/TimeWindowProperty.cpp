@@ -37,9 +37,9 @@ int TimeWindowProperty::writeWindowParams(QString const& path, QString const& fi
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << QString("Ширина временного окна = ") << width_ << endl;
-    outputStream << QString("Число временных окон = ") << nWindows_ << endl;
-    outputStream << QString("Шаг временнего окна = ") << shiftWindow_ << endl;
+    outputStream << QString("Ширина временного окна = ") << width_ << Qt::endl;
+    outputStream << QString("Число временных окон = ") << nWindows_ << Qt::endl;
+    outputStream << QString("Шаг временнего окна = ") << shiftWindow_ << Qt::endl;
     file.close(); // Закрытие файла
     return 0;
 }

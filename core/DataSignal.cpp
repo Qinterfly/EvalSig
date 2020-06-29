@@ -126,8 +126,8 @@ int DataSignal::readDataFile(QString const& path, QString const& fileName, int s
             data_[j] = tValue;
         // Справа
         tValue = data_[iInsert + nRead - 1];
-        for (int j = nRead; j != property.nCount_; ++j)
-            data_[iInsert + j] = tValue;
+        for (int j = iInsert + nRead; j != property.nCount_; ++j)
+            data_[j] = tValue;
     }
     file.close(); // Закрытие файла
     return 0;
@@ -144,19 +144,19 @@ int DataSignal::writeDataFile(QString const& path, QString const& fileName, int 
     file.open(QIODevice::WriteOnly | QIODevice::Text); // Открытие файла для записи
     QTextStream outputStream(&file); // Создание потока для записи
     outputStream.setCodec("cp1251"); // Кодировка CP1251
-    outputStream << property.dateAndTime_ << endl;     // Дата и время записи сигнала
-    outputStream << property.measureObject_ << endl;   // Объект измерения
-    outputStream << property.measurePoint_ << endl;    // Точка установки датчика
-    outputStream << property.currentCount_ << endl;    // Текущие отсчеты
-    outputStream << property.temperature_ << endl;     // Температура
-    outputStream << property.sensorType_ << endl;      // Тип датчика
-    outputStream << property.physicalFactor_ << endl;  // Физический коэффициент
-    outputStream << property.measureUnit_ << endl;     // Единица измерения
-    outputStream << property.scanPeriod_ << endl;      // Период опроса датчика
-    outputStream << property.characteristic_ << endl;   // Характеристика
-    outputStream << rightInd - leftInd + 1 << endl;    // Количество отсчетов
+    outputStream << property.dateAndTime_ << Qt::endl;     // Дата и время записи сигнала
+    outputStream << property.measureObject_ << Qt::endl;   // Объект измерения
+    outputStream << property.measurePoint_ << Qt::endl;    // Точка установки датчика
+    outputStream << property.currentCount_ << Qt::endl;    // Текущие отсчеты
+    outputStream << property.temperature_ << Qt::endl;     // Температура
+    outputStream << property.sensorType_ << Qt::endl;      // Тип датчика
+    outputStream << property.physicalFactor_ << Qt::endl;  // Физический коэффициент
+    outputStream << property.measureUnit_ << Qt::endl;     // Единица измерения
+    outputStream << property.scanPeriod_ << Qt::endl;      // Период опроса датчика
+    outputStream << property.characteristic_ << Qt::endl;   // Характеристика
+    outputStream << rightInd - leftInd + 1 << Qt::endl;    // Количество отсчетов
     for (int i = leftInd; i <= rightInd; ++i )
-        outputStream << data_[i] / property.physicalFactor_ << endl;
+        outputStream << data_[i] / property.physicalFactor_ << Qt::endl;
     file.close(); // Закрытие файла
     return 0;
 }
