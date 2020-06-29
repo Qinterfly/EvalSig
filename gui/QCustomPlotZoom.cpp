@@ -11,25 +11,23 @@ QCustomPlotZoom::QCustomPlotZoom(QWidget * parent)
 { }
 
 // Деструктор
-QCustomPlotZoom::~QCustomPlotZoom()
-{
+QCustomPlotZoom::~QCustomPlotZoom(){
     delete rubberBand_;
 }
 
 // Переключение возможности масштабирования
-void QCustomPlotZoom::setZoomEnabled(bool enabled) {
+void QCustomPlotZoom::setZoomEnabled(bool enabled){
     isZoomEnabled_ = enabled;
 }
 
 // Установка осей для масштабирования
-void QCustomPlotZoom::setKeyAxes(QPair<int, int> indexes){
+void QCustomPlotZoom::setKeyAxes(QPair<int, int> indexes) {
     indexes.first == 1 ? keyXAxis_ = xAxis : keyXAxis_ = xAxis2;
     indexes.second == 1 ? keyYAxis_ = yAxis : keyYAxis_ = yAxis2;
 }
 
 // При нажатии кнопки мыши
-void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
-{
+void QCustomPlotZoom::mousePressEvent(QMouseEvent * event){
     showCoordTag(event); // Отображение курсорной подсказки
     if ( !isZoomEnabled_ ) return;
     // Выделение области
@@ -45,7 +43,7 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
         rubberBand_->show(); // Включение отображения области выделения
     }
     // Снятие выделения области
-    if (event->button() == Qt::RightButton){
+    if (event->button() == Qt::RightButton && isZoomed_){
         rescaleAxes(); // Сброс выделения
         keyXAxis_->setRange(rangeXAxis_); // Возврат к диапазонам до масштабирования по X
         keyYAxis_->setRange(rangeYAxis_); // Возврат к диапазонам до масштабирования по Y
@@ -56,8 +54,7 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event)
 }
 
 // При сдвиге мыши
-void QCustomPlotZoom::mouseMoveEvent(QMouseEvent * event)
-{
+void QCustomPlotZoom::mouseMoveEvent(QMouseEvent * event){
     // Если область выделена
     if (rubberBand_->isVisible()){
         rubberBand_->setGeometry(QRect(origin_, event->pos()).normalized()); // Изменение размера области вслед за курсором мыши
@@ -67,8 +64,7 @@ void QCustomPlotZoom::mouseMoveEvent(QMouseEvent * event)
 }
 
 // При отжатии кнопки мыши
-void QCustomPlotZoom::mouseReleaseEvent(QMouseEvent * event)
-{
+void QCustomPlotZoom::mouseReleaseEvent(QMouseEvent * event){
     // Если область выделена
     if (rubberBand_->isVisible())
     {

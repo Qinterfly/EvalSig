@@ -113,11 +113,11 @@ private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
     // Дополнительные окна
-    SignalCharacteristicsWindow * signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
-    LevelsWindow * levelsWindow_; // Окно сохранение разбиения по уровням
-    AssociatedStatisticsWindow * associatedStatisticsWindow_; // Окно относительных статистик
-    CalculationTemplateWindow * calcTemplateWindow_; // Окно построения расчетного шаблона
-    FilterSignalsWindow * filterSignalsWindow_; // Окно фильтрации сигналов
+    QSharedPointer<SignalCharacteristicsWindow> signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
+    QSharedPointer<LevelsWindow> levelsWindow_; // Окно сохранение разбиения по уровням
+    QSharedPointer<AssociatedStatisticsWindow> associatedStatisticsWindow_; // Окно относительных статистик
+    QSharedPointer<CalculationTemplateWindow> calcTemplateWindow_; // Окно построения расчетного шаблона
+    QSharedPointer<FilterSignalsWindow> filterSignalsWindow_; // Окно фильтрации сигналов
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
     int widthTimeWindow_ = 0; // Ширина окна

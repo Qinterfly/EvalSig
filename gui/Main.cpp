@@ -1,7 +1,7 @@
 #include <QApplication>
 #include "MainWindow.h"
 
-// #define testApp
+//#define testApp
 
 #ifdef testApp
     #include "test/Tests.h"
@@ -12,6 +12,7 @@
         Tests::statistics();
         Tests::divisionDataSignal();
         Tests::associatedStatistics();
+        return 0;
     }
 #else
     int main(int argc, char * argv[])

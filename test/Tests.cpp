@@ -102,6 +102,11 @@ void Tests::numericalFunctions(){
     // Исключение выбросов
     DataSignal exclOut = excludeOutliers(obj1, 0.17);
     Q_ASSERT(!exclOut.writeDataFile(testOutputPath, "exclOutObj.txt"));
+    // Построение огибающей
+    DataSignal obj2(testInputPath, "20161119T105535_1_CM-311.txt");
+    QPair<DataSignal, DataSignal> envelopesObj = constructEnvelope(obj2);
+    Q_ASSERT(!envelopesObj.first.writeDataFile(testOutputPath, "lowerEnvelopeObj.txt"));
+    Q_ASSERT(!envelopesObj.second.writeDataFile(testOutputPath, "upperEnvelopeObj.txt"));
     qDebug();
 }
 

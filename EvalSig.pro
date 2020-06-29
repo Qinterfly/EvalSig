@@ -50,7 +50,6 @@ SOURCES += \
         include/csaps.cpp \
         test/Tests.cpp
 
-
 HEADERS += \
         core/AssociatedStatistics.h \
         core/CalculationTemplate.h \

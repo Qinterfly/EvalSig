@@ -31,6 +31,8 @@ DataSignal linearFilter(DataSignal const& dataSignal, int leftMeanNumber, int ri
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала
     // Срез
 DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound); // Срез сигнала по времени
+    // Преобразования
+QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal); // Построение огибающей
 
 // Вспомогательные
 int previousPow2(int number); // Ближайшая предыдущая степень двойки

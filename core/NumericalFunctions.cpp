@@ -564,6 +564,64 @@ QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderI
     return vecResultData;
 }
 
+// Построение огибающей
+QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal){
+    int nInputData = dataSignal.size(); // Длина временных данных
+    // Входные-выходные данные
+    QVector<double> inputData = dataSignal.getData(); // Временные данные исходного сигнала
+    QVector<double> upperEnvelope(nInputData); // Верхняя огибающая
+    QVector<double> lowerEnvelope(nInputData); // Нижняя огибающая
+    fftw_complex* currentFFTResult = (fftw_complex *) fftw_malloc(sizeof( fftw_complex ) * nInputData); // Преобразование Фурье
+    // Создание плана расчета
+    fftw_plan planForward = fftw_plan_dft_1d(nInputData, currentFFTResult, currentFFTResult, FFTW_FORWARD, FFTW_MEASURE);  // Прямое преобразование
+    fftw_plan planInverse = fftw_plan_dft_1d(nInputData, currentFFTResult, currentFFTResult, FFTW_BACKWARD, FFTW_MEASURE); // Обратное преобразования
+    // FFT-IFFT
+    double meanValue = meanVec(inputData); // Среднее значение сигнала
+    int halfWidth = nInputData / 2; // Реальный размер окна с учетом симметрии
+    int nZeroElements = halfWidth;
+    // Применение оконного преобразования к временным данным
+    for (int i = 0; i != nInputData; ++i){
+        currentFFTResult[i][0] = inputData[i] - meanValue;
+        currentFFTResult[i][1] = 0.0;
+    }
+    fftw_execute(planForward); // Выполнение прямого преобразования Фурье
+    // Осуществление преобразования Гильберта
+    for (int i = 0; i < halfWidth; ++i){
+        currentFFTResult[i][0] *= 2.0;
+        currentFFTResult[i][1] *= 2.0;
+    }
+    // Обработка центрального элемента
+    if (nInputData % 2 == 0){ // Четное
+        --nZeroElements;
+    } else if (nInputData > 1){ // Нечетное
+        currentFFTResult[halfWidth][0] *= 2.0;
+        currentFFTResult[halfWidth][1] *= 2.0;
+    }
+    memset(&currentFFTResult[halfWidth + 1], 0.0, nZeroElements * sizeof(fftw_complex)); // Сопряженная часть нулевая
+    fftw_execute(planInverse); // Выполнение обратного преобразования Фурье
+    // Применение оконного преобразования к временным данным
+    for (int i = 0; i != nInputData; ++i){
+        currentFFTResult[i][0] /= nInputData;
+        currentFFTResult[i][1] /= nInputData;
+    }
+    // Вычисляем огибающие
+    double absVal = 0.0;
+    for (int i = 0; i != nInputData; ++i){
+        absVal = sqrt( qPow(currentFFTResult[i][0], 2) + qPow(currentFFTResult[i][1], 2) );
+        upperEnvelope[i] =  absVal + meanValue;
+        lowerEnvelope[i] = -absVal + meanValue;
+    }
+    // Освобождение ресурсов, использованных для преобразования
+    fftw_destroy_plan(planForward);
+    fftw_destroy_plan(planInverse);
+    fftw_free(currentFFTResult);
+    fftw_cleanup();
+    // Формирование выходного сигнала
+    PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
+    tProperty.physicalFactor_ = 1; // Безразмерные величины
+    return QPair(DataSignal(lowerEnvelope, tProperty), DataSignal(upperEnvelope, tProperty));
+}
+
 // ---- Вспомогательные ----------------------------------------------------------------------------------------
 
 // Ближайшая предыдущая степень двойки
