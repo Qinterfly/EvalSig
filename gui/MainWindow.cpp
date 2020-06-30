@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSpectrumSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение спектра
     connect(ui->pushButtonIntegralSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение интеграла
     connect(ui->pushButtonAnalysisSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение анализа
+    connect(ui->pushButtonEnvelopeSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение огибающих
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала

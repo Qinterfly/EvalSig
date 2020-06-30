@@ -56,14 +56,8 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     double freqStep = (nyquistFrequency) / (nData - 1); // Частотный шаг
     for (int i = 0; i != nData; ++i)
         XData[i] = i * freqStep;
-    // Нахождение локальных максимумов
-    QVector<int> indPeaks = FindPeaksDirect(YData, 3, 1.0E-4);
-    int nPeaks = indPeaks.size();
-    QVector<double> valPeaks(nPeaks);
-    for (int i = 0; i != nPeaks; ++i)
-        valPeaks[i] = XData[indPeaks[i]];
     // Построение спектра
-    if ( ui->spectrumPlot->graphCount() != 0 )
+    if (ui->spectrumPlot->graphCount() != 0)
         ui->spectrumPlot->clearPlottables();
     ui->spectrumPlot->addGraph();
     ui->spectrumPlot->graph()->setAdaptiveSampling(false); // Отключение сэмплирования отображаемых значений
@@ -197,9 +191,15 @@ void MainWindow::calculateAndPlotEnvelope(bool isPlot){
     int iSelectedTab = ui->showModeWidget->currentIndex(); // Вкладки
     DataSignal const& baseSignal = vecDataSignal_[iSelectedSignal];
     QPair<DataSignal, DataSignal> const& envelopes = constructEnvelope(baseSignal);
-    mapSignalCharacteristics_.insert( iSelectedTab, envelopes.second); // Верхняя огибающая
-    mapSignalCharacteristics_.insert(-iSelectedTab, envelopes.first);  // Нижняя огибающая
+    // Верхняя огибающая
+    mapSignalCharacteristics_.insert( iSelectedTab, envelopes.second);
+    mapSignalCharacteristics_[iSelectedTab].setFileName(vecDataSignal_[iSelectedSignal].getName());
+    // Нижняя огибающая
+    mapSignalCharacteristics_.insert(SHIFT_TAB + iSelectedTab, envelopes.first);
+    mapSignalCharacteristics_[SHIFT_TAB + iSelectedTab].setFileName(vecDataSignal_[iSelectedSignal].getName());
+    // Включение сохранения и выделения
     ui->pushButtonDetectDecay->setEnabled(true);
+    ui->pushButtonEnvelopeSave->setEnabled(true);
     // Проверка необходимости построения
     if ( !isPlot )
         return;
@@ -232,7 +232,7 @@ void MainWindow::calculateAndPlotEnvelope(bool isPlot){
     ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft));
     ui->decayPlot->graph(2)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
     ui->decayPlot->graph(2)->setPen(penEnvelope);      // Выставление цвета графика
-    ui->decayPlot->graph(2)->setData(XData, mapSignalCharacteristics_[-iSelectedTab].getData(), true); // Передача отсортированных данных
+    ui->decayPlot->graph(2)->setData(XData, mapSignalCharacteristics_[SHIFT_TAB + iSelectedTab].getData(), true); // Передача отсортированных данных
     // Добавляем графики для аппроксимации и декремента
     for (int i = 0; i != 2; ++i)
         ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft)); // Верхняя и нижняя огибающие
@@ -249,6 +249,7 @@ void MainWindow::calculateAndPlotDecay(bool isPlot){
     // Параметры нахождения декремента
     int polynominalDegree = ui->spinBoxPolynominalDegree->value(); // Степень полинома
     double oscillationPeriod = ui->spinBoxOscillationPeriod->value(); // Период колебаний
+    bool isLogarithmic = ui->comboBoxDecayType->currentIndex() == 1; // Тип декремента
     // Получение выбранного временного диапазона
     double leftTimeBound = ui->decayPlot->xAxis->range().lower;
     double rightTimeBound = ui->decayPlot->xAxis->range().upper;
@@ -258,10 +259,10 @@ void MainWindow::calculateAndPlotDecay(bool isPlot){
     DataSignal approxUpperEnvelope = sliceByTime(mapSignalCharacteristics_[iSelectedTab], leftTimeBound, rightTimeBound, resTimeBound);
     approxUpperEnvelope = approximateLeastSquares(approxUpperEnvelope, polynominalDegree);
         // Нижней
-    DataSignal approxLowerEnvelope = sliceByTime(mapSignalCharacteristics_[-iSelectedTab], leftTimeBound, rightTimeBound, resTimeBound);
+    DataSignal approxLowerEnvelope = sliceByTime(mapSignalCharacteristics_[SHIFT_TAB + iSelectedTab], leftTimeBound, rightTimeBound, resTimeBound);
     approxLowerEnvelope = approximateLeastSquares(approxLowerEnvelope, polynominalDegree);
     // Расчет декремента затухания
-    DataSignal decay = evaluateDecay(approxUpperEnvelope, oscillationPeriod);
+    DataSignal decay = evaluateDecay(approxUpperEnvelope, oscillationPeriod, isLogarithmic);
     // Проверка необходимости построения
     if ( !isPlot )
         return;
@@ -348,6 +349,8 @@ void MainWindow::saveCharacteristic(int indSelected){
     if (indSelected < 0){
         indSelected = ui->showModeWidget->currentIndex();
         isUserCalc = true;
+    } else if (indSelected > SHIFT_TAB){
+        isUserCalc = true;
     }
     QString saveCaption;
     QString postfix;
@@ -363,6 +366,15 @@ void MainWindow::saveCharacteristic(int indSelected){
     case 3:
         saveCaption = "Сохранить анализ";
         postfix = "-Анализ";
+        break;
+    case 4:
+        saveCharacteristic(SHIFT_TAB + indSelected);
+        saveCaption = "Сохранить огибающие";
+        postfix = "-Верх.огиб";
+        break;
+    case SHIFT_TAB + 4:
+        saveCaption = "Сохранить огибающие";
+        postfix = "-Нижн.огиб";
         break;
     }
     // Формирование имени файла

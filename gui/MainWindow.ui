@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -710,7 +710,7 @@
             <item>
              <widget class="QLabel" name="labelPolynominalDegree">
               <property name="text">
-               <string>Степень полинома:</string>
+               <string>Степень:</string>
               </property>
              </widget>
             </item>
@@ -749,7 +749,7 @@
             <item>
              <widget class="QLabel" name="labelOscillationPeriod">
               <property name="text">
-               <string>Период колебаний, с: </string>
+               <string>Период, с: </string>
               </property>
              </widget>
             </item>
@@ -770,6 +770,46 @@
               <property name="value">
                <double>0.500000000000000</double>
               </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Тип:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxDecayType">
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>Обычный</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Логарифмический</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -799,6 +839,16 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="layoutDetectDecay">
+            <item>
+             <widget class="QPushButton" name="pushButtonEnvelopeSave">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
             <item>
              <spacer name="spacerDetectDecay">
               <property name="orientation">

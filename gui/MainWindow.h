@@ -142,6 +142,7 @@ private:
     QMap<int, DataSignal> mapSignalCharacteristics_;          // Данные
     QMap<int, QPointer<QPushButton>> mapCalculationButtons_;  // Расчетные кнопки
     QMap<int, QPointer<QPushButton>> mapSaveButtons_;         // Кнопки для сохранения
+    static int constexpr SHIFT_TAB = 100; // Смещение для хранение дополнительных данных
 };
 
 #endif // MAINWINDOW_H

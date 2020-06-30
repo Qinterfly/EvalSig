@@ -627,14 +627,17 @@ QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal){
 }
 
 // Оценка декремента затухания
-DataSignal evaluateDecay(DataSignal const& dataSignal, double period){
+DataSignal evaluateDecay(DataSignal const& dataSignal, double period, bool const isLogarithmic){
     int nDataSignal = dataSignal.size(); // Длина исходного сигнала
     int iStep = qCeil(period / dataSignal.timeStep());
     int nDecay = qCeil(double(nDataSignal) / iStep - 1);
     QVector<double> decay(nDecay);
     int k = 0;
-    for (int i = 0; i < nDataSignal - iStep; i += iStep, ++k)
-        decay[k] = qLn(dataSignal[i] / dataSignal[i + iStep - 1]);
+    for (int i = 0; i < nDataSignal - iStep; i += iStep, ++k){
+        decay[k] = dataSignal[i] / dataSignal[i + iStep - 1];
+        if (isLogarithmic)
+            decay[k] = qLn(decay[k]);
+    }
     PropertyDataSignal prop = dataSignal.getProperty();
     prop.physicalFactor_ = 1.0;
     return DataSignal(decay, prop);

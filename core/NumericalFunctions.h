@@ -34,7 +34,7 @@ DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, doubl
     // Преобразования
 QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal); // Построение огибающей
     // Оценка декремента затухания
-DataSignal evaluateDecay(DataSignal const& dataSignal, double period);
+DataSignal evaluateDecay(DataSignal const& dataSignal, double period, bool const isLogarithmic = false);
 
 // Вспомогательные
 int previousPow2(int number); // Ближайшая предыдущая степень двойки

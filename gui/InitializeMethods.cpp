@@ -88,7 +88,8 @@ void MainWindow::initializeAllPlot(){
     mapSaveButtons_.insert(1, ui->pushButtonSpectrumSave);
     mapSaveButtons_.insert(2, ui->pushButtonIntegralSave);
     mapSaveButtons_.insert(3, ui->pushButtonAnalysisSave);
-    mapSaveButtons_.insert(4, ui->pushButtonDetectDecay);
+    mapSaveButtons_.insert( 4, ui->pushButtonEnvelopeSave);
+    mapSaveButtons_.insert(-4, ui->pushButtonDetectDecay);
         // Подписи осей
     ui->spectrumPlot->xAxis->setLabel("Частота, Гц");
     ui->spectrumPlot->yAxis->setLabel("Амплитуда");
@@ -96,7 +97,7 @@ void MainWindow::initializeAllPlot(){
     ui->analysisPlot->xAxis2->setLabel("Время, c");
     envelopeAxisRect->axis(QCPAxis::atBottom)->setLabel("Время, с");
     decayAxisRect->axis(QCPAxis::atBottom)->setLabel("Отсчеты");
-    decayAxisRect->axis(QCPAxis::atLeft)->setLabel("Логарифмический декремент");
+    decayAxisRect->axis(QCPAxis::atLeft)->setLabel("Декремент затухания");
     // -- regressionPlot --
     ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
         // Настройка регрессии
