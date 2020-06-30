@@ -62,7 +62,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="tabCompare">
          <attribute name="title">
@@ -693,6 +693,139 @@
               </property>
               <property name="text">
                <string>Расчет</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabDecay">
+         <attribute name="title">
+          <string>Декремент</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <layout class="QHBoxLayout" name="layoutDecayParameters">
+            <item>
+             <widget class="QLabel" name="labelPolynominalDegree">
+              <property name="text">
+               <string>Степень полинома:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxPolynominalDegree">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacePlaceHolder">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelOscillationPeriod">
+              <property name="text">
+               <string>Период колебаний, с: </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="spinBoxOscillationPeriod">
+              <property name="decimals">
+               <number>4</number>
+              </property>
+              <property name="minimum">
+               <double>0.000100000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+              <property name="value">
+               <double>0.500000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerDecayParameters">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCustomPlotZoom" name="decayPlot" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="layoutDetectDecay">
+            <item>
+             <spacer name="spacerDetectDecay">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonCalculateEnvelope">
+              <property name="text">
+               <string>Вычислить огибающие</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonDetectDecay">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Выделить затухание</string>
               </property>
              </widget>
             </item>

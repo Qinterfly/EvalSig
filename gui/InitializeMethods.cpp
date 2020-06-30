@@ -64,14 +64,18 @@ void MainWindow::initializeAllPlot(){
         ui->comparePlot->graph(plotInd)->setBrush(brushCompare);
     }
     ui->comparePlot->setKeyAxes({2, 1}); // Выбор ключевых осей
-    // -- spectrumPlot, integralPlot, analysisPlot --
+    // -- spectrumPlot, integralPlot, analysisPlot, decayPlot --
         // Выбор ключевых осей
     ui->integralPlot->setKeyAxes({2, 1});
     ui->analysisPlot->setKeyAxes({2, 1});
+    ui->decayPlot->setKeyAxes({1, 1});
+        // Режим масштабирования
+    ui->decayPlot->setZoomMode(ZoomMode::HORIZONTAL);
         // Кнопки расчета
     mapCalculationButtons_.insert(1, ui->pushButtonSpectrumCalculate);
     mapCalculationButtons_.insert(2, ui->pushButtonIntegralCalculate);
     mapCalculationButtons_.insert(3, ui->pushButtonAnalysisCalculate);
+    mapCalculationButtons_.insert(4, ui->pushButtonCalculateEnvelope);
         // Кнопки сохранения
     mapSaveButtons_.insert(1, ui->pushButtonSpectrumSave);
     mapSaveButtons_.insert(2, ui->pushButtonIntegralSave);
@@ -81,6 +85,7 @@ void MainWindow::initializeAllPlot(){
     ui->spectrumPlot->yAxis->setLabel("Амплитуда");
     ui->integralPlot->xAxis2->setLabel("Время, c");
     ui->analysisPlot->xAxis2->setLabel("Время, c");
+    ui->decayPlot->xAxis->setLabel("Время, с");
     // -- regressionPlot --
     ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
         // Настройка регрессии

@@ -14,6 +14,7 @@ void MainWindow::clearSignalCharacteristics(){
     ui->spectrumPlot->clearGraphs(); // Спектра
     ui->integralPlot->clearGraphs(); // Интеграла
     ui->analysisPlot->clearGraphs(); // Анализа
+    ui->decayPlot->clearGraphs();    // Декремента
     // Скрытие дополнительных осей
     ui->integralPlot->xAxis2->setVisible(false); // Интеграла
     ui->analysisPlot->xAxis2->setVisible(false); // Анализа
@@ -25,6 +26,7 @@ void MainWindow::clearSignalCharacteristics(){
     ui->spectrumPlot->replot(); // Спектра
     ui->integralPlot->replot(); // Интеграла
     ui->analysisPlot->replot(); // Анализа
+    ui->decayPlot->replot();    // Декремента
 }
 
 // Расчета и построение спектра
@@ -186,6 +188,49 @@ void MainWindow::calculateAndPlotAnalysis(bool isPlot){
     ui->analysisPlot->xAxis2->setVisible(true); // Отображение вспомогательной оси
     ui->analysisPlot->legend->setVisible(true); // Отображение легенды
     ui->analysisPlot->replot(); // Обновление окна построения
+}
+
+// Расчет и построение огибающих
+void MainWindow::calculateAndPlotEnvelope(bool isPlot){
+    // Индексы выделенных объектов
+    int iSelectedSignal = ui->listFile->currentRow(); // Сигнала
+    int iSelectedTab = ui->showModeWidget->currentIndex(); // Вкладки
+    DataSignal const& baseSignal = vecDataSignal_[iSelectedSignal];
+    QPair<DataSignal, DataSignal> const& envelopes = constructEnvelope(baseSignal);
+    mapSignalCharacteristics_.insert( iSelectedTab, envelopes.second); // Верхняя огибающая
+    mapSignalCharacteristics_.insert(-iSelectedTab, envelopes.first);  // Нижняя огибающая
+    ui->pushButtonDetectDecay->setEnabled(true);
+    // Проверка необходимости построения
+    if ( !isPlot )
+        return;
+    // Формирование данных для построения
+    int nData = baseSignal.size(); // Длина сигнала
+    double tempStep = baseSignal.timeStep(); // Шаг по времени
+    QVector<double> XData(nData); // Вектор отсчетов
+    for (int i = 0; i != nData; ++i)
+        XData[i] = i * tempStep;
+    // Очистка предыдущих построений
+    if ( ui->decayPlot->graphCount() != 0 )
+        ui->decayPlot->clearPlottables();
+    // Построение основного сигнала
+    ui->decayPlot->addGraph();
+    ui->decayPlot->graph(0)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(0)->setPen(QPen(Qt::red));       // Выставление цвета графика
+    ui->decayPlot->graph(0)->setData(XData, baseSignal.getData(), true); // Передача отсортированных данных
+    // Построение верхней огибающей
+    ui->decayPlot->addGraph();
+    ui->decayPlot->graph(1)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(1)->setPen(QPen(Qt::blue));      // Выставление цвета графика
+    ui->decayPlot->graph(1)->setData(XData, mapSignalCharacteristics_[iSelectedTab].getData(), true); // Передача отсортированных данных
+    // Построение нижней огибающей
+    ui->decayPlot->addGraph();
+    ui->decayPlot->graph(2)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(2)->setPen(QPen(Qt::blue));      // Выставление цвета графика
+    ui->decayPlot->graph(2)->setData(XData, mapSignalCharacteristics_[-iSelectedTab].getData(), true); // Передача отсортированных данных
+    // Обновление графического окна
+    ui->decayPlot->rescaleAxes(true); // Масштабирование осей
+    ui->decayPlot->replot(); // Обновление окна построения
+
 }
 
 // Проверка возможности расчета и сохранения обработанных сигналов

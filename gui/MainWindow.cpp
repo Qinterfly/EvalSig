@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSpectrumCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotSpectrum())); // Расчет и построение спектра
     connect(ui->pushButtonIntegralCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotIntegral())); // Расчет и построение интеграла
     connect(ui->pushButtonAnalysisCalculate, SIGNAL(clicked()), this, SLOT(calculateAndPlotAnalysis())); // Расчет и построение анализа
+    connect(ui->pushButtonCalculateEnvelope, SIGNAL(clicked()), this, SLOT(calculateAndPlotEnvelope())); // Построение огибающей
     connect(ui->checkBoxIntegralCorrection, SIGNAL(stateChanged(int)), this, SLOT(setEnabledIntegralCorrection())); // Установка состояния коррекции интеграла
     connect(ui->comboBoxIntegralDomain, SIGNAL(currentIndexChanged(int)), this, SLOT(setEnabledIntegralDomain())); // Установка состояния параметров интегрирования
     connect(ui->pushButtonSpectrumSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение спектра

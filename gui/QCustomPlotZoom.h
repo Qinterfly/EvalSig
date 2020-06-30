@@ -8,6 +8,8 @@ class QRubberBand;
 class QMouseEvent;
 class QWidget;
 
+enum ZoomMode { HORIZONTAL, VERTICAL, FULL };
+
 struct QCustomPlotZoom : public QCustomPlot {
     Q_OBJECT
 public:
@@ -15,6 +17,7 @@ public:
     ~QCustomPlotZoom() override;
     void setZoomEnabled(bool enabled); // Переключение возможности масштабирования
     void setKeyAxes(QPair<int, int> indexes); // Установка осей для масштабирования
+    void setZoomMode(ZoomMode mode); // Установка режима масштабирования
 private slots:
     void mousePressEvent(QMouseEvent * event) override; // При нажатии кнопки мыши
     void mouseMoveEvent(QMouseEvent * event) override; // При сдвиге мыши
@@ -29,6 +32,7 @@ private:
     QCPRange rangeXAxis_; // Диапазон по дополнительной горизонтальной оси
     QCPRange rangeYAxis_; // Диапазон по дополнительной вертикальной оси
     bool isZoomEnabled_ = true; // Флаг доступности масштабирования
+    ZoomMode zoomMode_ = FULL; // Режим масштабирования
     // Указатели на главные оси
     QCPAxis * keyXAxis_; // Абсцис
     QCPAxis * keyYAxis_; // Ординат

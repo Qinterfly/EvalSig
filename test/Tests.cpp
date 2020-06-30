@@ -74,34 +74,34 @@ void Tests::statistics() {
 
 // Проверка численных методов
 void Tests::numericalFunctions(){
-//    DataSignal obj1(testInputPath, "Short2.txt"); // Длина == 200
-//    // Фильтрация
-//    DataSignal filt = bandpassFilter(obj1, HAMMING, 64, 0.5, {10, 20});
-//    Q_ASSERT(!filt.writeDataFile(testOutputPath, "filtObj.txt"));
-//    // Вычисление спектра
-//    DataSignal psd = computePowerSpectralDensity(obj1, HAMMING, 64, 0.5, 512, 3);
-//    Q_ASSERT(!psd.writeDataFile(testOutputPath, "psdObj.txt"));
-//    // Интегрирование
-//    QVector<DataSignal> integrVecObj = integrateTrapz(obj1, 1, -1);
-//    Q_ASSERT(!integrVecObj[0].writeDataFile(testOutputPath, "integrObj.txt"));
-//    // Аппроксимация
-//    DataSignal approxObj = approximateSmoothSpline(obj1, 1e-4);
-//    Q_ASSERT(!approxObj.writeDataFile(testOutputPath, "approxObj.txt"));
-//    // Линейная интерполяция
-//    DataSignal linInterpObj = interpolateLinear(obj1, 400, false);
-//    Q_ASSERT(!linInterpObj.writeDataFile(testOutputPath, "interpLinObj.txt"));
-//    // Линейная интерполяция по внутреннему числу точек
-//    DataSignal linInnerInterpObj = interpolateLinear(obj1, 100, true);
-//    Q_ASSERT(!linInnerInterpObj.writeDataFile(testOutputPath, "interpInnerLinObj.txt"));
-//    // Сплайн-интерполяция по общему числу точек
-//    DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000, false);
-//    Q_ASSERT(!splineInterpObj.writeDataFile(testOutputPath, "interpSplineObj.txt"));
-//    // Сплайн-интерполяция по внутреннему числу точек
-//    DataSignal splineInnerInterpObj = interpolateSpline(obj1, {1, 200}, 48, true);
-//    Q_ASSERT(!splineInnerInterpObj.writeDataFile(testOutputPath, "interpInnerSplineObj.txt"));
-//    // Исключение выбросов
-//    DataSignal exclOut = excludeOutliers(obj1, 0.17);
-//    Q_ASSERT(!exclOut.writeDataFile(testOutputPath, "exclOutObj.txt"));
+    DataSignal obj1(testInputPath, "Short2.txt"); // Длина == 200
+    // Фильтрация
+    DataSignal filt = bandpassFilter(obj1, HAMMING, 64, 0.5, {10, 20});
+    Q_ASSERT(!filt.writeDataFile(testOutputPath, "filtObj.txt"));
+    // Вычисление спектра
+    DataSignal psd = computePowerSpectralDensity(obj1, HAMMING, 64, 0.5, 512, 3);
+    Q_ASSERT(!psd.writeDataFile(testOutputPath, "psdObj.txt"));
+    // Интегрирование
+    QVector<DataSignal> integrVecObj = integrateTrapz(obj1, 1, -1);
+    Q_ASSERT(!integrVecObj[0].writeDataFile(testOutputPath, "integrObj.txt"));
+    // Аппроксимация
+    DataSignal approxObj = approximateSmoothSpline(obj1, 1e-4);
+    Q_ASSERT(!approxObj.writeDataFile(testOutputPath, "approxObj.txt"));
+    // Линейная интерполяция
+    DataSignal linInterpObj = interpolateLinear(obj1, 400, false);
+    Q_ASSERT(!linInterpObj.writeDataFile(testOutputPath, "interpLinObj.txt"));
+    // Линейная интерполяция по внутреннему числу точек
+    DataSignal linInnerInterpObj = interpolateLinear(obj1, 100, true);
+    Q_ASSERT(!linInnerInterpObj.writeDataFile(testOutputPath, "interpInnerLinObj.txt"));
+    // Сплайн-интерполяция по общему числу точек
+    DataSignal splineInterpObj = interpolateSpline(obj1, {1, 200}, 1000, false);
+    Q_ASSERT(!splineInterpObj.writeDataFile(testOutputPath, "interpSplineObj.txt"));
+    // Сплайн-интерполяция по внутреннему числу точек
+    DataSignal splineInnerInterpObj = interpolateSpline(obj1, {1, 200}, 48, true);
+    Q_ASSERT(!splineInnerInterpObj.writeDataFile(testOutputPath, "interpInnerSplineObj.txt"));
+    // Исключение выбросов
+    DataSignal exclOut = excludeOutliers(obj1, 0.17);
+    Q_ASSERT(!exclOut.writeDataFile(testOutputPath, "exclOutObj.txt"));
     // Построение огибающей
     DataSignal obj2(testInputPath, "20200506T134300_8_T3_11.txt");
     QPair<DataSignal, DataSignal> envelopesObj = constructEnvelope(obj2);

@@ -26,6 +26,11 @@ void QCustomPlotZoom::setKeyAxes(QPair<int, int> indexes) {
     indexes.second == 1 ? keyYAxis_ = yAxis : keyYAxis_ = yAxis2;
 }
 
+// Установка режима масштабирования
+void QCustomPlotZoom::setZoomMode(ZoomMode mode){
+    zoomMode_ = mode;
+}
+
 // При нажатии кнопки мыши
 void QCustomPlotZoom::mousePressEvent(QMouseEvent * event){
     showCoordTag(event); // Отображение курсорной подсказки
@@ -38,6 +43,17 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event){
             rangeXAxis_ = keyXAxis_->range(); // Диапазон по горизонтальной оси
             rangeYAxis_ = keyYAxis_->range(); // Диапазон по вертикальной оси
             isZoomed_ = true; // Изображение смаштабировано
+        }
+        // Проверка режима масштабирования
+        switch(zoomMode_){
+        case HORIZONTAL:
+            origin_.setY(keyYAxis_->coordToPixel(rangeYAxis_.upper));
+            break;
+        case VERTICAL:
+            origin_.setX(keyXAxis_->coordToPixel(rangeXAxis_.lower));
+            break;
+        case FULL:
+            break;
         }
         rubberBand_->setGeometry(QRect(origin_, QSize())); // Формирование области выделения
         rubberBand_->show(); // Включение отображения области выделения
@@ -57,7 +73,19 @@ void QCustomPlotZoom::mousePressEvent(QMouseEvent * event){
 void QCustomPlotZoom::mouseMoveEvent(QMouseEvent * event){
     // Если область выделена
     if (rubberBand_->isVisible()){
-        rubberBand_->setGeometry(QRect(origin_, event->pos()).normalized()); // Изменение размера области вслед за курсором мыши
+        QPoint currentPosition = event->pos();
+        // Проверка режима масштабирования
+        switch(zoomMode_){
+        case HORIZONTAL:
+            currentPosition.setY(keyYAxis_->coordToPixel(rangeYAxis_.lower));
+            break;
+        case VERTICAL:
+            currentPosition.setX(keyXAxis_->coordToPixel(rangeXAxis_.upper));
+            break;
+        case FULL:
+            break;
+        }
+        rubberBand_->setGeometry(QRect(origin_, currentPosition).normalized()); // Изменение размера области вслед за курсором мыши
         showCoordTag(event); // Отображение курсорной подсказки
     }
     QCustomPlot::mouseMoveEvent(event);

@@ -1,17 +1,17 @@
 #include <QApplication>
 #include "MainWindow.h"
 
-#define testApp
+//#define testApp
 
 #ifdef testApp
     #include "test/Tests.h"
     int main()
     {
         Tests::numericalFunctions();
-//        Tests::dataSignal();
-//        Tests::statistics();
-//        Tests::divisionDataSignal();
-//        Tests::associatedStatistics();
+        Tests::dataSignal();
+        Tests::statistics();
+        Tests::divisionDataSignal();
+        Tests::associatedStatistics();
         return 0;
     }
 #else
