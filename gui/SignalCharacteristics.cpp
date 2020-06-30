@@ -210,27 +210,88 @@ void MainWindow::calculateAndPlotEnvelope(bool isPlot){
     for (int i = 0; i != nData; ++i)
         XData[i] = i * tempStep;
     // Очистка предыдущих построений
-    if ( ui->decayPlot->graphCount() != 0 )
+    if ( ui->decayPlot->graphCount() != 0 ){
         ui->decayPlot->clearPlottables();
+        ui->decayPlot->clearGraphs();
+    }
+    // Создание слоев
+    QCPAxisRect const* envelopeAxisRect = static_cast<QCPAxisRect const*>( ui->decayPlot->plotLayout()->element(0, 0));
+    QCPAxisRect const* decayAxisRect = static_cast<QCPAxisRect const*>( ui->decayPlot->plotLayout()->element(0, 1));
     // Построение основного сигнала
-    ui->decayPlot->addGraph();
+    ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft));
     ui->decayPlot->graph(0)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
     ui->decayPlot->graph(0)->setPen(QPen(Qt::red));       // Выставление цвета графика
     ui->decayPlot->graph(0)->setData(XData, baseSignal.getData(), true); // Передача отсортированных данных
     // Построение верхней огибающей
-    ui->decayPlot->addGraph();
+    QPen penEnvelope(Qt::blue, 1);
+    ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft));
     ui->decayPlot->graph(1)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
-    ui->decayPlot->graph(1)->setPen(QPen(Qt::blue));      // Выставление цвета графика
+    ui->decayPlot->graph(1)->setPen(penEnvelope);         // Выставление цвета графика
     ui->decayPlot->graph(1)->setData(XData, mapSignalCharacteristics_[iSelectedTab].getData(), true); // Передача отсортированных данных
     // Построение нижней огибающей
-    ui->decayPlot->addGraph();
+    ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft));
     ui->decayPlot->graph(2)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
-    ui->decayPlot->graph(2)->setPen(QPen(Qt::blue));      // Выставление цвета графика
+    ui->decayPlot->graph(2)->setPen(penEnvelope);      // Выставление цвета графика
     ui->decayPlot->graph(2)->setData(XData, mapSignalCharacteristics_[-iSelectedTab].getData(), true); // Передача отсортированных данных
+    // Добавляем графики для аппроксимации и декремента
+    for (int i = 0; i != 2; ++i)
+        ui->decayPlot->addGraph(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft)); // Верхняя и нижняя огибающие
+    ui->decayPlot->addGraph(decayAxisRect->axis(QCPAxis::atBottom), decayAxisRect->axis(QCPAxis::atLeft)); // Декремент затухания
     // Обновление графического окна
     ui->decayPlot->rescaleAxes(true); // Масштабирование осей
     ui->decayPlot->replot(); // Обновление окна построения
+}
 
+// Расчет и построение декремента
+void MainWindow::calculateAndPlotDecay(bool isPlot){
+    // Индексы выделенных объектов
+    int iSelectedTab = ui->showModeWidget->currentIndex(); // Вкладки
+    // Параметры нахождения декремента
+    int polynominalDegree = ui->spinBoxPolynominalDegree->value(); // Степень полинома
+    double oscillationPeriod = ui->spinBoxOscillationPeriod->value(); // Период колебаний
+    // Получение выбранного временного диапазона
+    double leftTimeBound = ui->decayPlot->xAxis->range().lower;
+    double rightTimeBound = ui->decayPlot->xAxis->range().upper;
+    QPair<double, double> resTimeBound(0.0, 0.0); // Результирующий диапазон
+    // Аппроксимация огибающих
+        // Верхней
+    DataSignal approxUpperEnvelope = sliceByTime(mapSignalCharacteristics_[iSelectedTab], leftTimeBound, rightTimeBound, resTimeBound);
+    approxUpperEnvelope = approximateLeastSquares(approxUpperEnvelope, polynominalDegree);
+        // Нижней
+    DataSignal approxLowerEnvelope = sliceByTime(mapSignalCharacteristics_[-iSelectedTab], leftTimeBound, rightTimeBound, resTimeBound);
+    approxLowerEnvelope = approximateLeastSquares(approxLowerEnvelope, polynominalDegree);
+    // Расчет декремента затухания
+    DataSignal decay = evaluateDecay(approxUpperEnvelope, oscillationPeriod);
+    // Проверка необходимости построения
+    if ( !isPlot )
+        return;
+    int nPoints = approxLowerEnvelope.size();
+    QVector<double> XData(nPoints);
+    double stepXData = (resTimeBound.second - resTimeBound.first) / (nPoints - 1.0);
+    for (int i = 0; i != nPoints; ++i)
+        XData[i] = resTimeBound.first + i * stepXData;
+    // Построение аппроксимации верхней огибающей
+    QPen penEnvelope(Qt::green, 2.0);
+    ui->decayPlot->graph(3)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(3)->setPen(penEnvelope);      // Выставление цвета графика
+    ui->decayPlot->graph(3)->setData(XData, approxUpperEnvelope.getData(), true); // Передача отсортированных данных
+    // Построение аппроксимации нижней огибающей
+    ui->decayPlot->graph(4)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(4)->setPen(penEnvelope);      // Выставление цвета графика
+    ui->decayPlot->graph(4)->setData(XData, approxLowerEnvelope.getData(), true); // Передача отсортированных данных
+    // Построение декремента затуханий
+    int nDecay = decay.size();
+    XData.resize(nDecay);
+    for (int i = 0; i != nDecay; ++i)
+        XData[i] = 1 + i;
+    ui->decayPlot->graph(5)->setAdaptiveSampling(false);  // Отключение сэмплирования отображаемых значений
+    ui->decayPlot->graph(5)->setPen(QPen(Qt::black));      // Выставление цвета графика
+    ui->decayPlot->graph(5)->setData(XData, decay.getData(), true); // Передача отсортированных данных
+    // Обновление графического окна
+    QCPAxisRect const* decayAxisRect = static_cast<QCPAxisRect const*>( ui->decayPlot->plotLayout()->element(0, 1));
+    decayAxisRect->axis(QCPAxis::atBottom)->rescale();
+    decayAxisRect->axis(QCPAxis::atLeft)->rescale();
+    ui->decayPlot->replot(); // Обновление окна построения
 }
 
 // Проверка возможности расчета и сохранения обработанных сигналов

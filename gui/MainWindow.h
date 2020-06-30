@@ -70,6 +70,7 @@ public slots:
     void calculateAndPlotIntegral(bool isPlot = true); // Интеграла
     void calculateAndPlotAnalysis(bool isPlot = true); // Анализа
     void calculateAndPlotEnvelope(bool isPlot = true); // Огибающие
+    void calculateAndPlotDecay(bool isPlot = true);    // Декремента
     void saveCharacteristic(int indSelected = -1); // Сохранение характеристик сигналов
     // Установка параметров характеристик сигналов
     void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов

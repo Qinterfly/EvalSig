@@ -218,7 +218,8 @@ void FilterSignalsWindow::filterSignals(){
             }
         }
         // Срез сигнала по времени
-        vecDataSignal_[iSignal] = sliceByTime(vecDataSignal_[iSignal], leftTimeBoundary, rightTimeBoundary);
+        QPair<double, double> tempPair;
+        vecDataSignal_[iSignal] = sliceByTime(vecDataSignal_[iSignal], leftTimeBoundary, rightTimeBoundary, tempPair);
         // Линейный фильтр
         if (isLinearFilter)
             vecDataSignal_[iSignal] = linearFilter(vecDataSignal_[iSignal], leftLinearBoundary, rightLinearBoundary);

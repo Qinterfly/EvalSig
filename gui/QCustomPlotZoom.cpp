@@ -26,6 +26,12 @@ void QCustomPlotZoom::setKeyAxes(QPair<int, int> indexes) {
     indexes.second == 1 ? keyYAxis_ = yAxis : keyYAxis_ = yAxis2;
 }
 
+ // Установка осей для масштабирования
+void QCustomPlotZoom::setKeyAxes(QCPAxis* keyXAxis, QCPAxis* keyYAxis){
+    keyXAxis_ = keyXAxis;
+    keyYAxis_ = keyYAxis;
+}
+
 // Установка режима масштабирования
 void QCustomPlotZoom::setZoomMode(ZoomMode mode){
     zoomMode_ = mode;

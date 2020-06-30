@@ -54,7 +54,7 @@ void MainWindow::filtrationFinished(){
 // Информация о программе
 void MainWindow::aboutProgram(){
     QString description = "Программа <b>EvalSig</b> предназначена для оценки взаимного влияния сигналов";
-    QString version = "v1.6.8";
+    QString version = "v1.6.9";
     QString author = "Copyright © 2019-2020 Павел Лакиза (Qinterfly)";
     QString info = QString("%1<br> Версия программы: %2<br> %3<br>").arg(description).arg(version).arg(author);
     QMessageBox::about(this, "О программе", info);

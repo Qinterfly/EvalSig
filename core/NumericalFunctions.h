@@ -30,9 +30,11 @@ DataSignal linearFilter(DataSignal const& dataSignal, int leftMeanNumber, int ri
     // Корректировка
 DataSignal correct(DataSignal const& dataSignal, double smoothFactor); // Корректировка временного сигнала
     // Срез
-DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound); // Срез сигнала по времени
+DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound, QPair<double, double> & resTimeBound); // Срез сигнала по времени
     // Преобразования
 QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal); // Построение огибающей
+    // Оценка декремента затухания
+DataSignal evaluateDecay(DataSignal const& dataSignal, double period);
 
 // Вспомогательные
 int previousPow2(int number); // Ближайшая предыдущая степень двойки

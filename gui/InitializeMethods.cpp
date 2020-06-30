@@ -71,6 +71,14 @@ void MainWindow::initializeAllPlot(){
     ui->decayPlot->setKeyAxes({1, 1});
         // Режим масштабирования
     ui->decayPlot->setZoomMode(ZoomMode::HORIZONTAL);
+        // Создание слоев
+    ui->decayPlot->plotLayout()->clear();
+    QCPAxisRect* envelopeAxisRect = new QCPAxisRect(ui->decayPlot); // Слой с огибающими
+    QCPAxisRect* decayAxisRect = new QCPAxisRect(ui->decayPlot);    // Слой с декрементом
+    ui->decayPlot->plotLayout()->addElement(0, 0, envelopeAxisRect);
+    ui->decayPlot->plotLayout()->addElement(0, 1, decayAxisRect);
+    ui->decayPlot->plotLayout()->setColumnStretchFactor(0, 2.5); // Масштабирование слоев
+    ui->decayPlot->setKeyAxes(envelopeAxisRect->axis(QCPAxis::atBottom), envelopeAxisRect->axis(QCPAxis::atLeft));
         // Кнопки расчета
     mapCalculationButtons_.insert(1, ui->pushButtonSpectrumCalculate);
     mapCalculationButtons_.insert(2, ui->pushButtonIntegralCalculate);
@@ -80,12 +88,15 @@ void MainWindow::initializeAllPlot(){
     mapSaveButtons_.insert(1, ui->pushButtonSpectrumSave);
     mapSaveButtons_.insert(2, ui->pushButtonIntegralSave);
     mapSaveButtons_.insert(3, ui->pushButtonAnalysisSave);
+    mapSaveButtons_.insert(4, ui->pushButtonDetectDecay);
         // Подписи осей
     ui->spectrumPlot->xAxis->setLabel("Частота, Гц");
     ui->spectrumPlot->yAxis->setLabel("Амплитуда");
     ui->integralPlot->xAxis2->setLabel("Время, c");
     ui->analysisPlot->xAxis2->setLabel("Время, c");
-    ui->decayPlot->xAxis->setLabel("Время, с");
+    envelopeAxisRect->axis(QCPAxis::atBottom)->setLabel("Время, с");
+    decayAxisRect->axis(QCPAxis::atBottom)->setLabel("Отсчеты");
+    decayAxisRect->axis(QCPAxis::atLeft)->setLabel("Логарифмический декремент");
     // -- regressionPlot --
     ui->regressionPlot->legend->setFont(QFont("Noto Sans", 10));
         // Настройка регрессии

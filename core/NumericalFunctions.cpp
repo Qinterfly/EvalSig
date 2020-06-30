@@ -446,10 +446,11 @@ Spline getInterpolationSpline(DataSignal const& dataSignal, QPair<double, double
 }
 
 // Срез сигнала по времени
-DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound){
+DataSignal sliceByTime(DataSignal const& dataSignal, double leftTimeBound, double rightTimeBound, QPair<double, double> & resTimeBound){
     int nDataSignal = dataSignal.size(); // Длина сигнала
     int leftInd = dataSignal.convertTimeToCount(leftTimeBound); // Левая индексная граница
     int rightInd = dataSignal.convertTimeToCount(rightTimeBound); // Правая индексная граница
+    resTimeBound = {dataSignal.convertCountToTime(leftInd), dataSignal.convertCountToTime(rightInd)}; // Результирующие временные границы
     int nResPoints = rightInd - leftInd + 1; // Результирующее число точек
     if (nDataSignal == nResPoints) return dataSignal;
     QVector<double> resData(nResPoints); // Результирующий сигнал
@@ -623,6 +624,20 @@ QPair<DataSignal, DataSignal> constructEnvelope(DataSignal const& dataSignal){
     PropertyDataSignal tProperty = dataSignal.getProperty(); // Свойства исходного сигнала
     tProperty.physicalFactor_ = 1; // Безразмерные величины
     return QPair(DataSignal(lowerEnvelope, tProperty), DataSignal(upperEnvelope, tProperty));
+}
+
+// Оценка декремента затухания
+DataSignal evaluateDecay(DataSignal const& dataSignal, double period){
+    int nDataSignal = dataSignal.size(); // Длина исходного сигнала
+    int iStep = qCeil(period / dataSignal.timeStep());
+    int nDecay = qCeil(double(nDataSignal) / iStep - 1);
+    QVector<double> decay(nDecay);
+    int k = 0;
+    for (int i = 0; i < nDataSignal - iStep; i += iStep, ++k)
+        decay[k] = qLn(dataSignal[i] / dataSignal[i + iStep - 1]);
+    PropertyDataSignal prop = dataSignal.getProperty();
+    prop.physicalFactor_ = 1.0;
+    return DataSignal(decay, prop);
 }
 
 // ---- Вспомогательные ----------------------------------------------------------------------------------------

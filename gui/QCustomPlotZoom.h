@@ -17,6 +17,7 @@ public:
     ~QCustomPlotZoom() override;
     void setZoomEnabled(bool enabled); // Переключение возможности масштабирования
     void setKeyAxes(QPair<int, int> indexes); // Установка осей для масштабирования
+    void setKeyAxes(QCPAxis* keyXAxis, QCPAxis* keyYAxis);
     void setZoomMode(ZoomMode mode); // Установка режима масштабирования
 private slots:
     void mousePressEvent(QMouseEvent * event) override; // При нажатии кнопки мыши
