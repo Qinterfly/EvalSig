@@ -19,7 +19,7 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
     csaps::DoubleArray xData(nDataSignal), yData(nDataSignal); // Данные сигнала для аппроксимации
     // Исходная сетка сигнала
     for (int i = 0; i != nDataSignal; ++i){
-        xData[i] = 1 + i;
+        xData[i] = 1.0 + i;
         yData[i] = dataSignal[i];
     }
     csaps::UnivariateCubicSmoothingSpline spline(xData, yData, smoothFactor); // Сглаживание сплайном
@@ -46,32 +46,35 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
 }
 
 // Аппроксимация по методу наименьших квадратов
-DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint, bool isUpdateScanPeriod){
+DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int sign, int nPoint, bool isUpdateScanPeriod){
     int nDataSignal = dataSignal.size(); // Длина сигнала
     if (nPoint <= 0) nPoint = nDataSignal; // Обработка исключения по числу разбиений
     QVector<double> xData(nDataSignal); // Вектор отсчетов
     // Заполнение вектора отсчетов
+    double normMult = 1.0 / nDataSignal;
     for (int i = 0; i != nDataSignal; ++i)
-        xData[i] = 1 + i;
+        xData[i] = (1.0 + i) * normMult;
     // Формирование СЛАУ
     int nSystem = order + 1; // Размер системы
     Eigen::MatrixXd AMat(nSystem, nSystem); // Матрица невязок
     Eigen::VectorXd XVec(nSystem); // Вектор полиномиальных коэффициентов
     Eigen::VectorXd BVec(nSystem); // Вектор правой части
-    double elemSumMat = 0, elemSumVec = 0; // Сумма элементов, входящих в невязку
+    double elemSum = 0; // Сумма элементов, входящих в невязку
     double tVal = 0; // Контейнер текущих операций
         // Матрица невязок
     for (int i = 0; i != nSystem; ++i){
+        // Сумма в правой части
+        elemSum = 0;
+        for (int s = 0; s != nDataSignal; ++s)
+            elemSum += qPow(xData[s], i * sign) * dataSignal[s];
+        BVec(i) = elemSum; // Запись суммы в вектор правой части
+        // Сумма в левой части
         for (int j = 0; j != nSystem; ++j){
-            elemSumMat = 0; elemSumVec = 0;
+            elemSum = 0;
             // Поэлементная сумма
-            for (int s = 0; s != nDataSignal; ++s){
-                tVal = qPow(xData[s], i); // Элемент, входящий в обе суммы
-                elemSumMat += tVal * qPow(xData[s], j); // Сумма в левой части
-                elemSumVec += tVal * dataSignal[s]; // Сумма в правой части
-            }
-            AMat(i, j) = elemSumMat; // Запись суммы в матрицу невязок
-            BVec(i) = elemSumVec; // Запись суммы в вектор правой части
+            for (int s = 0; s != nDataSignal; ++s)
+                elemSum += qPow(xData[s], (i + j) * sign);
+            AMat(i, j) = elemSum; // Запись суммы в матрицу невязок
         }
     }
     // Получение решения системы
@@ -83,7 +86,7 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
         // Новая координатная сетка
         double stepXData = (nDataSignal - 1.0) / double(nPoint - 1);
         for (int i = 0; i != nPoint; ++i)
-            xData[i] = 1 + i * stepXData;
+            xData[i] = (1.0 + i * stepXData) * normMult;
     }
     // Вычисление значения полинома на новой сетке
     QVector<double> yData(nPoint);
@@ -91,7 +94,7 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
         tVal = 0;
         // Суммирование значений для заданного узла
         for (int s = 0; s != nSystem; ++s)
-            tVal += XVec[s] * qPow(xData[i], s);
+            tVal += XVec[s] * qPow(xData[i], s * sign);
         yData[i] = tVal;
     }
     // Меняем частоту дискретизации

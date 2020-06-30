@@ -12,7 +12,7 @@ enum WindowFunction{ HAMMING, HANN, BLACKMAN }; // Типы весовых ок�
 // Функции обработки временных сигналов
     // Аппроксимация
 DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFactor, int nPoint = -1, bool isUpdateScanPeriod = true); // Аппроксимация сплайнами
-DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int nPoint = -1, bool isUpdateScanPeriod = true); // Аппроксимация по методу наименьших квадратов
+DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int sign = 1, int nPoint = -1, bool isUpdateScanPeriod = true); // Аппроксимация по методу наименьших квадратов
     // Интегрирование
 QVector<DataSignal> integrateTrapz(DataSignal const& dataSignal, int orderIntegral, double smoothFactor); // Интегрирование сигнала по правилу трапеций с коррекций
 QVector<DataSignal> integrateFreqDomain(DataSignal const& dataSignal, int orderIntegral, WindowFunction windowFun, int weightWindowWidth, double overlapFactor); // Интегрирование сигнала в частотной области
