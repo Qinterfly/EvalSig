@@ -99,14 +99,15 @@ void FilterSignalsWindow::keyPressEvent(QKeyEvent * event)
 
 // Проверка возможности расчета
 void FilterSignalsWindow::checkStateFilter(){
-    const int limDivisors = ui->spinBoxScanPeriod->maximum();
+    const qint64 limDivisors = ui->spinBoxScanPeriod->maximum();
     if ( !ui->listSignals->selectedItems().isEmpty() ){
         ui->buttonFilter->setEnabled(true);
         // Задание значений для выбора периода опроса
         ui->spinBoxScanPeriod->setEnabled(true);
         QModelIndexList const& selectedIndexes = ui->listSignals->selectionModel()->selectedIndexes();
         int iSelected = selectedIndexes[0].row();
-        availableScanPeriods_ = findDivisors(vecDataSignal_[iSelected].timeDuration() / DataSignal::TIME_PHYS_MULT, limDivisors); // Получаем все делители до верхней границы
+        qint64 period = qRound64(vecDataSignal_[iSelected].timeDuration() / DataSignal::TIME_PHYS_MULT);
+        availableScanPeriods_ = findDivisors(period, limDivisors); // Получаем все делители до верхней границы
         // Задание период опроса по умолчанию
         ui->spinBoxScanPeriod->blockSignals(true);
         lastScanPeriod_ = vecDataSignal_[iSelected].getProperty().scanPeriod_;

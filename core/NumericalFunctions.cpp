@@ -41,7 +41,7 @@ DataSignal approximateSmoothSpline(DataSignal const& dataSignal, double smoothFa
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
     if (isUpdateScanPeriod)
-        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+        property.scanPeriod_ = int(property.scanPeriod_ * double(nDataSignal) / nPoint);
     return DataSignal(resYData, property);
 }
 
@@ -100,7 +100,7 @@ DataSignal approximateLeastSquares(DataSignal const& dataSignal, int order, int 
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
     if (isUpdateScanPeriod)
-        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nPoint;
+        property.scanPeriod_ = int(property.scanPeriod_ * double(nDataSignal) / nPoint);
     return DataSignal(yData, property);
 }
 
@@ -181,7 +181,7 @@ DataSignal interpolateLinear(DataSignal const& dataSignal, int nDivPoints, bool 
     PropertyDataSignal property = dataSignal.getProperty();
     // Меняем частоту дискретизации
     if (isUpdateScanPeriod)
-        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+        property.scanPeriod_ = int(property.scanPeriod_ * double(nDataSignal) / nResPoints);
     return DataSignal(yData, property);
 }
 
@@ -201,7 +201,7 @@ DataSignal interpolateSpline(DataSignal const& dataSignal, QPair<double, double>
     // Меняем частоту дискретизации
     PropertyDataSignal property = dataSignal.getProperty();
     if (isUpdateScanPeriod)
-        property.scanPeriod_ = property.scanPeriod_ * nDataSignal / nResPoints;
+        property.scanPeriod_ = int(property.scanPeriod_ * double(nDataSignal) / nResPoints);
     return DataSignal(resData, property);
 }
 
@@ -657,18 +657,19 @@ int previousPow2(int number){
 }
 
 // Поиск всех делителей
-std::set<int> findDivisors(int number, int upperLim){
+std::set<int> findDivisors(qint64 number, qint64 upperLim){
     if (number <= 0) return std::set<int>();
     if (upperLim == -1) upperLim = number;
     std::set<int> res;
-    int sqrRoot = (int) qSqrt(number) + 1;
-    int nIter = qMin(sqrRoot, upperLim);
-    int k = 0;
-    for (int i = 1; i != nIter; ++i){
+    qint64 sqrRoot = (qint64) qSqrt(number) + 1;
+    qint64 nIter = qMin(sqrRoot, upperLim);
+    qint64 k = 0;
+    for (qint64 i = 1; i != nIter; ++i){
         if ( number % i == 0 ){
             res.insert(i);
             k = number / i;
-            if ( k <= upperLim ) res.insert(k);
+            if ( k <= upperLim )
+                res.insert(k);
         }
     }
     return res;
