@@ -1524,7 +1524,7 @@
             <number>13</number>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -2014,7 +2014,6 @@
    <addaction name="actionSaveCalculation"/>
    <addaction name="actionSaveAssociatedStatistics"/>
    <addaction name="actionSaveLevels"/>
-   <addaction name="actionCalculationTemplate"/>
   </widget>
   <widget class="QToolBar" name="InteractionToolBar">
    <property name="sizePolicy">

@@ -7,10 +7,9 @@
 static QString const& WINDOW_NAME = "AssociatedStatisticsWindow";
 
 // Конструктор
-AssociatedStatisticsWindow::AssociatedStatisticsWindow(CalculationTemplate & calcTemplate, QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
+AssociatedStatisticsWindow::AssociatedStatisticsWindow(QVector<DataSignal> const& vecDataSignal, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AssociatedStatisticsWindow),
-    calcTemplate_(calcTemplate),
     vecDataSignal_(vecDataSignal)
 {
     ui->setupUi(this);
@@ -28,17 +27,6 @@ AssociatedStatisticsWindow::AssociatedStatisticsWindow(CalculationTemplate & cal
 AssociatedStatisticsWindow::~AssociatedStatisticsWindow()
 {
     delete ui;
-}
-
-// Применить расчетный шаблон
-void AssociatedStatisticsWindow::applyCalculationTemplate(int mainIndex){
-    if ( !calcTemplate_.contains(WINDOW_NAME) ) return;
-    ui->comboBoxIndMainSignal->setCurrentIndex(mainIndex); // Выбор основоного сигнала
-    setParamsBoundaries(); // Выставление границ параметров окна
-    WindowData const& windowData = *calcTemplate_.getWindowData(WINDOW_NAME); // Получение новых данных окна
-    ui->spinBoxWidthWindow->setValue(windowData["widthWindow"].toInt()); // Ширина окна
-    ui->spinBoxShiftMainWindow->setValue(windowData["shiftMainWindow"].toInt()); // Смещение главного окна
-    ui->spinBoxShiftCompareWindow->setValue(windowData["shiftCompareWindow"].toInt()); // Смещение окна для сравнения
 }
 
 // Установка пути по умолчанию
@@ -115,12 +103,6 @@ void AssociatedStatisticsWindow::save(bool isUserCalc){
     exitStatus += statistics.writeAllStatistics(lastPath_);
     if (!exitStatus && isUserCalc) emit this->accepted();
     this->hide(); // Скрытие окна
-    // Заполнение расчетного шаблона
-    if ( exitStatus != 0 || !calcTemplate_.isRecord() || !isUserCalc ) return;
-    // Данные
-    calcTemplate_.addWindowData(WINDOW_NAME, "widthWindow", ui->spinBoxWidthWindow->value()); // Ширина окна
-    calcTemplate_.addWindowData(WINDOW_NAME, "shiftMainWindow", ui->spinBoxShiftMainWindow->value()); // Смещение главного окна
-    calcTemplate_.addWindowData(WINDOW_NAME, "shiftCompareWindow", ui->spinBoxShiftCompareWindow->value()); // Смещение окна для сравнения
 }
 
 // -------------------------------------------------------------------------------------------------------------

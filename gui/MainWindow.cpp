@@ -8,10 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
     statSignal_(vecDataSignal_, widthTimeWindow_, shiftWindow_, 1, 2) // Статистики
 {
     ui->setupUi(this); // Инициализация графического интерфейса
-    signalCharacteristicsWindow_ = QSharedPointer<SignalCharacteristicsWindow>(new SignalCharacteristicsWindow(calcTemplate_, this));
-    levelsWindow_ = QSharedPointer<LevelsWindow>(new LevelsWindow(calcTemplate_, vecDataSignal_, this));
-    associatedStatisticsWindow_ = QSharedPointer<AssociatedStatisticsWindow>(new AssociatedStatisticsWindow(calcTemplate_, vecDataSignal_, this));
-    calcTemplateWindow_ = QSharedPointer<CalculationTemplateWindow>(new CalculationTemplateWindow(calcTemplate_, vecDataSignal_, this));
+    signalCharacteristicsWindow_ = QSharedPointer<SignalCharacteristicsWindow>(new SignalCharacteristicsWindow(this));
+    levelsWindow_ = QSharedPointer<LevelsWindow>(new LevelsWindow(vecDataSignal_, this));
+    associatedStatisticsWindow_ = QSharedPointer<AssociatedStatisticsWindow>(new AssociatedStatisticsWindow(vecDataSignal_, this));
     filterSignalsWindow_ = QSharedPointer<FilterSignalsWindow>(new FilterSignalsWindow(vecDataSignal_, this));
     initializeCalculationParams(); // Выставление расчетных параметров
     clearSignalPropertyList(); // Очистка листа со свойствами сигнала
@@ -44,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSaveScreenshot, SIGNAL(triggered()), this, SLOT(saveScreenshot())); // Сохранить скриншот программы
     connect(ui->actionSaveAssociatedStatistics, SIGNAL(triggered()), this, SLOT(saveAssociatedStatistics())); // Сохранить относительные статистики
     connect(ui->actionAddShiftSignal, SIGNAL(triggered()), this, SLOT(addShiftSignal())); // Добавление сигнала со смещением
-    connect(ui->actionCalculationTemplate, SIGNAL(triggered()), this, SLOT(changeCalculationTemplate())); // Добавление сигнала со смещением
     // Характеристики сигналов
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateSettingsOfCharacterstics()), Qt::QueuedConnection); // Проверяем возможность расчета
     connect(ui->spinBoxSpectrumWeightWindowWidth, SIGNAL(editingFinished()), this, SLOT(checkSpectrumWeightWindowWidth())); // При изменении ширины весового окна спектра
@@ -67,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(signalCharacteristicsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
     connect(levelsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
-    connect(calcTemplateWindow_.data(), SIGNAL(finished(int)), this, SLOT(calculationTemplateProcessed(int))); // Сохранение расчетного шаблона
-    connect(calcTemplateWindow_.data(), SIGNAL(apply(QVector<int>, int, int, int)), this, SLOT(applyCalculationTemplate(QVector<int>, int, int, int))); // Применение расчетного шаблона
     connect(filterSignalsWindow_.data(), SIGNAL(accepted()), this, SLOT(filtrationFinished())); // Фильтрация сигналов завершена
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));

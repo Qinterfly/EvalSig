@@ -21,25 +21,6 @@ void MainWindow::saveAssociatedStatisticsFinished(){
     lastPath_= associatedStatisticsWindow_->lastPath();
 }
 
-// Завершение сохранения расчетного шаблона
-void MainWindow::calculationTemplateProcessed(int state){
-    switch (state) {
-    case CalculationTemplateWindow::Code::Saved:
-        ui->statusBar->showMessage("Сохранение расчетного шаблона завершилось успешно"); // Вывод информационного сообщения
-        break;
-    case CalculationTemplateWindow::Code::Loaded:
-        ui->statusBar->showMessage("Загрузка расчетного шаблона завершилась успешно");
-        break;
-    case CalculationTemplateWindow::Code::StartedApplying:
-        ui->statusBar->showMessage("Начато применение расчетного шаблона...");
-        break;
-    case CalculationTemplateWindow::Code::FinishedApplying:
-        ui->statusBar->showMessage("Расчетный шаблон применен успешно");
-        break;
-    }
-    lastPath_= calcTemplateWindow_->lastPath();
-}
-
 // Фильтрация сигналов завершена
 void MainWindow::filtrationFinished(){
     statSignal_.setEstimationBoundaries(1, statSignal_.maxSizeSignals(), true); // Пересчет статистик

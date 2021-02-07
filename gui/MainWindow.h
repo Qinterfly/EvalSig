@@ -7,8 +7,6 @@
 #include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
 #include "gui/AssociatedStatisticsWindow.h"
-#include "core/CalculationTemplate.h"
-#include "gui/CalculationTemplateWindow.h"
 #include "gui/FilterSignalsWindow.h"
 
 enum ColorMapType { STATS, SPECTRUM, GROUP }; // Тип цветовой карты
@@ -35,7 +33,6 @@ public slots:
     void saveLevels(); // Сохранить разбиения по уровням
     void saveScreenshot(); // Сохранить скриншот программы
     void saveAssociatedStatistics(); // Сохранить относительные статистики
-    void changeCalculationTemplate(); // Изменить расчетный шаблон
     void filterSignals(); // Фильтрация сигналов
     // Set методы
     void setSignalProperty(); // Установка свойств сигнала
@@ -47,7 +44,6 @@ public slots:
     void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
     void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
     void changeDataSignal(int row, int column); // Изменение параметров сигналов
-    void applyCalculationTemplate(QVector<int> iSelectedSignals, int iMainSignal, int iBaseSignal, int iSupportSignal); // Применение расчетного шаблона
     // Обновление
     void updateStatusBar(); // Обновление строки состояния
     // Методы очистки
@@ -57,7 +53,6 @@ public slots:
     void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
-    void calculationTemplateProcessed(int state); // Завершение сохранения расчетного шаблона
     void filtrationFinished(); // Фильтрация сигналов завершена
     // Справка
     void aboutProgram(); // Информация о программе
@@ -117,7 +112,6 @@ private:
     QSharedPointer<SignalCharacteristicsWindow> signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
     QSharedPointer<LevelsWindow> levelsWindow_; // Окно сохранение разбиения по уровням
     QSharedPointer<AssociatedStatisticsWindow> associatedStatisticsWindow_; // Окно относительных статистик
-    QSharedPointer<CalculationTemplateWindow> calcTemplateWindow_; // Окно построения расчетного шаблона
     QSharedPointer<FilterSignalsWindow> filterSignalsWindow_; // Окно фильтрации сигналов
     // Данные
     QVector<DataSignal> vecDataSignal_; // Вектор с исходными сигналами
@@ -136,8 +130,6 @@ private:
     QVector<QCPColorMap *> vecColorMap_; // Вектор указателей на цветовые карты
     QVector<int> vecColorMapType_; // Типы цветовых карт
     QVector<QCPColorScale *> vecColorScale_; // Вектор указателей на цветовые шкалы
-    // Расчетный шаблон
-    CalculationTemplate calcTemplate_;
     // Сигналы, полученные после применения численных методов
     QMap<int, DataSignal> mapSignalCharacteristics_;          // Данные
     QMap<int, QPointer<QPushButton>> mapCalculationButtons_;  // Расчетные кнопки

@@ -94,8 +94,6 @@ void MainWindow::saveCalcualtion(){
     exitStatus += statSignal_.writeAllMetrics(lastPath_, "Метрики сигналов"); // Запись метрик сигналов
     if (exitStatus == 0)
         statusBar()->showMessage("Результаты сохранены");
-    if ( exitStatus != 0 || !calcTemplate_.isRecord() ) return;
-    calcTemplate_.addWindow("StatisticsWindow");
 }
 
 // Сохранить разбиения по уровням
@@ -147,15 +145,6 @@ void MainWindow::saveAssociatedStatistics(){
     associatedStatisticsWindow_->setParamsBoundaries(); // Выставление границ параметров окна
     associatedStatisticsWindow_->refreshNumberOfWindows(); // Обновление чисел окон по сигналам
     associatedStatisticsWindow_->show(); // Отобразить окно относительных статистик
-}
-
-// Изменить расчетный шаблон
-void MainWindow::changeCalculationTemplate(){
-    calcTemplate_.setStatParams(statSignal_.getEstimationBoundaries(), widthTimeWindow_, shiftWindow_);
-    calcTemplateWindow_->setLastPath(lastPath_); // Передача последнего пути, выбранного пользователем
-    calcTemplateWindow_->setSignalsName(*ui->listFile); // Передача имен сигналов
-    calcTemplateWindow_->updateSequenceOfWindows(); // Обновление последовательности окон
-    calcTemplateWindow_->show();
 }
 
 // Фильтрация сигналов

@@ -20,13 +20,14 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
         core/AssociatedStatistics.cpp \
-        core/CalculationTemplate.cpp \
         core/DataSignal.cpp \
         core/DivisionDataSignal.cpp \
         core/PartsObject.cpp \
         core/Statistics.cpp \
+        core/FileOperate.cpp \
+        core/TimeWindowProperty.cpp \
+        core/NumericalFunctions.cpp \
         gui/AssociatedStatisticsWindow.cpp \
-        gui/CalculationTemplateWindow.cpp \
         gui/FilterSignalsWindow.cpp \
         gui/LevelsWindow.cpp \
         gui/MainWindow.cpp \
@@ -40,10 +41,7 @@ SOURCES += \
         gui/ClearMethods.cpp \
         gui/ColorMapPlotting.cpp \
         gui/GraphPlotting.cpp \
-        core/FileOperate.cpp \
-        core/TimeWindowProperty.cpp \
         gui/UpdateMethods.cpp \
-        core/NumericalFunctions.cpp \
         gui/SignalCharacteristicsWindow.cpp \
         gui/DataTransfer.cpp \
         gui/QCustomPlotZoom.cpp \
@@ -52,22 +50,20 @@ SOURCES += \
 
 HEADERS += \
         core/AssociatedStatistics.h \
-        core/CalculationTemplate.h \
         core/DataSignal.h \
         core/DivisionDataSignal.h \
         core/PartsObject.h \
         core/Statistics.h \
         core/Macroses.h \
-        gui/AssociatedStatisticsWindow.h \
-        gui/CalculationTemplateWindow.h \
-        gui/FilterSignalsWindow.h \
-        gui/LevelsWindow.h \
-        gui/MainWindow.h \
-        gui/QCPColorCurve.h \
         core/FileOperate.h \
         core/PropertyDataSignal.h \
         core/TimeWindowProperty.h \
         core/NumericalFunctions.h \
+        gui/AssociatedStatisticsWindow.h \
+        gui/FilterSignalsWindow.h \
+        gui/LevelsWindow.h \
+        gui/MainWindow.h \
+        gui/QCPColorCurve.h \
         gui/SignalCharacteristicsWindow.h \
         gui/QCustomPlotZoom.h \
         include/csaps.h \
@@ -76,7 +72,6 @@ HEADERS += \
 
 FORMS += \
     gui/AssociatedStatisticsWindow.ui \
-    gui/CalculationTemplateWindow.ui \
     gui/FilterSignalsWindow.ui \
     gui/LevelsWindow.ui \
     gui/MainWindow.ui \
