@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include "core/Statistics.h"
 #include "gui/QCustomPlotZoom.h"
-#include "gui/SignalCharacteristicsWindow.h"
 #include "gui/LevelsWindow.h"
 #include "gui/AssociatedStatisticsWindow.h"
 #include "gui/FilterSignalsWindow.h"
@@ -50,7 +49,6 @@ public slots:
     void clearProject(); // Очистка проекта
     void clearSignalCharacteristics(); // Очистка обработанных сигналов
     // Обмен данными между окнами
-    void saveSignalCharacteristicsFinished(); // Завершение сохранения свойств сигнала
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
     void filtrationFinished(); // Фильтрация сигналов завершена
@@ -109,7 +107,6 @@ private:
     Ui::MainWindow * ui; // Графический интерфейс QtDesigner
     QString lastPath_ = ""; // Последний путь, выбранный пользователем
     // Дополнительные окна
-    QSharedPointer<SignalCharacteristicsWindow> signalCharacteristicsWindow_; // Окно сохранение характеристик сигнала
     QSharedPointer<LevelsWindow> levelsWindow_; // Окно сохранение разбиения по уровням
     QSharedPointer<AssociatedStatisticsWindow> associatedStatisticsWindow_; // Окно относительных статистик
     QSharedPointer<FilterSignalsWindow> filterSignalsWindow_; // Окно фильтрации сигналов

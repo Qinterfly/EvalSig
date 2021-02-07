@@ -79,10 +79,25 @@ void MainWindow::removeSignal(bool isReplot){
 void MainWindow::saveSignalCharacteristics(){
     int saveInd = ui->listFile->currentRow(); // Индекс файла для сохранения
     if (saveInd == -1) return; // Проверка на пустоту списка
-    signalCharacteristicsWindow_->setDataSignal(vecDataSignal_[saveInd]); // Передача сигнала
-    signalCharacteristicsWindow_->setEstimationBoundaries(statSignal_.getEstimationBoundaries()); // Границы расчета
-    signalCharacteristicsWindow_->setLastPath(lastPath_); // Передача пути по умолчанию
-    signalCharacteristicsWindow_->show(); // Отображение диалогового окна
+    int saveStatus = 0; // Код сохранения
+    // Получение сигнала на интервале
+    QPair<int, int> const& estimationBoundaries = statSignal_.getEstimationBoundaries();
+    DataSignal const& baseSignal = vecDataSignal_[saveInd];
+    DataSignal resDataSignal(baseSignal, estimationBoundaries.first - 1, estimationBoundaries.second - 1); // -1 при переводе отсчетов в индексы
+    // Диалог с пользователем для выбора директории для сохранения
+    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+    // Проверка корректности выбора
+    if (saveDir.isEmpty()){
+        saveStatus = -1;
+        return;
+    }
+    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
+    QFileInfo fileInfo(baseSignal.getName()); // Информация о файле
+    QString const& signalName = fileInfo.baseName(); // Базовое имя сигналаа
+    // Выставление флагов расчета
+    saveStatus += resDataSignal.writeDataFile(lastPath_, signalName + ".txt"); // Сохранение исходного временного сигнала
+    if (saveStatus == 0) // В случае успешного сохранения
+        ui->statusBar->showMessage("Сохранение сигнала на заданном диапазоне завершено");
 }
 
 // Сохранение результатов расчета

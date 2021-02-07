@@ -3,12 +3,6 @@
 
 // ---- Обмен данными между окнами -----------------------------------------------------------------------------
 
-// Завершение сохранения свойств сигнала
-void MainWindow::saveSignalCharacteristicsFinished(){
-    ui->statusBar->showMessage("Сохранение характеристик сигнала завершилось успешно"); // Вывод информационного сообщения
-    lastPath_ = signalCharacteristicsWindow_->lastPath(); // Запись последнего пути
-}
-
 // Завершение сохранения поуровневого разбиения
 void MainWindow::saveLevelsFinished(){
     ui->statusBar->showMessage("Сохранение разбиения по уровням завершилось успешно");
@@ -35,8 +29,8 @@ void MainWindow::filtrationFinished(){
 // Информация о программе
 void MainWindow::aboutProgram(){
     QString description = "Программа <b>EvalSig</b> предназначена для оценки взаимного влияния сигналов";
-    QString version = "v1.6.9";
-    QString author = "Copyright © 2019-2020 Павел Лакиза (Qinterfly)";
+    QString version = "v1.7.1";
+    QString author = "Copyright © 2019-2021 Павел Лакиза (Qinterfly)";
     QString info = QString("%1<br> Версия программы: %2<br> %3<br>").arg(description).arg(version).arg(author);
     QMessageBox::about(this, "О программе", info);
 }

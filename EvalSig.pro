@@ -42,7 +42,6 @@ SOURCES += \
         gui/ColorMapPlotting.cpp \
         gui/GraphPlotting.cpp \
         gui/UpdateMethods.cpp \
-        gui/SignalCharacteristicsWindow.cpp \
         gui/DataTransfer.cpp \
         gui/QCustomPlotZoom.cpp \
         include/csaps.cpp \
@@ -64,7 +63,6 @@ HEADERS += \
         gui/LevelsWindow.h \
         gui/MainWindow.h \
         gui/QCPColorCurve.h \
-        gui/SignalCharacteristicsWindow.h \
         gui/QCustomPlotZoom.h \
         include/csaps.h \
         include/fftw3.h \
@@ -74,8 +72,7 @@ FORMS += \
     gui/AssociatedStatisticsWindow.ui \
     gui/FilterSignalsWindow.ui \
     gui/LevelsWindow.ui \
-    gui/MainWindow.ui \
-    gui/SignalCharacteristicsWindow.ui
+    gui/MainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

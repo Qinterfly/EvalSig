@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
     statSignal_(vecDataSignal_, widthTimeWindow_, shiftWindow_, 1, 2) // Статистики
 {
     ui->setupUi(this); // Инициализация графического интерфейса
-    signalCharacteristicsWindow_ = QSharedPointer<SignalCharacteristicsWindow>(new SignalCharacteristicsWindow(this));
     levelsWindow_ = QSharedPointer<LevelsWindow>(new LevelsWindow(vecDataSignal_, this));
     associatedStatisticsWindow_ = QSharedPointer<AssociatedStatisticsWindow>(new AssociatedStatisticsWindow(vecDataSignal_, this));
     filterSignalsWindow_ = QSharedPointer<FilterSignalsWindow>(new FilterSignalsWindow(vecDataSignal_, this));
@@ -62,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
     // Дополнительные окна
-    connect(signalCharacteristicsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveSignalCharacteristicsFinished())); // Сохранение характеристик
     connect(levelsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
     connect(filterSignalsWindow_.data(), SIGNAL(accepted()), this, SLOT(filtrationFinished())); // Фильтрация сигналов завершена
