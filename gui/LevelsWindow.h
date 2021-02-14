@@ -21,7 +21,7 @@ public:
     void setLastPath(QString const& lastPath); // Установка пути по умолчанию
     QString const& lastPath() { return lastPath_; } // Получение пути по умолчанию
 public slots:
-    void save(bool isUserCalc = true); // Сохранение и расчет
+    void save(); // Сохранение и расчет
 private slots:
     void setSaveState(int); // Проверка возможности сохранения
     void showLevels(); // Отображение уровней на графике

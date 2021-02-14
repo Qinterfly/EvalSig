@@ -192,9 +192,9 @@ void FilterSignalsWindow::filterSignals(){
     bool isBandpassFilter = ui->groupBoxBandpassFilter->isChecked();
     WindowFunction windowFun = WindowFunction(ui->comboBoxWeightWindowType->currentIndex()); // Тип окна (HAMMING, HANN, BLACKMAN)
     int weightWindowWidth = ui->spinBoxWeightWindowWidth->value(); // Ширина весового окна
-    double overlapFactor = ui->spinBoxOverlapFactor->value(); // Коэффициент перекрытия окон
-    double lowerFreq = ui->spinBoxLowerFrequency->value(); // Нижняя частота
-    double upperFreq = ui->spinBoxUpperFrequency->value(); // Верхняя частота
+    double overlapFactor = ui->spinBoxOverlapFactor->value();      // Коэффициент перекрытия окон
+    double lowerFreq = ui->spinBoxLowerFrequency->value();         // Нижняя частота
+    double upperFreq = ui->spinBoxUpperFrequency->value();         // Верхняя частота
         // Интерполяция
     bool isInterpolate = ui->groupBoxInterpolation->isChecked();
     int nPoints = vecDataSignal_[0].timeDuration() / DataSignal::TIME_PHYS_MULT / ui->spinBoxScanPeriod->value(); // Всегда целое

@@ -382,8 +382,9 @@ DataSignal bandpassFilter(DataSignal const& dataSignal, WindowFunction windowFun
         leftBound += stepWindow; // Сдвиг левой границы окна
     }
     // Нормировка результатов расчета
+    double normMult = absMaxVec(dataSignal.getData()) / absMaxVec(resultData);
     for (double &res : resultData)
-        res /= nWindows;
+        res *= normMult;
     // Освобождение ресурсов, использованных для преобразования
     fftw_destroy_plan(planForward);
     fftw_destroy_plan(planInverse);
@@ -702,10 +703,10 @@ double Spline::scaleValue(double x) const {
 }
 
 // Наивный поиск локальных экстремумов
-QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance, double thresholdFrac, std::function<bool(double, double)> compare){
+QVector<int> FindPeaks(QVector<double> const& data, double step, double minDistance, double thresholdFrac, std::function<bool(double, double)> compare){
     static int const RESERVE_SIZE = 32;
     int nData = data.size(); // Длина сигнала
-    int distance = minDistance; // Число отсчетов до предыдущего экстремума
+    double distance = minDistance; // Дистанция до предыдущего экстремума
     double previous = data[1] - data[0]; // Предыдущее значение производной
     double current = 0.0; // Текущее значение производной
     QPair<double, double> minMaxData = minMaxVec(data); // Минимум и максимум сигнала
@@ -718,11 +719,11 @@ QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance, doubl
         current = data[i] - data[i - 1];
         // Если знак производной поменялся
         if ( current * previous < 0 && distance >= minDistance && compare(current, 0.0) && qAbs(data[i - 1]) > thresholdVal ){
-            distance = 0;
+            distance = 0.0;
             resVec.push_back(i - 1);
         }
         previous = current;
-        ++distance; // Приращение числа отсчетов между экстремумами
+        distance += step; // Приращение дистанции между экстремумами
     }
     return resVec;
 }

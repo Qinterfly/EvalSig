@@ -158,4 +158,12 @@ void QCustomPlotZoom::showCoordTag(QMouseEvent * event){
     }
 }
 
+// При нажатии клавиши
+void QCustomPlotZoom::keyPressEvent(QKeyEvent * event){
+    if (hasFocus()){
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        emit keyPressed(keyEvent->key());
+    }
+}
+
 // -------------------------------------------------------------------------------------------------------------

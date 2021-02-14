@@ -24,7 +24,7 @@ public:
 
 public slots:
     // Чтение, запись и удаление сигналов
-    void addSignal(int shiftRead = 0); // Добавить сигнал
+    void addSignal(int shiftRead = 0, QString path = QString()); // Добавить сигнал
     void addShiftSignal(); // Добавить сигнал со смещением
     void removeSignal(bool isReplot = true); // Удалить сигнал
     void saveSignalCharacteristics(); // Сохранить характеристики сигнала
@@ -40,7 +40,7 @@ public slots:
     void setShowParams(); // Установка параметров отображения
     void setVisibleFileWidget(bool); // Изменить отображения списка сигналов
     void setVisiblePropertyWidget(bool); // Изменить отображения виджета свойств
-    void setStatEstimationBoundaries(); // Установка границ расчета (поля -> статистики)
+    void setStatEstimationBoundaries(bool isPlot = true); // Установка границ расчета (поля -> статистики)
     void setStatEstimationBoundaries(QPair<int, int> const& estimationBoundaries); // Установка границ расчета (статистики -> поля)
     void changeDataSignal(int row, int column); // Изменение параметров сигналов
     // Обновление
@@ -52,6 +52,7 @@ public slots:
     void saveLevelsFinished(); // Завершение сохранение поуровневого разбиения
     void saveAssociatedStatisticsFinished(); // Завершение сохранения относительных статистик
     void filtrationFinished(); // Фильтрация сигналов завершена
+    void keyPressedComparePlot(int key); // Нажатие клавиши при сравнении сигналов
     // Справка
     void aboutProgram(); // Информация о программе
     // Регрессия
@@ -65,10 +66,12 @@ public slots:
     void calculateAndPlotEnvelope(bool isPlot = true); // Огибающие
     void calculateAndPlotDecay(bool isPlot = true);    // Декремента
     void saveCharacteristic(int indSelected = -1); // Сохранение характеристик сигналов
+    void saveShiftedSignals(); // Сохранение сигналов со смещением
     // Установка параметров характеристик сигналов
     void updateSettingsOfCharacterstics(); // Проверка возможности расчета и сохранения обработанных сигналов
     void checkSpectrumWeightWindowWidth(); // Проверка ширины весового окна спектра
     void checkIntegralWeightWindowWidth(); // Проверка ширины весового окна интеграла
+    void checkSelectedPeaks(); // Проверка возможности сохранения сигналов со смещениям по пикам
     void setEnabledIntegralCorrection(); // Установка состояния коррекции интеграла
     void setEnabledIntegralDomain(); // Установка состояния параметров интегрирования
 protected:

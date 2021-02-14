@@ -86,22 +86,20 @@ void AssociatedStatisticsWindow::refreshNumberOfWindows(){
 }
 
 // Сохранение статистик
-void AssociatedStatisticsWindow::save(bool isUserCalc){
+void AssociatedStatisticsWindow::save(){
     int exitStatus = 0; // Статус завершения
     // Диалог с пользователем для выбора директории для сохранения
-    if (isUserCalc){
-        QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
-        // Проверка корректности выбора
-        if (saveDir.isEmpty()) return;
-        lastPath_ = saveDir + QDir::separator(); // Запись последней директории
-    }
+    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+    // Проверка корректности выбора
+    if (saveDir.isEmpty()) return;
+    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     // Создание и расчет статистик
     AssociatedStatistics statistics(vecDataSignal_, ui->spinBoxWidthWindow->value(),  ui->spinBoxShiftMainWindow->value(),
                                     ui->spinBoxShiftCompareWindow->value(), ui->comboBoxIndMainSignal->currentIndex());
     exitStatus += statistics.computeStatistics(); // Полный расчет
     // Сохранение всех статистик
     exitStatus += statistics.writeAllStatistics(lastPath_);
-    if (!exitStatus && isUserCalc) emit this->accepted();
+    if (!exitStatus) emit this->accepted();
     this->hide(); // Скрытие окна
 }
 

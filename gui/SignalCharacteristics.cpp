@@ -11,10 +11,10 @@ void checkWeightWindowWidth(QPointer<QSpinBox> spinBoxWeightWindowWidth); // П�
 void MainWindow::clearSignalCharacteristics(){
     mapSignalCharacteristics_.clear(); // Очистка данных сигналов
     // Удаление данных графиков
-    ui->spectrumPlot->clearGraphs(); // Спектра
-    ui->integralPlot->clearGraphs(); // Интеграла
-    ui->analysisPlot->clearGraphs(); // Анализа
-    ui->decayPlot->clearGraphs();    // Декремента
+    ui->spectrumPlot->clearPlottables(); // Спектра
+    ui->integralPlot->clearGraphs();     // Интеграла
+    ui->analysisPlot->clearGraphs();     // Анализа
+    ui->decayPlot->clearGraphs();        // Декремента
     // Скрытие дополнительных осей
     ui->integralPlot->xAxis2->setVisible(false); // Интеграла
     ui->analysisPlot->xAxis2->setVisible(false); // Анализа
@@ -27,6 +27,9 @@ void MainWindow::clearSignalCharacteristics(){
     ui->integralPlot->replot(); // Интеграла
     ui->analysisPlot->replot(); // Анализа
     ui->decayPlot->replot();    // Декремента
+    // Очистка спектральных данных
+    ui->tableSpectrumData->clearContents();
+    ui->tableSpectrumData->setRowCount(0);
 }
 
 // Расчета и построение спектра
@@ -56,6 +59,22 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     double freqStep = (nyquistFrequency) / (nData - 1); // Частотный шаг
     for (int i = 0; i != nData; ++i)
         XData[i] = i * freqStep;
+    // Отыскание пиков и добавление их в таблицу
+    ui->tableSpectrumData->clearContents();
+    QVector<int> vecPeakIndices = FindPeaks(YData, freqStep);
+    int nPeaks = vecPeakIndices.size();
+    ui->tableSpectrumData->setRowCount(nPeaks);
+    int iPeak;
+    double tempVal;
+    ui->tableSpectrumData->setSortingEnabled(false);
+    for (int i = 0; i != nPeaks; ++i){
+        iPeak = vecPeakIndices[i];
+        tempVal = XData[iPeak];
+        ui->tableSpectrumData->setItem(i, 0, new QTableWidgetItem(QString::number(tempVal, 'g', 4)));       // Частота
+        ui->tableSpectrumData->setItem(i, 1, new QTableWidgetItem(QString::number(YData[iPeak], 'g', 3)));  // Амплитуда
+        ui->tableSpectrumData->setItem(i, 2, new QTableWidgetItem(QString::number(1.0 / tempVal, 'g', 3))); // Время
+    }
+    ui->tableSpectrumData->setSortingEnabled(true);
     // Построение спектра
     if (ui->spectrumPlot->graphCount() != 0)
         ui->spectrumPlot->clearPlottables();
@@ -64,9 +83,25 @@ void MainWindow::calculateAndPlotSpectrum(bool isPlot){
     ui->spectrumPlot->graph()->setPen(QPen(Qt::red)) ; // Выставление цвета графика
     ui->spectrumPlot->graph()->setData(XData, YData, true); // Передача отсортированных данных
     ui->spectrumPlot->graph()->setName(ui->listFile->currentItem()->text()); // Имя графика
-    // Обновление графического окна
+    // Масштабирование
     ui->spectrumPlot->rescaleAxes(true); // Масштабирование осей
     ui->spectrumPlot->xAxis->setRange(0, nyquistFrequency); // Диапазон частот
+    // Построение экстремумов
+    QCPRange const& YRange = ui->spectrumPlot->yAxis->range();
+    QVector<double> YLimits = {YRange.minRange, YRange.maxRange};
+    QPen peakPen;
+    peakPen.setColor(Qt::blue);
+    peakPen.setStyle(Qt::PenStyle::DashLine);
+    peakPen.setWidth(1);
+    for (int iPeak = 0; iPeak != nPeaks; ++iPeak){
+        tempVal = XData[vecPeakIndices[iPeak]];
+        QCPCurve * curve = new QCPCurve(ui->spectrumPlot->xAxis, ui->spectrumPlot->yAxis);
+        curve->setData({tempVal, tempVal}, YLimits);
+        curve->setLineStyle(QCPCurve::LineStyle::lsLine);
+        curve->setPen(peakPen);
+        curve->removeFromLegend();
+    }
+    // Обновление графического окна
     ui->spectrumPlot->legend->setVisible(true); // Отображение легенды
     ui->spectrumPlot->replot(); // Обновление окна построения
 }
@@ -322,6 +357,12 @@ void MainWindow::checkIntegralWeightWindowWidth(){
     checkWeightWindowWidth(ui->spinBoxIntegralWeightWindowWidth);
 }
 
+// Проверка возможности сохранения сигналов со смещениям по пикам
+void MainWindow::checkSelectedPeaks(){
+    bool isSelected = ui->tableSpectrumData->selectedItems().size() != 0;
+    ui->pushButtonSaveShiftedSignals->setEnabled(isSelected);
+}
+
 // Установка состояния коррекции интеграла
 void MainWindow::setEnabledIntegralCorrection(){
     ui->spinBoxIntegralCorrectionFactor->setEnabled(ui->checkBoxIntegralCorrection->isChecked());
@@ -344,14 +385,6 @@ void MainWindow::setEnabledIntegralDomain(){
 void MainWindow::saveCharacteristic(int indSelected){
     static QString const ext = ".txt";
     static QString const hintExt = "Text files (*" + ext + ")";
-    bool isUserCalc = false;
-    // Если объект не выбран программно, то выбираем текущий пользовательский
-    if (indSelected < 0){
-        indSelected = ui->showModeWidget->currentIndex();
-        isUserCalc = true;
-    } else if (indSelected > SHIFT_TAB){
-        isUserCalc = true;
-    }
     QString saveCaption;
     QString postfix;
     switch (indSelected) {
@@ -380,19 +413,48 @@ void MainWindow::saveCharacteristic(int indSelected){
     // Формирование имени файла
     DataSignal const& dataSignal = mapSignalCharacteristics_[indSelected];
     QString fileName = QFileInfo(dataSignal.getName()).completeBaseName() + postfix + ext;
-        // Организация диалога с пользователем
-    if (isUserCalc){
-        QString fullFilePath = QFileDialog::getSaveFileName(this, saveCaption, lastPath_ + fileName, hintExt);
-        if (fullFilePath.isEmpty()) return;
-        QFileInfo infoName(fullFilePath); // Создание информационного объекта
-        fileName = infoName.fileName(); // Имя файла
-        if ( !fileName.contains(ext) ) // Добавление расширения
-            fileName += ext;
-        lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
-    }
+    // Организация диалога с пользователем
+    QString fullFilePath = QFileDialog::getSaveFileName(this, saveCaption, lastPath_ + fileName, hintExt);
+    if (fullFilePath.isEmpty()) return;
+    QFileInfo infoName(fullFilePath); // Создание информационного объекта
+    fileName = infoName.fileName(); // Имя файла
+    if ( !fileName.contains(ext) ) // Добавление расширения
+        fileName += ext;
+    lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
      // Сохранение файла
-    if (!dataSignal.writeDataFile(lastPath_, fileName) && isUserCalc)
+    if (!dataSignal.writeDataFile(lastPath_, fileName))
         ui->statusBar->showMessage("Сохранение характеристики выполнено успешно");
+}
+
+// Сохранение сигналов со смещением
+void MainWindow::saveShiftedSignals(){
+    QList<QTableWidgetItem*> items = ui->tableSpectrumData->selectedItems();
+    if (items.size() == 0)
+        return;
+    // Получение пользовательской директории
+    QString dir = QFileDialog::getExistingDirectory(this, "Выберите директорию для сохранения сигналов со смещением", lastPath_);
+    if (dir.isEmpty())
+        return;
+    lastPath_ = dir + QDir::separator();
+    // Получение базового сигнала
+    int iSignal = ui->listFile->currentRow();
+    DataSignal baseSignal = vecDataSignal_[iSignal];
+    QString path = baseSignal.getPath();
+    QString fileName = baseSignal.getName();
+    QString baseName = QFileInfo(fileName).baseName();
+    // Запись сигналов
+    QModelIndexList indices = ui->tableSpectrumData->selectionModel()->selectedRows();
+    for (QModelIndex index : indices){
+        int iRow = index.row();
+        double shiftTime = ui->tableSpectrumData->item(iRow, 2)->data(0).toDouble();
+        int shiftInd = baseSignal.convertTimeToCount(shiftTime);
+        // Читаем сигнал со смещением
+        DataSignal signal(path, fileName, shiftInd);
+        QString tempFileName = baseName + " (" + QString::number(shiftTime, 'g', 2).replace('.', ',') + " c)" + ".txt";
+        // Добавляем смещенный сигнал в проект
+        signal.writeDataFile(lastPath_, tempFileName);
+        addSignal(0, lastPath_ + tempFileName);
+    }
 }
 
 // ---- Вспомогательные ----------------------------------------------------------------------------------------

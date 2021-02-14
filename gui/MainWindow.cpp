@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonIntegralSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение интеграла
     connect(ui->pushButtonAnalysisSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение анализа
     connect(ui->pushButtonEnvelopeSave, SIGNAL(clicked()), this, SLOT(saveCharacteristic())); // Сохранение огибающих
+    connect(ui->pushButtonSaveShiftedSignals, SIGNAL(clicked()), this, SLOT(saveShiftedSignals())); // Сохранение сигналов со смещением
+    connect(ui->tableSpectrumData, SIGNAL(itemSelectionChanged()), this, SLOT(checkSelectedPeaks())); // Проверка возможности сохранения сигналов со смещениям по пикам
     // Обновление statusBar
     connect(ui->showModeWidget, SIGNAL(currentChanged(int)), this, SLOT(updateStatusBar())); // При переключении типа графиков
     connect(ui->listFile, SIGNAL(itemSelectionChanged()), this, SLOT(updateStatusBar()), Qt::QueuedConnection); // При выборе сигнала
@@ -64,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(levelsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveLevelsFinished())); // Сохранение уровней
     connect(associatedStatisticsWindow_.data(), SIGNAL(accepted()), this, SLOT(saveAssociatedStatisticsFinished())); // Сохранение относительных статистик
     connect(filterSignalsWindow_.data(), SIGNAL(accepted()), this, SLOT(filtrationFinished())); // Фильтрация сигналов завершена
+    connect(ui->comparePlot, SIGNAL(keyPressed(int)), this, SLOT(keyPressedComparePlot(int)));
     // Справка
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAboutProgram, SIGNAL(triggered()), this, SLOT(aboutProgram()));

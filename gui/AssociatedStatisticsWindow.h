@@ -23,7 +23,7 @@ public:
     QString const& lastPath() const { return lastPath_; } // Получение пути по умолчанию
 public slots:
     void refreshNumberOfWindows(); // Обновление информации о числе окон по сигналам
-    void save(bool isUserCalc = true); // Сохранение статистик
+    void save(); // Сохранение статистик
 private:
     Ui::AssociatedStatisticsWindow *ui;
     QVector<DataSignal> const& vecDataSignal_; // Вектор с исходными сигналами

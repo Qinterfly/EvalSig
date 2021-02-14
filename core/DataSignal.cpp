@@ -187,6 +187,12 @@ QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd, int rig
     return {*res.first, *res.second};
 }
 
+// Поиск абсолютного максимума в векторе
+double absMaxVec(QVector<double> const& vec, int leftInd, int rightInd){
+    QPair<double, double> minMax = minMaxVec(vec, leftInd, rightInd);
+    return qMax(qAbs(minMax.first), qAbs(minMax.second));
+}
+
 // Поиск максимума в векторе
 double maxVec(QVector<double> const& vec, int leftInd, int rightInd){
     return *std::max(vec.begin() + leftInd, vec.begin() + rightInd + 1);

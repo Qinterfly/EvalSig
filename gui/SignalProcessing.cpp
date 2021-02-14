@@ -4,9 +4,13 @@
 // ----  Чтение, запись и удаление сигналов ------------------------------------------------------------------------
 
 // Добавить сигнал
-void MainWindow::addSignal(int shiftRead){
+void MainWindow::addSignal(int shiftRead, QString path){
     // Организация диалога с пользователем
-    QStringList listFullFilePath = QFileDialog::getOpenFileNames(this, "Выберите один или несколько файлов с временными сигналами", lastPath_, "Text files (*.txt)");
+    QStringList listFullFilePath;
+    if (path.isEmpty())
+        listFullFilePath = QFileDialog::getOpenFileNames(this, "Выберите один или несколько файлов с временными сигналами", lastPath_, "Text files (*.txt)");
+    else
+        listFullFilePath.push_back(path);
     if (listFullFilePath.isEmpty()) return;
     int indFile = 0; // Номер файла в обработке
     for ( QString const& fullFilePath : listFullFilePath ){

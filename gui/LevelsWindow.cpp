@@ -76,14 +76,12 @@ void LevelsWindow::setSaveState(int){
 }
 
 // Сохранение и расчет
-void LevelsWindow::save(bool isUserCalc){
+void LevelsWindow::save(){
     // Диалог с пользователем для выбора директории для сохранения
-    if (isUserCalc){
-        QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
-        // Проверка корректности выбора
-        if (saveDir.isEmpty()) return;
-        lastPath_ = saveDir + QDir::separator(); // Запись последней директории
-    }
+    QString saveDir = QFileDialog::getExistingDirectory(this, "", lastPath_, QFileDialog::ShowDirsOnly); // Диалоговое окно
+    // Проверка корректности выбора
+    if (saveDir.isEmpty()) return;
+    lastPath_ = saveDir + QDir::separator(); // Запись последней директории
     // Сигналы
     DataSignal base = vecDataSignal_[ui->comboBoxBase->currentIndex() - 1]; // Базовый
     DataSignal support = vecDataSignal_[ui->comboBoxSupport->currentIndex() - 1]; // Опорный
@@ -120,7 +118,7 @@ void LevelsWindow::save(bool isUserCalc){
     }
         // Информация об уровнях
     saveStatus += divSignal.writeInfo(lastPath_, "Информация об уровнях.txt");
-    if (saveStatus == 0 && isUserCalc) // В случае успешного сохранения
+    if (saveStatus == 0) // В случае успешного сохранения
         emit this->accepted();
     this->hide(); // Скрытие окна
 }

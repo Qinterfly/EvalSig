@@ -40,7 +40,7 @@ DataSignal evaluateDecay(DataSignal const& dataSignal, double period, bool const
 int previousPow2(int number); // Ближайшая предыдущая степень двойки
 std::set<int> findDivisors(qint64 number, qint64 upperLim = -1); // Поиск всех делителей
 QVector<double> linspace(double leftBound, double rightBound, int nPoint); // Вектор с nPoint равномерно распределенных значений [leftBound, rightBound]
-QVector<int> FindPeaksDirect(QVector<double> const& data, int minDistance = 1, double thresholdFrac = 1.0E-3, std::function<bool(double, double)> compare = std::less<>()); // Наивный поиск локальных экстремумов
+QVector<int> FindPeaks(QVector<double> const& data, double step, double minDistance = 0.01, double thresholdFrac = 5.0E-3, std::function<bool(double, double)> compare = std::less<>()); // Поиск локальных экстремумов
     // Интерполяция сплайнами
 struct Spline {
 public:

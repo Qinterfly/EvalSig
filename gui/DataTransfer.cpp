@@ -28,11 +28,23 @@ void MainWindow::filtrationFinished(){
 
 // Информация о программе
 void MainWindow::aboutProgram(){
-    QString description = "Программа <b>EvalSig</b> предназначена для оценки взаимного влияния сигналов";
-    QString version = "v1.7.1";
-    QString author = "Copyright © 2019-2021 Павел Лакиза (Qinterfly)";
-    QString info = QString("%1<br> Версия программы: %2<br> %3<br>").arg(description).arg(version).arg(author);
+    static QString const description = "Программа <b>EvalSig</b> предназначена для оценки взаимного влияния сигналов";
+    static QString const version = "v1.7.1";
+    static QString const author = "Copyright © 2019-2021 Павел Лакиза (Qinterfly)";
+    static QString const info = QString("%1<br> Версия программы: %2<br> %3<br>").arg(description).arg(version).arg(author);
     QMessageBox::about(this, "О программе", info);
+}
+
+// Нажатие клавиши при сравнении сигналов
+void MainWindow::keyPressedComparePlot(int key){
+    // Установка расчетного диапазона по выбранному участку
+    if (key == Qt::Key_F1 && !statSignal_.isEmpty()){
+        QCPRange const& rangeX = ui->comparePlot->getXRange();
+        ui->spinBoxLeftEstimationBoundary->setValue(qFloor(rangeX.lower));
+        ui->spinBoxRightEstimationBoundary->setValue(qFloor(rangeX.upper));
+        setStatEstimationBoundaries(false);
+        ui->comparePlot->replot();
+    }
 }
 
 // --------------------------------------------------------------------------------------------------------------

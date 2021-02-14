@@ -35,6 +35,7 @@ public:
     QVector<double> getData(int leftInd, int rightInd) const { return data_.mid(leftInd, rightInd - leftInd + 1); } // Получение среза сигнала
     PropertyDataSignal const& getProperty() const { return property; } // Получение всех свойств
     QString getName() const { return property.fileName_; } // Получение имени сигнала
+    QString getPath() const { return property.path_; } // Получение имени сигнала
     double convertCountToTime(int count) const { return count * TIME_PHYS_MULT * property.scanPeriod_; } // Перевести номер отсчета в время
     int convertTimeToCount(double time) const { return time < timeDuration() ? time / property.scanPeriod_ / TIME_PHYS_MULT : size() - 1; } // Перевести время в номер отсчета
     double timeDuration() const { return convertCountToTime(size()); } // Длительность записи в секундах
@@ -65,6 +66,9 @@ public:
 
 // Поиск минимума-максимума в векторе
 QPair<double, double> minMaxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
+
+// Поиск абсолютного максимума в векторе
+double absMaxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);
 
 // Поиск максимума в векторе
 double maxVec(QVector<double> const& vec, int leftInd = 0, int rightInd = -1);

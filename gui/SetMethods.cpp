@@ -98,7 +98,7 @@ void MainWindow::setVisiblePropertyWidget(bool isChecked){ ui->dockPropertyWidge
 
 // Установка границ расчета
     // Поля -> статистики
-void MainWindow::setStatEstimationBoundaries(){
+void MainWindow::setStatEstimationBoundaries(bool isPlot){
     // Получение новых границ расчета
     int newLeftBound = ui->spinBoxLeftEstimationBoundary->value(), newRightBound = ui->spinBoxRightEstimationBoundary->value();
     // Задание максимальной правой границы
@@ -120,7 +120,7 @@ void MainWindow::setStatEstimationBoundaries(){
     }
     statSignal_.setEstimationBoundaries(newLeftBound, newRightBound); // Выставление границ расчета статистик
     setBoundariesShowParams(); // Выставление граничных значений параметров
-    plotEstimationBoundaries(true); // Построение граничных линий
+    plotEstimationBoundaries(isPlot); // Построение граничных линий
     updateStatusBar(); // Обновление информационной строки
     // Отображение временных границ в подсказках
     ui->spinBoxLeftEstimationBoundary->setToolTip(QString::number(vecDataSignal_[0].convertCountToTime(newLeftBound)) + " c");

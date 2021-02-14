@@ -65,6 +65,8 @@ void MainWindow::initializeAllPlot(){
     }
     ui->comparePlot->setKeyAxes({2, 1}); // Выбор ключевых осей
     // -- spectrumPlot, integralPlot, analysisPlot, decayPlot --
+        // Организация спектральных данных
+    ui->tableSpectrumData->sortByColumn(1, Qt::SortOrder::DescendingOrder); // Сортировка по амплитуде
         // Выбор ключевых осей
     ui->integralPlot->setKeyAxes({2, 1});
     ui->analysisPlot->setKeyAxes({2, 1});
