@@ -3,7 +3,7 @@
 The program is aimed at finding technological defects in power lines. 
 
 ## How does it work?
-Firstly several sensor signals are preprocessed. According to features of measurements the following procedures can be applied:
+Firstly, several sensor signals are preprocessed. According to features of measurements, the following procedures can be applied:
 - Approximation by smooth splines; 
 - Integration;
 - Interpolation;
