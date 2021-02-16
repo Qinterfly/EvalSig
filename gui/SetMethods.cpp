@@ -222,6 +222,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
     static const float RELATIVE_WIDTH_DOCK = 0.3f;
     static const float RELATIVE_WIDTH_MAINWINDOW = 0.4688f;
     static const float RELATIVE_HEIGHT_MAINWINDOW = 0.5556f;
+    static const float RELATIVE_WIDTH_TABLE = 0.4f;
     // В случае изменения размера
     if (event->type() == QEvent::Resize){
         QResizeEvent * resizeEvent = dynamic_cast<QResizeEvent*>(event); // Событие
@@ -244,6 +245,9 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * event){
             int leftPanelMaxWidth = qRound(this->width() * RELATIVE_WIDTH_DOCK);
             ui->dockFileWidget->setMaximumWidth(leftPanelMaxWidth); // Список сигналов
             ui->dockPropertyWidget->setMaximumWidth(leftPanelMaxWidth); // Свойства
+        }
+        if (obj == ui->tableSpectrumData){
+            ui->tableSpectrumData->setMaximumWidth(RELATIVE_WIDTH_TABLE * ui->spectrumPlot->width());
         }
         // Для dock виджетов
         if (obj == ui->dockFileWidget || obj == ui->dockPropertyWidget){

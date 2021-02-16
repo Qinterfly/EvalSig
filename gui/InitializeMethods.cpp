@@ -47,6 +47,8 @@ void MainWindow::initializeShowParams(){
         // Для dock виджетов
     ui->dockFileWidget->installEventFilter(this); // Список сигналов
     ui->dockFileWidget->installEventFilter(this); // Свойства сигналов
+        // Для таблиц
+    ui->tableSpectrumData->installEventFilter(this); // Данные спектра
     // Формирование строки состояния
     calcStatusLabel = new QLabel(""); // Информация о расчете в statusBar
     ui->statusBar->addPermanentWidget(calcStatusLabel);
