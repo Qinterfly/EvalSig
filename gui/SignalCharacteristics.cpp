@@ -385,6 +385,14 @@ void MainWindow::setEnabledIntegralDomain(){
 void MainWindow::saveCharacteristic(int indSelected){
     static QString const ext = ".txt";
     static QString const hintExt = "Text files (*" + ext + ")";
+    bool isUserCalc = false;
+    // Если объект не выбран программно, то выбираем текущий пользовательский
+    if (indSelected < 0){
+        indSelected = ui->showModeWidget->currentIndex();
+        isUserCalc = true;
+    } else if (indSelected > SHIFT_TAB){
+        isUserCalc = true;
+    }
     QString saveCaption;
     QString postfix;
     switch (indSelected) {
@@ -413,16 +421,18 @@ void MainWindow::saveCharacteristic(int indSelected){
     // Формирование имени файла
     DataSignal const& dataSignal = mapSignalCharacteristics_[indSelected];
     QString fileName = QFileInfo(dataSignal.getName()).completeBaseName() + postfix + ext;
-    // Организация диалога с пользователем
-    QString fullFilePath = QFileDialog::getSaveFileName(this, saveCaption, lastPath_ + fileName, hintExt);
-    if (fullFilePath.isEmpty()) return;
-    QFileInfo infoName(fullFilePath); // Создание информационного объекта
-    fileName = infoName.fileName(); // Имя файла
-    if ( !fileName.contains(ext) ) // Добавление расширения
-        fileName += ext;
-    lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
+        // Организация диалога с пользователем
+    if (isUserCalc){
+        QString fullFilePath = QFileDialog::getSaveFileName(this, saveCaption, lastPath_ + fileName, hintExt);
+        if (fullFilePath.isEmpty()) return;
+        QFileInfo infoName(fullFilePath); // Создание информационного объекта
+        fileName = infoName.fileName(); // Имя файла
+        if ( !fileName.contains(ext) ) // Добавление расширения
+            fileName += ext;
+        lastPath_ = infoName.absolutePath() + QDir::separator(); // Путь к файлу ( + запись в последний выбранный)
+    }
      // Сохранение файла
-    if (!dataSignal.writeDataFile(lastPath_, fileName))
+    if (!dataSignal.writeDataFile(lastPath_, fileName) && isUserCalc)
         ui->statusBar->showMessage("Сохранение характеристики выполнено успешно");
 }
 
